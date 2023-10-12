@@ -10,4 +10,5 @@ target_link_libraries(${PROJECT_NAME} liblua-5.4.6)
 target_include_directories(${PROJECT_NAME} PRIVATE lua-5.4.6/src)
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/main.lua"
+    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
 )
