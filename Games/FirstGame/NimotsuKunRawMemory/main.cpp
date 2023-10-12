@@ -1,4 +1,5 @@
 #include <iostream> //必须包含这个头文件
+#include <stdlib.h>
 using namespace std;
 /*
 
@@ -63,7 +64,7 @@ int main() {
     cout << "Congratulation! you win." << endl;
 
     // 为了避免运行完一闪而过，这里添加一个无限循环。命令行中按下Ctrl-C即可终止
-    while (true) { ; }
+    system("pause");
     return 0;
 }
 
@@ -179,11 +180,11 @@ void checkClear() {
 }
 
 // #墙 _空白区 .终点 o砖块 p人
-//  ########\n\
-//# .. p #\n\
-//# oo   #\n\
-//#      #\n\
-//########";
+// ########
+// # .. p #
+// # oo   #
+// #      #
+// ########";
 void initializeGlobalVariables() {
     // 宽度为18
     m[18] = 8;
