@@ -1,5 +1,17 @@
 {
     "cmake.debugConfig": {
         "console": "externalTerminal"
-    }
+    },
+    "files.associations": {
+        "windows.h": "c",
+        "lualib.h": "c",
+        "lua.h": "c",
+        "string": "cpp"
+    },
+    "Lua.diagnostics.globals": [
+        "lfs"
+    ],
+    "Lua.workspace.library": [
+        "${3rd}/lfs/library"
+    ]
 }

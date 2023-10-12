@@ -6,6 +6,7 @@ int main(int argc, char const* argv[]) {
 #endif
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
+    luaopen_lfs(L);
     lua_register(L, "SetConsoleCursorPosition", Lua_SetConsoleCursorPosition);
 #ifdef LUA_PACKAGE_PATH
     lua_getglobal(L, "package");
