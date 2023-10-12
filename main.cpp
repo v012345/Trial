@@ -21,6 +21,10 @@ int main(int argc, char const* argv[]) {
     lua_settable(L, -3);
     free(new_path);
 #endif
+#ifdef CMAKE_SOURCE_DIR
+    lua_pushstring(L, CMAKE_SOURCE_DIR);
+    lua_setglobal(L, "CMAKE_SOURCE_DIR");
+#endif
 #ifdef LUA_MAIN_SCRIPT
     luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
