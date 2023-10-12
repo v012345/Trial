@@ -49,7 +49,7 @@ local function draw()
                 end
             end
         end
-        print()
+        io.write("\n")
     end
 end
 local function is_clear()
@@ -121,7 +121,7 @@ while true do
     local old_y = position.y
     deal_input(input)
     if not (old_x == position.x and old_y == position.y) then
-        os.execute("cls")
+        SetConsoleCursorPosition(0, 0)
         draw()
         if is_clear() then
             print("Congratulation!")

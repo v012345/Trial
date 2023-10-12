@@ -1,10 +1,12 @@
 #include "main.hpp"
+static int Lua_SetConsoleCursorPosition(lua_State* L);
 int main(int argc, char const* argv[]) {
 #ifdef _WIN32
     system("chcp 65001 > NUL");
 #endif
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
+    lua_register(L, "SetConsoleCursorPosition", Lua_SetConsoleCursorPosition);
 #ifdef LUA_PACKAGE_PATH
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "path");
@@ -21,5 +23,14 @@ int main(int argc, char const* argv[]) {
 #ifdef LUA_MAIN_SCRIPT
     luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
+    return 0;
+}
+static int Lua_SetConsoleCursorPosition(lua_State* L) {
+    int column = lua_tointeger(L, 1);
+    int line = lua_tointeger(L, 2);
+    COORD coord;
+    coord.X = column;
+    coord.Y = line;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
     return 0;
 }
