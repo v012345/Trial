@@ -1,4 +1,3 @@
-os.execute("cls")
 local MAN = '😁' -- 1
 local MAN_ON_GRASS = '😬' -- 2
 local HORSE = '🐴' -- 3
@@ -85,12 +84,12 @@ local function deal_input(input)
             elseif input == "w" then
                 horse.x = horse.x - 1
             end
-            if horse.x < 2 or horse.x > 4 then
+            if horse.x < 2 or horse.x > #Ground - 1 then
                 horse.x = h_old_x
                 position.x = old_x
                 return
             end
-            if horse.y < 2 or horse.y > 7 then
+            if horse.y < 2 or horse.y > #Ground[1] - 1 then
                 horse.y = h_old_y
                 position.y = old_y
                 return
@@ -107,10 +106,10 @@ local function deal_input(input)
             break
         end
     end
-    if position.x < 2 or position.x > 4 then
+    if position.x < 2 or position.x > #Ground - 1 then
         position.x = old_x
     end
-    if position.y < 2 or position.y > 7 then
+    if position.y < 2 or position.y > #Ground[1] - 1 then
         position.y = old_y
     end
 end
@@ -121,7 +120,7 @@ while true do
     local old_y = position.y
     deal_input(input)
     if not (old_x == position.x and old_y == position.y) then
-        SetConsoleCursorPosition(0, 0)
+        SetConsoleCursorPosition(0, 1)
         draw()
         if is_clear() then
             print("Congratulation!")
