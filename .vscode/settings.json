@@ -6,7 +6,8 @@
         "windows.h": "c",
         "lualib.h": "c",
         "lua.h": "c",
-        "string": "cpp"
+        "string": "cpp",
+        "istream": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"
