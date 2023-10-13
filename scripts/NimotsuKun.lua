@@ -18,6 +18,14 @@ local factory = {
     { 6, 0, 0, 1, 0, 0, 0, 6 },
     { 6, 6, 6, 6, 6, 6, 6, 6 },
 }
+local factory_backup = {}
+for x, row in ipairs(factory) do
+    factory_backup[x] = factory_backup[x] or {}
+    for y, obj in ipairs(row) do
+        factory_backup[x][y] = obj
+    end
+end
+
 local function parse_factory(factory_map)
     local worker_pos = nil
     local HORSES = {}
@@ -56,6 +64,16 @@ local function parse_factory(factory_map)
     end
 end
 local worker_pos, HORSES = parse_factory(factory)
+
+local function reset_game()
+    for x, row in ipairs(factory_backup) do
+        factory[x] = factory[x] or {}
+        for y, obj in ipairs(row) do
+            factory[x][y] = obj
+        end
+    end
+    worker_pos, HORSES = parse_factory(factory)
+end
 
 -- 渲染地图
 local function draw()
@@ -124,6 +142,9 @@ local function deal_input(input)
         dy = 1
     elseif input == "w" then
         dx = -1
+    elseif input == "r" then
+        reset_game()
+        return
     end
     local isHorse, horse = is_horse(old_x + dx, old_y + dy)
     if isHorse then
@@ -150,7 +171,7 @@ while true do
     local old_x = worker_pos.x
     local old_y = worker_pos.y
     deal_input(input)
-    if not (old_x == worker_pos.x and old_y == worker_pos.y) then
+    if not (old_x == worker_pos.x and old_y == worker_pos.y) or input == "r" then
         SetConsoleCursorPosition(0, 2)
         draw()
     end
