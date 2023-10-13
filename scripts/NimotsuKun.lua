@@ -5,6 +5,7 @@ local SelectStageThread = coroutine.create(function(stageId)
     local from = (currentStage - 1) // 10 * 10 + 1
     local to = from + 9
     while true do
+        print("asdw 选择, 回车确认, q退出")
         if to > allStages then
             to = allStages
         end
