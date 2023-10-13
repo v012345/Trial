@@ -7,7 +7,7 @@ local LOG = '🪵' -- 6
 local OBJ = {
     MAN, MAN_ON_GRASS, HORSE, UNICORN, GRASS, LOG, [0] = "  "
 }
-
+print("a,s,d,w to move")
 local Ground = {
     { 6, 6, 6, 6, 6, 6, 6, 6 },
     { 6, 0, 5, 5, 0, 0, 0, 6 },
@@ -115,12 +115,12 @@ local function deal_input(input)
 end
 draw()
 while true do
-    local input = io.read('l')
+    local input = string.char(_getch())
     local old_x = position.x
     local old_y = position.y
     deal_input(input)
     if not (old_x == position.x and old_y == position.y) then
-        SetConsoleCursorPosition(0, 1)
+        SetConsoleCursorPosition(0, 2)
         draw()
         if is_clear() then
             print("Congratulation!")

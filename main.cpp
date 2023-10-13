@@ -1,5 +1,6 @@
 #include "main.hpp"
 static int Lua_SetConsoleCursorPosition(lua_State* L);
+static int Lua__getch(lua_State* L);
 int main(int argc, char const* argv[]) {
 #ifdef _WIN32
     system("chcp 65001 > NUL");
@@ -8,6 +9,7 @@ int main(int argc, char const* argv[]) {
     luaL_openlibs(L);
     luaopen_lfs(L);
     lua_register(L, "SetConsoleCursorPosition", Lua_SetConsoleCursorPosition);
+    lua_register(L, "_getch", Lua__getch);
 #ifdef LUA_PACKAGE_PATH
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "path");
@@ -29,6 +31,11 @@ int main(int argc, char const* argv[]) {
     luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
     return 0;
+}
+static int Lua__getch(lua_State* L) {
+    int c = _getch();
+    lua_pushinteger(L, c);
+    return 1;
 }
 static int Lua_SetConsoleCursorPosition(lua_State* L) {
     int column = lua_tointeger(L, 1);
