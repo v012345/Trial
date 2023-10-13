@@ -9,20 +9,53 @@ local OBJ = {
 }
 print("a,s,d,w to move")
 local factory = {
-    { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 },
-    { 6, 0, 5, 0, 0, 0, 0, 0, 0, 6 },
-    { 6, 0, 0, 0, 0, 0, 0, 0, 0, 6 },
-    { 6, 0, 0, 0, 0, 0, 0, 0, 0, 6 },
-    { 6, 0, 0, 0, 6, 6, 6, 0, 0, 6 },
-    { 6, 0, 0, 0, 6, 0, 6, 5, 0, 6 },
-    { 6, 0, 0, 0, 6, 0, 6, 0, 0, 6 },
-    { 6, 6, 6, 6, 6, 0, 6, 6, 6, 6 },
+    { 0, 0, 6, 6, 6, 6, 0, 0 },
+    { 0, 0, 6, 5, 5, 6, 0, 0 },
+    { 0, 6, 0, 0, 5, 6, 6, 0 },
+    { 0, 6, 0, 0, 3, 5, 6, 0 },
+    { 6, 6, 0, 3, 0, 0, 6, 6 },
+    { 6, 0, 0, 6, 3, 3, 0, 6 },
+    { 6, 0, 0, 1, 0, 0, 0, 6 },
+    { 6, 6, 6, 6, 6, 6, 6, 6 },
 }
-local worker_pos = { x = 4, y = 2 }
-local HORSES = {
-    { x = 3, y = 3 },
-    { x = 3, y = 4 }
-}
+local function parse_factory(factory_map)
+    local worker_pos = nil
+    local HORSES = {}
+    for x, row in ipairs(factory_map) do
+        for y, obj in ipairs(row) do
+            if obj == 1 then
+                if worker_pos then
+                    error("has more one worker")
+                else
+                    worker_pos = { x = x, y = y }
+                    factory_map[x][y] = 0
+                end
+            end
+            if obj == 2 then
+                if worker_pos then
+                    error("has more one worker")
+                else
+                    worker_pos = { x = x, y = y }
+                    factory_map[x][y] = 5
+                end
+            end
+            if obj == 3 then
+                HORSES[#HORSES + 1] = { x = x, y = y }
+                factory_map[x][y] = 0
+            end
+            if obj == 4 then
+                HORSES[#HORSES + 1] = { x = x, y = y }
+                factory_map[x][y] = 5
+            end
+        end
+    end
+    if worker_pos and #HORSES > 0 then
+        return worker_pos, HORSES
+    else
+        error("wrong factory map")
+    end
+end
+local worker_pos, HORSES = parse_factory(factory)
 
 -- 渲染地图
 local function draw()
@@ -122,4 +155,4 @@ while true do
         draw()
     end
 end
--- os.execute("pause")
+os.execute("pause")
