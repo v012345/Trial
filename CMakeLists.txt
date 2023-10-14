@@ -6,6 +6,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory("lua-5.4.6/src")
 add_subdirectory("lua-extensions")
 add_subdirectory("tools")
+add_subdirectory("Modules")
 add_subdirectory("Games")
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME}
