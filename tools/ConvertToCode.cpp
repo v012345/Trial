@@ -97,9 +97,18 @@ void write(bool* succeeded, ofstream& o, const char* inFileName) {
             name += c;
         }
     }
+#ifdef CMAKE_SOURCE_DIR
+    // 直接在 CMAKE 里定义, 省得传参
+    o << "namespace {\n";
+    o << "const char g"
+      << "FontTga"
+      << "[] = {\\\n";
+#else
     // 开始写入head
     o << "namespace {\n";
     o << "const char g" << name << "[] = {\\\n";
+#endif
+
     // 循环
     int rowCount = 0;
     for (streamsize i = 0; i < s; ++i) {
