@@ -8,6 +8,8 @@ target_compile_definitions(NimotsuKun2 PRIVATE
 include_directories(include)
 add_library(FileIOManager STATIC
     "src/Base/Conversion.cpp"
+    "src/Base/IBinaryStream.cpp"
+    "src/Base/RefString.cpp"
 )
 add_library(GameLib STATIC
     "Framework.cpp"
