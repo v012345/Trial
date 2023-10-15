@@ -5,3 +5,14 @@ add_executable(NimotsuKun2 FirstGame/NimotsuKun2/main.cpp)
 target_compile_definitions(NimotsuKun2 PRIVATE
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
+include_directories(include)
+add_library(FileIOManager STATIC
+    "src/Base/Conversion.cpp"
+)
+add_library(GameLib STATIC
+    "Framework.cpp"
+)
+add_executable(test test.cpp)
+target_link_libraries(test
+    FileIOManager
+)
