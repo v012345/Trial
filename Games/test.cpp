@@ -4,6 +4,7 @@
 #include "include/GameLib/Base/IBinaryStream.h"
 #include "include/GameLib/Base/MemoryManager.h"
 #include "include/GameLib/Base/PrimeNumber.h"
+#include "include/GameLib/FileIO/Manager.h"
 #include <iostream>
 int main(int argc, char const* argv[]) {
     /* code */
@@ -27,11 +28,12 @@ int main(int argc, char const* argv[]) {
     char outData[1024];
     int outSize = 0;
     char data[100] = "asdf";
-    GameLib::Compressor::decompress(outData, &outSize, data, 4);
-    GameLib::DebugStream pDebugStream;
-    pDebugStream.begin();
-    pDebugStream << "jife";
-    pDebugStream.end();
-    GameLib::MemoryManager::instance().write();
+    // GameLib::Compressor::decompress(outData, &outSize, data, 4);
+    // GameLib::DebugStream pDebugStream;
+    // pDebugStream.begin();
+    // pDebugStream << "jife";
+    GameLib::FileIO::Manager::instance().create();
+    // GameLib::MemoryManager::instance().write();
+    // pDebugStream.end();
     return 0;
 }

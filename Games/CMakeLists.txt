@@ -17,14 +17,25 @@ add_library(Base STATIC
     "src/Base/Halt.cpp"
     "src/Base/MemoryManager.cpp"
 )
-add_library(ThreadingManager STATIC
-    "src/Threading/Mutex.cpp"
+add_library(FileIOManager STATIC
+    "src/FileIO/Manager.cpp"
 )
+target_include_directories(FileIOManager PRIVATE src)
+add_library(ThreadingManager STATIC
+    "src/Threading/Manager.cpp"
+    "src/Threading/Mutex.cpp"
+    "src/Threading/Event.cpp"
+    "src/Threading/Functions.cpp"
+    "src/Threading/Thread.cpp"
+    "src/Threading/Semaphore.cpp"
+)
+target_include_directories(ThreadingManager PRIVATE src)
 add_library(GameLib STATIC
     "Framework.cpp"
 )
 add_executable(test test.cpp)
 target_link_libraries(test
     Base
+    FileIOManager
     ThreadingManager
 )
