@@ -10,6 +10,7 @@ add_library(FileIOManager STATIC
     "src/Base/Conversion.cpp"
     "src/Base/IBinaryStream.cpp"
     "src/Base/RefString.cpp"
+    "src/Base/PrimeNumber.cpp"
 )
 add_library(GameLib STATIC
     "Framework.cpp"

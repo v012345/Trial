@@ -1,5 +1,6 @@
 #include "include/GameLib/Base/Conversion.h"
 #include "include/GameLib/Base/IBinaryStream.h"
+#include "include/GameLib/Base/PrimeNumber.h"
 #include <iostream>
 int main(int argc, char const* argv[]) {
     /* code */
@@ -18,6 +19,7 @@ int main(int argc, char const* argv[]) {
     }
 
     std::cout << o1 << std::endl;
-    // std::cout << ok << std::endl;
+    std::cout << GameLib::PrimeNumber::isPrimeNumber(2) << std::endl;
+    std::cout << GameLib::PrimeNumber::isPrimeNumber(4) << std::endl;
     return 0;
 }
