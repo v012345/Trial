@@ -2,7 +2,7 @@
 static int Lua_SetConsoleCursorPosition(lua_State* L);
 static int Lua__getch(lua_State* L);
 int main(int argc, char const* argv[]) {
-#ifdef _WIN32
+    #ifdef _WIN32
     system("chcp 65001 > NUL");
 #endif
     lua_State* L = luaL_newstate();
