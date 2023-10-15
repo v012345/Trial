@@ -2,6 +2,7 @@
 #include "include/GameLib/Base/Conversion.h"
 #include "include/GameLib/Base/DebugStream.h"
 #include "include/GameLib/Base/IBinaryStream.h"
+#include "include/GameLib/Base/MemoryManager.h"
 #include "include/GameLib/Base/PrimeNumber.h"
 #include <iostream>
 int main(int argc, char const* argv[]) {
@@ -31,5 +32,6 @@ int main(int argc, char const* argv[]) {
     pDebugStream.begin();
     pDebugStream << "jife";
     pDebugStream.end();
+    GameLib::MemoryManager::instance().write();
     return 0;
 }

@@ -6,7 +6,7 @@ target_compile_definitions(NimotsuKun2 PRIVATE
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 include_directories(include)
-add_library(FileIOManager STATIC
+add_library(Base STATIC
     "src/Base/Conversion.cpp"
     "src/Base/IBinaryStream.cpp"
     "src/Base/RefString.cpp"
@@ -15,6 +15,7 @@ add_library(FileIOManager STATIC
     "src/Base/Compressor.cpp"
     "src/Base/DebugStream.cpp"
     "src/Base/Halt.cpp"
+    "src/Base/MemoryManager.cpp"
 )
 add_library(ThreadingManager STATIC
     "src/Threading/Mutex.cpp"
@@ -24,6 +25,6 @@ add_library(GameLib STATIC
 )
 add_executable(test test.cpp)
 target_link_libraries(test
-    FileIOManager
+    Base
     ThreadingManager
 )
