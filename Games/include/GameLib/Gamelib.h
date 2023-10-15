@@ -44,8 +44,8 @@ void halt(const char* filename, int line, const char* message);
 #endif // NDEBUG
 
 // 基本服务标头
-//  #include "Base/DebugStream.h"
-//  #include "Base/Array.h"
+#include "Base/Array.h"
+#include "Base/DebugStream.h"
 //  #include "Base/AutoPtr.h"
 //  #include "Base/SharedPtr.h"
 //  #include "Base/MemoryManager.h"

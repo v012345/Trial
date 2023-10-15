@@ -1,5 +1,6 @@
 #include "include/GameLib/Base/Compressor.h"
 #include "include/GameLib/Base/Conversion.h"
+#include "include/GameLib/Base/DebugStream.h"
 #include "include/GameLib/Base/IBinaryStream.h"
 #include "include/GameLib/Base/PrimeNumber.h"
 #include <iostream>
@@ -26,5 +27,9 @@ int main(int argc, char const* argv[]) {
     int outSize = 0;
     char data[100] = "asdf";
     GameLib::Compressor::decompress(outData, &outSize, data, 4);
+    GameLib::DebugStream pDebugStream;
+    pDebugStream.begin();
+    pDebugStream << "jife";
+    pDebugStream.end();
     return 0;
 }
