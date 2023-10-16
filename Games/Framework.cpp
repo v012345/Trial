@@ -44,6 +44,14 @@ namespace GameLib {
                     mVideoMemoryWithPadding[i] = MAGIC_NUMBER;
                     mVideoMemoryWithPadding[mWidth * (mHeight + 1) + i] = MAGIC_NUMBER;
                 }
+                L = luaL_newstate();
+                luaL_openlibs(L);
+                luaopen_lfs(L);
+#ifdef CMAKE_SOURCE_DIR
+                lua_pushstring(L, CMAKE_SOURCE_DIR);
+                lua_setglobal(L, "CMAKE_SOURCE_DIR");
+#endif
+                luaL_dofile(L, LUA_MAIN_SCRIPT);
             }
             ~Impl() {
                 if (mArchiveNames) { SAFE_DELETE_ARRAY(mArchiveNames); }
@@ -184,6 +192,7 @@ namespace GameLib {
             bool mStarted;
             Scene::StringRenderer mDebugStringRenderer;
             Scene::Font mDebugFont;
+            lua_State* L;
         };
 
         Impl* gImpl = 0;
