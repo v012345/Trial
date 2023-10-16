@@ -44,14 +44,6 @@ namespace GameLib {
                     mVideoMemoryWithPadding[i] = MAGIC_NUMBER;
                     mVideoMemoryWithPadding[mWidth * (mHeight + 1) + i] = MAGIC_NUMBER;
                 }
-                L = luaL_newstate();
-                luaL_openlibs(L);
-                luaopen_lfs(L);
-#ifdef CMAKE_SOURCE_DIR
-                lua_pushstring(L, CMAKE_SOURCE_DIR);
-                lua_setglobal(L, "CMAKE_SOURCE_DIR");
-#endif
-                luaL_dofile(L, LUA_MAIN_SCRIPT);
             }
             ~Impl() {
                 if (mArchiveNames) { SAFE_DELETE_ARRAY(mArchiveNames); }
@@ -196,8 +188,12 @@ namespace GameLib {
         };
 
         Impl* gImpl = 0;
+        lua_State* L = nullptr;
 
     } // namespace
+    static int lua_getHeight(lua_State* L) { return 0; }
+    static int lua_getWidth(lua_State* L) { return 0; }
+    static int luaopen_Impl(lua_State* L, Impl*) { return 1; }
 
     Framework::Framework() {
         // 不允许来自其他线程的调用
@@ -207,6 +203,13 @@ namespace GameLib {
     void Framework::create() {
         ASSERT(!gImpl);
         gImpl = NEW Impl();
+        L = luaL_newstate();
+        luaL_openlibs(L);
+        luaopen_lfs(L);
+        lua_pushstring(L, CMAKE_SOURCE_DIR);
+        lua_setglobal(L, "CMAKE_SOURCE_DIR");
+        luaopen_Impl(L, gImpl);
+        luaL_dofile(L, LUA_MAIN_SCRIPT);
     }
 
     void Framework::destroy() { SAFE_DELETE(gImpl); }

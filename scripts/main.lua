@@ -7,5 +7,5 @@
 -- end)
 
 local file = io.open(CMAKE_SOURCE_DIR .. "/log/log.txt", "w") or error()
-file:write("llllll");
+file:write("ll22222222222llll");
 file:close()
