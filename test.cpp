@@ -105,6 +105,16 @@ void mainLoop() {
         delete gState;
         gState = 0;
     }
+    // 结束判断
+    if (input == 'q') { Framework::instance().requestEnd(); }
+    // x键是否被按下了？
+    if (Framework::instance().isEndRequested()) {
+        if (gState) {
+            delete gState;
+            gState = 0;
+        }
+        return;
+    }
 }
 
 //---------------------下面是函数定义--------------
