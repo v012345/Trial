@@ -35,3 +35,21 @@ target_include_directories(Game PRIVATE
 target_link_libraries(Game
     GameLib
 )
+
+add_executable(Test WIN32
+    "test.cpp"
+    "Games/src/WindowCreator/WindowCreator.cpp"
+)
+target_include_directories(Test PRIVATE
+    "Games/src"
+    "Games/include"
+)
+
+target_link_libraries(Test
+    GameLib
+)
+
+add_custom_command(TARGET Test POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy
+"${CMAKE_SOURCE_DIR}/log/stageData.txt"
+${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
