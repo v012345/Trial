@@ -193,7 +193,12 @@ namespace GameLib {
     } // namespace
     static int lua_getHeight(lua_State* L) { return 0; }
     static int lua_getWidth(lua_State* L) { return 0; }
-    static int luaopen_Impl(lua_State* L, Impl*) { return 1; }
+    static int luaopen_Impl(lua_State* L, Impl* gImpl) {
+        lua_pushlightuserdata(L, gImpl);
+        lua_setglobal(L, "Impl");
+        // luaL_newmetatable(L, "Impl.metatable");
+        return 1;
+    }
 
     Framework::Framework() {
         // 不允许来自其他线程的调用
