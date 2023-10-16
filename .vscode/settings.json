@@ -1,6 +1,6 @@
 {
     "cmake.debugConfig": {
-        "console": "externalTerminal"
+        // "console": "externalTerminal"
     },
     "files.associations": {
         "windows.h": "c",

@@ -22,7 +22,7 @@ target_compile_definitions(function_test PRIVATE
     LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
-
+add_compile_definitions(USE_WIN32_CONSOLE)
 add_executable(Game WIN32
     "update.cpp"
     "Games/src/WindowCreator/WindowCreator.cpp"
@@ -50,6 +50,6 @@ target_link_libraries(Test
 )
 
 add_custom_command(TARGET Test POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy
-"${CMAKE_SOURCE_DIR}/log/stageData.txt"
-${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+    COMMAND ${CMAKE_COMMAND} -E copy
+    "${CMAKE_SOURCE_DIR}/log/stageData.txt"
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
