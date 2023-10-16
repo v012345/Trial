@@ -35,7 +35,7 @@ BraceWrapping:
   # 分离空语句
   SplitEmptyRecord: false
   # 分离空命名空间
-  SplitEmptyNamespace: false
+  SplitEmptyNamespace: true
 # 括号内的空格
 SpaceInParentheses: false
 # while 或 if 后面只有一条语句时，将这条语句与 while 或 if 在同一行显示
@@ -81,3 +81,5 @@ AllowShortCaseLabelsOnASingleLine: true
 #   Allman(总是在大括号前换行), GNU(总是在大括号前换行，并对于控制语句的大括号增加额外的缩进), WebKit(在函数前换行), Custom
 #   注：这里认为语句块也属于函数
 BreakBeforeBraces: Custom
+
+NamespaceIndentation: All
