@@ -47,6 +47,7 @@ add_library(PseudoXml STATIC
     "src/PseudoXml/Document.cpp"
     "src/PseudoXml/DocumentImpl.cpp"
     "src/PseudoXml/Element.cpp"
+    "src/PseudoXml/Tag.cpp"
 )
 target_include_directories(PseudoXml PRIVATE src)
 
@@ -54,6 +55,51 @@ add_library(WindowCreator STATIC
     "src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(WindowCreator PRIVATE src)
+
+add_library(InputManaegr STATIC
+    "src/Input/Joystick.cpp"
+    "src/Input/Keyboard.cpp"
+    "src/Input/Manager.cpp"
+    "src/Input/Mouse.cpp"
+)
+target_include_directories(InputManaegr PRIVATE src)
+
+add_library(MathFunctions STATIC
+    "src/Math/Functions.cpp"
+    "src/Math/Matrix22.cpp"
+    "src/Math/Matrix23.cpp"
+    "src/Math/Matrix33.cpp"
+    "src/Math/Matrix34.cpp"
+    "src/Math/Matrix44.cpp"
+    "src/Math/Random.cpp"
+    "src/Math/vector2.cpp"
+    "src/Math/Vector3.cpp"
+    "src/Math/Vector4.cpp"
+)
+target_include_directories(MathFunctions PRIVATE src)
+
+add_library(SoundManager STATIC
+    "src/Sound/Manager.cpp"
+    "src/Sound/Player.cpp"
+    "src/Sound/Wave.cpp"
+)
+target_include_directories(SoundManager PRIVATE src)
+
+add_library(SceneManager STATIC
+    "src/Scene/Animation.cpp"
+    "src/Scene/AnimationNode.cpp"
+    "src/Scene/Batch.cpp"
+    "src/Scene/CollisionDetector.cpp"
+    "src/Scene/CollisionMesh.cpp"
+    "src/Scene/Container.cpp"
+    "src/Scene/Font.cpp"
+    "src/Scene/Model.cpp"
+    "src/Scene/PrimitiveRenderer.cpp"
+    "src/Scene/StringRenderer.cpp"
+    "src/Scene/Tree.cpp"
+    "src/Scene/TreeTemplate.cpp"
+)
+target_include_directories(SceneManager PRIVATE src)
 
 add_library(GameLib STATIC
     "Framework.cpp"
@@ -65,6 +111,16 @@ target_link_libraries(test
     FileIOManager
     ThreadingManager
     GraphicsManager
-    GameLib
     WindowCreator
+    InputManaegr
+    MathFunctions
+    SoundManager
+    SceneManager
+    GameLib
+
+    winmm
+    d3d9
+    dsound
+    dinput8
+    dxguid
 )
