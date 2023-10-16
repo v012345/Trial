@@ -50,13 +50,21 @@ add_library(PseudoXml STATIC
 )
 target_include_directories(PseudoXml PRIVATE src)
 
+add_library(WindowCreator STATIC
+    "src/WindowCreator/WindowCreator.cpp"
+)
+target_include_directories(WindowCreator PRIVATE src)
+
 add_library(GameLib STATIC
     "Framework.cpp"
 )
 add_executable(test test.cpp)
 target_link_libraries(test
     Base
+    PseudoXml
     FileIOManager
     ThreadingManager
     GraphicsManager
+    GameLib
+    WindowCreator
 )

@@ -32,7 +32,7 @@ int main(int argc, char const* argv[]) {
     // GameLib::DebugStream pDebugStream;
     // pDebugStream.begin();
     // pDebugStream << "jife";
-    GameLib::FileIO::Manager::instance().create();
+    // GameLib::FileIO::Manager::instance().create();
     // GameLib::MemoryManager::instance().write();
     // pDebugStream.end();
     return 0;
