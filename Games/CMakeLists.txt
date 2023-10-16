@@ -19,7 +19,10 @@ add_library(Base STATIC
 )
 add_library(FileIOManager STATIC
     "src/FileIO/Manager.cpp"
+    "src/FileIO/InFile.cpp"
+    "src/FileIO/OutFile.cpp"
 )
+
 target_include_directories(FileIOManager PRIVATE src)
 add_library(ThreadingManager STATIC
     "src/Threading/Manager.cpp"
