@@ -191,12 +191,40 @@ namespace GameLib {
         lua_State* L = nullptr;
 
     } // namespace
-    static int lua_getHeight(lua_State* L) { return 0; }
-    static int lua_getWidth(lua_State* L) { return 0; }
+    static int lua_getHeight(lua_State* L) {
+        Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
+        lua_pushinteger(L, (*ppImpl)->mHeight);
+        return 1;
+    }
+    static int lua_getWidth(lua_State* L) {
+        Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
+        lua_pushinteger(L, (*ppImpl)->mWidth);
+        return 1;
+    }
+    static int lua_setVarm(lua_State* L) {
+        Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
+        unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
+        unsigned w = lua_tointeger(L, 2);
+        unsigned h = lua_tointeger(L, 3);
+        unsigned c = lua_tointeger(L, 4);
+        vram[w * gImpl->mWidth + h] = c;
+        return 0;
+    }
     static int luaopen_Impl(lua_State* L, Impl* gImpl) {
-        lua_pushlightuserdata(L, gImpl);
+        luaL_Reg pImpl_metatable[] = {
+            {"height", lua_getHeight},
+            {"width", lua_getWidth},
+            {"vram", lua_setVarm},
+            {NULL, NULL},
+        };
+        Impl** ppImpl = (Impl**)lua_newuserdata(L, sizeof(Impl**));
+        *ppImpl = gImpl;
+        luaL_newmetatable(L, "pImpl_metatable");
+        lua_newtable(L);
+        luaL_setfuncs(L, pImpl_metatable, 0);
+        lua_setfield(L, -2, "__index");
+        lua_setmetatable(L, -2);
         lua_setglobal(L, "Impl");
-        // luaL_newmetatable(L, "Impl.metatable");
         return 1;
     }
 

@@ -11,4 +11,10 @@ file:write("ll22222222222llll");
 file:close()
 
 print("lua:jifjisojfseifjsijfii")
-print("lua:",Impl)
+print("lua:", Impl, type(getmetatable(Impl)), Impl.height, Impl:height())
+
+for i = 1, 10, 1 do
+    for j = 1, 10, 1 do
+        Impl:vram(i, j, 0xFF0000)
+    end
+end
