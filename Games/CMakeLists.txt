@@ -93,12 +93,8 @@ target_include_directories(SceneManager PRIVATE src)
 add_library(GameLib STATIC
     "Framework.cpp"
 )
-add_executable(test WIN32
-    "src/WindowCreator/WindowCreator.cpp"
-    test.cpp
-)
-target_include_directories(test PRIVATE src)
-target_link_libraries(test
+
+target_link_libraries(GameLib
     Base
     PseudoXml
     FileIOManager
@@ -108,7 +104,6 @@ target_link_libraries(test
     MathFunctions
     SoundManager
     SceneManager
-    GameLib
     winmm
     d3d9
     dsound

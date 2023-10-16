@@ -8,17 +8,30 @@ add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
 
-add_executable(${PROJECT_NAME} main.cpp)
-add_definitions(-DNDEBUG)
-target_link_libraries(${PROJECT_NAME}
+# add_definitions(-DNDEBUG)
+add_executable(function_test main.cpp)
+target_link_libraries(function_test
     liblua-5.4.6
     lfs
 )
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(function_test PRIVATE
     lua-5.4.6/src
 )
-target_compile_definitions(${PROJECT_NAME} PRIVATE
+target_compile_definitions(function_test PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/main.lua"
     LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
+add_executable(Game WIN32
+    "update.cpp"
+    "Games/src/WindowCreator/WindowCreator.cpp"
+)
+target_include_directories(Game PRIVATE
+    "Games/src"
+    "Games/include"
+)
+
+target_link_libraries(Game
+    GameLib
 )
