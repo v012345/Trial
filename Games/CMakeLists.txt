@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.20)
 include_directories(include)
 add_library(Base STATIC
-    "src/Base/Conversion.cpp"
-    "src/Base/IBinaryStream.cpp"
-    "src/Base/RefString.cpp"
-    "src/Base/OStringStream.cpp"
-    "src/Base/PrimeNumber.cpp"
-    "src/Base/Compressor.cpp"
-    "src/Base/DebugStream.cpp"
-    "src/Base/Halt.cpp"
+    # "src/Base/Conversion.cpp"
+    # "src/Base/IBinaryStream.cpp"
+    # "src/Base/RefString.cpp"
+    # "src/Base/OStringStream.cpp"
+    # "src/Base/PrimeNumber.cpp"
+    # "src/Base/Compressor.cpp"
+    # "src/Base/DebugStream.cpp"
+    # "src/Base/Halt.cpp"
     "src/Base/MemoryManager.cpp"
 )
 add_library(FileIOManager STATIC
@@ -101,16 +101,16 @@ add_library(GameLib STATIC
 add_executable(test test.cpp)
 target_link_libraries(test
     Base
-    PseudoXml
-    FileIOManager
-    ThreadingManager
-    GraphicsManager
-    WindowCreator
-    InputManaegr
-    MathFunctions
-    SoundManager
-    SceneManager
-    GameLib
+    # PseudoXml
+    # FileIOManager
+    # ThreadingManager
+    # GraphicsManager
+    # WindowCreator
+    # InputManaegr
+    # MathFunctions
+    # SoundManager
+    # SceneManager
+    # GameLib
 
     winmm
     d3d9

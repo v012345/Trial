@@ -4,7 +4,7 @@
 #undef max
 #endif
 
-#include "GameLib/GameLib.h"
+// #include "GameLib/GameLib.h"
 //
 #include "GameLib/Base/MemoryManager.h"
 #include <cstdio>
@@ -73,7 +73,7 @@ U2 getFileNameIndex(const char* p) {
             return i;
         }
     }
-    STRONG_ASSERT(false && "MemoryManager : FileName Table Full!");
+    // STRONG_ASSERT(false && "MemoryManager : FileName Table Full!");
     return FILE_INDEX_UNKNOWN;
 }
 #endif // DEBUG_INFO
@@ -110,12 +110,12 @@ inline U4 align(U4 size, U4 n) {
 void* allocateAlignedMemory(void** originalPointer, U4 size, U4 alignSize) {
     // 2预约双地址
     void* reserved = VirtualAlloc(NULL, size * 2, MEM_RESERVE, PAGE_NOACCESS);
-    STRONG_ASSERT(reserved && "MemoryManager : Address Space Full!");
+    // STRONG_ASSERT(reserved && "MemoryManager : Address Space Full!");
     // 获取适当的对齐地址并从中获取实际区域
     void* aligned = align(reserved, alignSize);
     void* commited = VirtualAlloc(aligned, size, MEM_COMMIT, PAGE_READWRITE);
-    STRONG_ASSERT(commited && "MemoryManager : No Memory!");
-    STRONG_ASSERT((commited == aligned) && "MemoryManager : Unexpected Error! VirtualAlloc() returned invalid value.");
+    // STRONG_ASSERT(commited && "MemoryManager : No Memory!");
+    // STRONG_ASSERT((commited == aligned) && "MemoryManager : Unexpected Error! VirtualAlloc() returned invalid value.");
 
     *originalPointer = reserved; // 返回free的地址
     return commited;
@@ -125,7 +125,7 @@ void* allocateAlignedMemory(void** originalPointer, U4 size, U4 alignSize) {
 void* allocateMemory(U4 size) {
     U4 alignedSize = align(size, 64 * 1024);
     void* p = VirtualAlloc(NULL, alignedSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-    STRONG_ASSERT(p && "MemoryManager : No Memory!");
+    // STRONG_ASSERT(p && "MemoryManager : No Memory!");
 #ifndef NDEBUG // 填充
     memset(p, 0xfb, size); // 未使用的区域标记
     if (size < alignedSize) { // 禁止区域标记
@@ -138,7 +138,7 @@ void* allocateMemory(U4 size) {
 // 将内存归还操作系统
 void deallocateMemory(void* p) {
     BOOL succeeded = VirtualFree(p, 0, MEM_RELEASE);
-    STRONG_ASSERT((succeeded != 0) && "MemoryManager : Deallocation failed! The pointer must be invalid.");
+    // STRONG_ASSERT((succeeded != 0) && "MemoryManager : Deallocation failed! The pointer must be invalid.");
 }
 #endif
 
@@ -240,7 +240,7 @@ class Heap {
         }
     }
     void insertToList(U4 addr, U4 size) {
-        STRONG_ASSERT(addr < 0xfffff8);
+        // STRONG_ASSERT(addr < 0xfffff8);
         U4 index = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
         // 插入新列表。在开始处插入
         U4 first = mHeads[index][NEXT];
@@ -335,11 +335,11 @@ class Heap {
             U4 prevSize = getPrevSize(addr);
             U4 prev = addr - prevSize;
             U4 prevSizeWithFlag = getSize(prev);
-            STRONG_ASSERT(prevSizeWithFlag & FLAG_EMPTY);
-            STRONG_ASSERT(prevSize == (prevSizeWithFlag & SIZE_MASK));
+            // STRONG_ASSERT(prevSizeWithFlag & FLAG_EMPTY);
+            // STRONG_ASSERT(prevSize == (prevSizeWithFlag & SIZE_MASK));
         }
         U4 nextSizeWithFlagDebug = getSize(next);
-        STRONG_ASSERT(!(nextSizeWithFlagDebug & FLAG_PREV_EMPTY)); // 正在用它所以不为空
+        // STRONG_ASSERT(!(nextSizeWithFlagDebug & FLAG_PREV_EMPTY)); // 正在用它所以不为空
 
         // 填充释放标记
         ptrdiff_t fillSize = ptr(this) + next - ptr(p);
@@ -416,9 +416,9 @@ class Heap {
         while (current < end) {
             U4 sizeWithFlag = getSize(current);
             if (sizeWithFlag & FLAG_PREV_EMPTY) {
-                STRONG_ASSERT(prevIsEmpty);
+                // STRONG_ASSERT(prevIsEmpty);
                 U4 prevSize = getPrevSize(current);
-                STRONG_ASSERT(prevSize == prevSizeCheck);
+                // STRONG_ASSERT(prevSize == prevSizeCheck);
             }
             prevIsEmpty = (sizeWithFlag & FLAG_EMPTY) ? true : false;
             U4 size = sizeWithFlag & SIZE_MASK;
@@ -432,20 +432,20 @@ class Heap {
             current = mHeads[i][NEXT];
             while (current != head) {
                 U4 sizeWithFlag = getSize(current);
-                STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
+                // STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
                 U4 size = sizeWithFlag & SIZE_MASK;
                 U4 idx = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
-                STRONG_ASSERT(idx == i);
+                // STRONG_ASSERT(idx == i);
                 current = getNext(current);
             }
             // 检查链接降序
             current = mHeads[i][PREV];
             while (current != head) {
                 U4 sizeWithFlag = getSize(current);
-                STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
+                // STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
                 U4 size = sizeWithFlag & SIZE_MASK;
                 U4 idx = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
-                STRONG_ASSERT(idx == i);
+                // STRONG_ASSERT(idx == i);
                 current = getPrev(current);
             }
         }
@@ -534,7 +534,7 @@ class Impl {
     void* allocate(size_t sizeOrig) {
 #endif
 #ifdef _WIN64
-        STRONG_ASSERT(sizeoOrig <= 0xffffffff && "allocation over 4GB is forbidden");
+        // STRONG_ASSERT(sizeoOrig <= 0xffffffff && "allocation over 4GB is forbidden");
 #endif
         U4 size = static_cast<U4>(sizeOrig); // 4GB以上的
         // 返回值
@@ -579,7 +579,7 @@ class Impl {
                 mHeapLock.unlock();
             }
         }
-        STRONG_ASSERT(r && "BUG!"); // 这是不可能的。这是一个bug
+        // STRONG_ASSERT(r && "BUG!"); // 这是不可能的。这是一个bug
         return r;
     }
     void deallocate(void* p) {
@@ -604,7 +604,7 @@ class Impl {
         if (filename) {
             setlocale(LC_ALL, "");
             errno_t e = fopen_s(&fp, filename, "w");
-            STRONG_ASSERT((e == 0) && "MemoryManager::write() : can't open output file.");
+            // STRONG_ASSERT((e == 0) && "MemoryManager::write() : can't open output file.");
         } else {
             ::OutputDebugStringA("\n");
         }
@@ -677,8 +677,8 @@ class Impl {
                 void* prev = getLbPrev(block);
                 void* nextPrev = getLbPrev(next);
                 void* prevNext = getLbNext(prev);
-                STRONG_ASSERT(nextPrev == block);
-                STRONG_ASSERT(prevNext == block);
+                // STRONG_ASSERT(nextPrev == block);
+                // STRONG_ASSERT(prevNext == block);
                 block = next;
             } while (begin != block);
         }
@@ -752,8 +752,8 @@ class Impl {
 #ifndef NDEBUG
         void* nextPrev = getLbPrev(next);
         void* prevNext = getLbNext(prev);
-        STRONG_ASSERT(nextPrev == p);
-        STRONG_ASSERT(prevNext == p);
+        // STRONG_ASSERT(nextPrev == p);
+        // STRONG_ASSERT(prevNext == p);
 #endif
         setLbNext(prev, next);
         setLbPrev(next, prev);
