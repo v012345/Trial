@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_VECTOR_H
+#ifndef INCLUDED_GAMELIB_VECTOR_H
 #define INCLUDED_GAMELIB_VECTOR_H
 
 namespace GameLib{

@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Scene/StringRenderer.h"
 #include "GameLib/Scene/Font.h"
 #include "GameLib/Graphics/Texture.h"

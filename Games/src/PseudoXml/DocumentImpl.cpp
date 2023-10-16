@@ -1,4 +1,4 @@
-﻿#include "PseudoXml/ElementImpl.h"
+#include "PseudoXml/ElementImpl.h"
 #include "PseudoXml/AttributeImpl.h"
 
 #include "GameLib/PseudoXml/Document.h"

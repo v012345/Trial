@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "PseudoXml/Tag.h"
 #include "PseudoXml/AttributeImpl.h"
 #include "PseudoXml/DocumentImpl.h"

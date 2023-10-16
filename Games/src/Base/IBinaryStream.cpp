@@ -1,4 +1,4 @@
-﻿#include "GameLib/Base/IBinaryStream.h"
+#include "GameLib/Base/IBinaryStream.h"
 
 namespace GameLib {
 using namespace std;

@@ -1,4 +1,4 @@
-﻿#include "GameLib/Base/RefString.h"
+#include "GameLib/Base/RefString.h"
 #include "GameLib/GameLib.h"
 
 namespace GameLib {

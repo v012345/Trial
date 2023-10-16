@@ -1,4 +1,4 @@
-﻿#include "GameLib/Base/Compressor.h"
+#include "GameLib/Base/Compressor.h"
 #include "GameLib/GameLib.h"
 
 #define OPTIMIZATION // 如果启用，则为高性能版本。

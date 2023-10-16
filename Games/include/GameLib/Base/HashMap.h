@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_HASHMAP_H
+#ifndef INCLUDED_GAMELIB_HASHMAP_H
 #define INCLUDED_GAMELIB_HASHMAP_H
 
 #include "GameLib/Base/Stack.h"

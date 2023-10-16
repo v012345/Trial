@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_SCENE_CURVE_H
+#ifndef INCLUDED_GAMELIB_SCENE_CURVE_H
 #define INCLUDED_GAMELIB_SCENE_CURVE_H
 
 #include "GameLib/PseudoXml/Element.h"

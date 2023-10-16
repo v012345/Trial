@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 //
 #include "GameLib/Base/Conversion.h"
 #include "GameLib/Base/OStringStream.h"

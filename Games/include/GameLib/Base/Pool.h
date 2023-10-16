@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_POOL_H
+#ifndef INCLUDED_GAMELIB_POOL_H
 #define INCLUDED_GAMELIB_POOL_H
 
 namespace GameLib{

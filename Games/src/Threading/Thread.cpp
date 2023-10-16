@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 //
 #include "GameLib/Threading/Event.h"
 #include "GameLib/Threading/Thread.h"

@@ -1,4 +1,4 @@
-﻿#include "GameLib/Base/Conversion.h"
+#include "GameLib/Base/Conversion.h"
 
 namespace GameLib {
 

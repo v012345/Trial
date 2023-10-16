@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_QUEUE_H
+#ifndef INCLUDED_GAMELIB_QUEUE_H
 #define INCLUDED_GAMELIB_QUEUE_H
 
 namespace GameLib{

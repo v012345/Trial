@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_SCENE_TREEIMPL_H
+#ifndef INCLUDED_GAMELIB_SCENE_TREEIMPL_H
 #define INCLUDED_GAMELIB_SCENE_TREEIMPL_H
 
 #include "GameLib/Base/Impl/ReferenceType.h"

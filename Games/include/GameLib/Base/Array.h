@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_ARRAY_H
+#ifndef INCLUDED_GAMELIB_ARRAY_H
 #define INCLUDED_GAMELIB_ARRAY_H
 
 namespace GameLib {

@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 //
 #include "FileIO/ManagerImpl.h"
 #include "FileIO/OutFileImpl.h"

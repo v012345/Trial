@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_TANKIMPL_H
+#ifndef INCLUDED_GAMELIB_TANKIMPL_H
 #define INCLUDED_GAMELIB_TANKIMPL_H
 
 #include "GameLib/Base/Tank.h"

@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Scene/CollisionDetector.h"
 #include "GameLib/Base/Impl/ReferenceType.h"
 #include "GameLib/Base/Tank.h"

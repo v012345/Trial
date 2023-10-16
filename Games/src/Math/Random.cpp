@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Math/Random.h"
 #include "GameLib/Base/Impl/ReferenceType.h"
 

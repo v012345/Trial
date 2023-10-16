@@ -1,4 +1,4 @@
-﻿#include "GameLib/Base/PrimeNumber.h"
+#include "GameLib/Base/PrimeNumber.h"
 
 namespace GameLib {
 namespace PrimeNumber {

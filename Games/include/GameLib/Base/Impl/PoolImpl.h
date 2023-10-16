@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_POOLIMPL_H
+#ifndef INCLUDED_GAMELIB_POOLIMPL_H
 #define INCLUDED_GAMELIB_POOLIMPL_H
 
 #include "GameLib/GameLib.h"

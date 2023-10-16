@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Math/Matrix34.h"
 #include "GameLib/Math/Matrix33.h"
 #include "GameLib/Math/Functions.h"

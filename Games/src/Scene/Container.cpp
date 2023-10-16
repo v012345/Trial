@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Scene/Container.h"
 #include "GameLib/Scene/Model.h"
 #include "GameLib/Scene/Batch.h"

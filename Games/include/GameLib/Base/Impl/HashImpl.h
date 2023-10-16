@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_HASHIMPL_H
+#ifndef INCLUDED_GAMELIB_HASHIMPL_H
 #define INCLUDED_GAMELIB_HASHIMPL_H
 
 #include "GameLib/Base/Hash.h"

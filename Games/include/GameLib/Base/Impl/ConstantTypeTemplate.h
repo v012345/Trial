@@ -1,4 +1,4 @@
-﻿//
+//
 //#define TYPE ActualType
 //#define CONST_TYPE ActualConstType
 //包含它。ActualType是类型的名称。

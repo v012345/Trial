@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Scene/PrimitiveRenderer.h"
 #include "GameLib/Graphics/Manager.h"
 #include "GameLib/Graphics/Vertex.h"

@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_TANK_H
+#ifndef INCLUDED_GAMELIB_TANK_H
 #define INCLUDED_GAMELIB_TANK_H
 
 #include "GameLib/Base/Array.h"

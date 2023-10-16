@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_HASH_H
+#ifndef INCLUDED_GAMELIB_HASH_H
 #define INCLUDED_GAMELIB_HASH_H
 
 namespace GameLib {

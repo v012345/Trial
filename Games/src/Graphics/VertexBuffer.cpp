@@ -1,4 +1,4 @@
-﻿#include <d3d9.h>
+#include <d3d9.h>
 #undef max
 #undef min
 

@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_SCENE_NODE_H
+#ifndef INCLUDED_GAMELIB_SCENE_NODE_H
 #define INCLUDED_GAMELIB_SCENE_NODE_H
 
 #include "GameLib/Math/Matrix34.h"

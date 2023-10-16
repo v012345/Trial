@@ -1,4 +1,4 @@
-﻿#include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 #include "GameLib/Input/Keyboard.h"
 
 #include "Input/ManagerImpl.h"

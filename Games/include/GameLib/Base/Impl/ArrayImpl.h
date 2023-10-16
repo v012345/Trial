@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_GAMELIB_ARRAYIMPL_H
+#ifndef INCLUDED_GAMELIB_ARRAYIMPL_H
 #define INCLUDED_GAMELIB_ARRAYIMPL_H
 
 #include "GameLib/Base/Array.h"
