@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 include_directories(include)
 add_library(Base STATIC
-    # "src/Base/Conversion.cpp"
-    # "src/Base/IBinaryStream.cpp"
-    # "src/Base/RefString.cpp"
-    # "src/Base/OStringStream.cpp"
-    # "src/Base/PrimeNumber.cpp"
-    # "src/Base/Compressor.cpp"
-    # "src/Base/DebugStream.cpp"
-    # "src/Base/Halt.cpp"
     "src/Base/MemoryManager.cpp"
+    "src/Base/Conversion.cpp"
+    "src/Base/IBinaryStream.cpp"
+    "src/Base/RefString.cpp"
+    "src/Base/OStringStream.cpp"
+    "src/Base/PrimeNumber.cpp"
+    "src/Base/Compressor.cpp"
+    "src/Base/DebugStream.cpp"
+    "src/Base/Halt.cpp"
 )
 add_library(FileIOManager STATIC
     "src/FileIO/Manager.cpp"
@@ -44,11 +44,6 @@ add_library(PseudoXml STATIC
     "src/PseudoXml/Tag.cpp"
 )
 target_include_directories(PseudoXml PRIVATE src)
-
-add_library(WindowCreator STATIC
-    "src/WindowCreator/WindowCreator.cpp"
-)
-target_include_directories(WindowCreator PRIVATE src)
 
 add_library(InputManaegr STATIC
     "src/Input/Joystick.cpp"
@@ -98,20 +93,22 @@ target_include_directories(SceneManager PRIVATE src)
 add_library(GameLib STATIC
     "Framework.cpp"
 )
-add_executable(test test.cpp)
+add_executable(test WIN32
+    "src/WindowCreator/WindowCreator.cpp"
+    test.cpp
+)
+target_include_directories(test PRIVATE src)
 target_link_libraries(test
     Base
-    # PseudoXml
-    # FileIOManager
-    # ThreadingManager
-    # GraphicsManager
-    # WindowCreator
-    # InputManaegr
-    # MathFunctions
-    # SoundManager
-    # SceneManager
-    # GameLib
-
+    PseudoXml
+    FileIOManager
+    ThreadingManager
+    GraphicsManager
+    InputManaegr
+    MathFunctions
+    SoundManager
+    SceneManager
+    GameLib
     winmm
     d3d9
     dsound

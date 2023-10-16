@@ -1,22 +1,15 @@
-#include "CONST.h"
 #ifdef _WIN32
 #include <windows.h>
 #undef min
 #undef max
 #endif
 
-// #include "GameLib/GameLib.h"
+#include "GameLib/GameLib.h"
 //
 #include "GameLib/Base/MemoryManager.h"
 #include <cstdio>
 #include <cstring> //sprintf等，不想使用它，但是没有办法。
 #include <locale>
-
-// define STRONG DEBUG//开发调试用的
-
-#ifndef NDEBUG // 仅在调试时调试信息
-#define USE_DEBUG_INFO
-#endif
 
 // 此文件中不要使用C++的类库
 // 原因是，如果在一个名为new的地方执行新操作，则最终会无限递归。
@@ -47,37 +40,6 @@ namespace GameLib {
         const U4 FLAG_EMPTY = (1 << 0); // 空。
         const U4 FLAG_PREV_EMPTY = (1 << 1); // 前一个块为空
         const U4 SIZE_MASK = ~(FLAG_PREV_EMPTY | FLAG_EMPTY);
-
-#ifdef USE_DEBUG_INFO
-        // 文件名哈希
-
-        const U2 FILE_INDEX_MAX = 65521; // 65536最大素数
-        const U2 FILE_INDEX_UNKNOWN = FILE_INDEX_MAX - 1;
-        const char* gFileNames[FILE_INDEX_MAX];
-
-        U2 getFileNameIndex(const char* p) {
-            if (!p) { return FILE_INDEX_UNKNOWN; }
-            // 哈希值计算
-            ptrdiff_t address = p - static_cast<const char*>(0);
-            U2 h = static_cast<U2>(address % FILE_INDEX_MAX);
-            // 索引以哈希值作为下标
-            for (U2 i = h; i < FILE_INDEX_UNKNOWN; ++i) {
-                if (!gFileNames[i] || (gFileNames[i] == p)) {
-                    gFileNames[i] = p;
-                    return i;
-                }
-            }
-            // 到这里就相当于结束了。无法以令人满意的速度移动。
-            for (U2 i = 0; i < h; ++i) {
-                if (!gFileNames[i] || (gFileNames[i] == p)) {
-                    gFileNames[i] = p;
-                    return i;
-                }
-            }
-            // STRONG_ASSERT(false && "MemoryManager : FileName Table Full!");
-            return FILE_INDEX_UNKNOWN;
-        }
-#endif // DEBUG_INFO
 
         // 获取char*
         template <class T> inline char* ptr(T* p) { return reinterpret_cast<char*>(p); }
@@ -111,12 +73,12 @@ namespace GameLib {
         void* allocateAlignedMemory(void** originalPointer, U4 size, U4 alignSize) {
             // 2预约双地址
             void* reserved = VirtualAlloc(NULL, size * 2, MEM_RESERVE, PAGE_NOACCESS);
-            // STRONG_ASSERT(reserved && "MemoryManager : Address Space Full!");
+            STRONG_ASSERT(reserved && "MemoryManager : Address Space Full!");
             // 获取适当的对齐地址并从中获取实际区域
             void* aligned = align(reserved, alignSize);
             void* commited = VirtualAlloc(aligned, size, MEM_COMMIT, PAGE_READWRITE);
-            // STRONG_ASSERT(commited && "MemoryManager : No Memory!");
-            // STRONG_ASSERT((commited == aligned) && "MemoryManager : Unexpected Error! VirtualAlloc() returned invalid value.");
+            STRONG_ASSERT(commited && "MemoryManager : No Memory!");
+            STRONG_ASSERT((commited == aligned) && "MemoryManager : Unexpected Error! VirtualAlloc() returned invalid value.");
 
             *originalPointer = reserved; // 返回free的地址
             return commited;
@@ -126,20 +88,14 @@ namespace GameLib {
         void* allocateMemory(U4 size) {
             U4 alignedSize = align(size, 64 * 1024);
             void* p = VirtualAlloc(NULL, alignedSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
-            // STRONG_ASSERT(p && "MemoryManager : No Memory!");
-#ifndef NDEBUG // 填充
-            memset(p, 0xfb, size); // 未使用的区域标记
-            if (size < alignedSize) { // 禁止区域标记
-                memset(ptr(p) + size, 0xf9, alignedSize - size);
-            }
-#endif
+            STRONG_ASSERT(p && "MemoryManager : No Memory!");
             return p;
         }
 
         // 将内存归还操作系统
         void deallocateMemory(void* p) {
             BOOL succeeded = VirtualFree(p, 0, MEM_RELEASE);
-            // STRONG_ASSERT((succeeded != 0) && "MemoryManager : Deallocation failed! The pointer must be invalid.");
+            STRONG_ASSERT((succeeded != 0) && "MemoryManager : Deallocation failed! The pointer must be invalid.");
         }
 #endif
 
@@ -220,7 +176,6 @@ namespace GameLib {
                 setEmptySize(body, bodySize);
                 U4 next = body + bodySize;
                 setPrevEmptyFlag(next, bodySize);
-                if (STRONG_DEBUG) check();
             }
             static Heap* create() {
                 void* reserved;
@@ -239,7 +194,7 @@ namespace GameLib {
                 }
             }
             void insertToList(U4 addr, U4 size) {
-                // STRONG_ASSERT(addr < 0xfffff8);
+                STRONG_ASSERT(addr < 0xfffff8);
                 U4 index = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
                 // 插入新列表。在开始处插入
                 U4 first = mHeads[index][NEXT];
@@ -251,67 +206,7 @@ namespace GameLib {
                 setPrev(first, addr);
             }
 
-#ifdef USE_DEBUG_INFO
-            void* allocate(U4 size, U4 debugInfo) {
-                if (STRONG_DEBUG) check();
-                void* r = 0;
-                U4 headIndex = getHeadIndex(size) + 1; // 需要一个符合这个尺寸的盒子，因此需要+1
-                for (U4 i = headIndex; i < TABLE_NUMBER; ++i) {
-                    U4 head = diff(mHeads[i], this);
-                    U4 current = mHeads[i][NEXT];
-                    if (current != head) {
-                        U4 currentSizeWithFlag = getSize(current);
-                        U4 currentSize = currentSizeWithFlag & SIZE_MASK;
-                        U4 next = current + currentSize;
-                        // 计算8字节对齐的返回地址（因为+4将破坏下一个标头的前4个字节）
-                        U4 user = (next + 4 - size) & ~(ALIGN - 1);
-                        // 从中减去使用的头大小的块头地址
-                        U4 newBlock = user - OCCUPYED_HEADER_SIZE;
-                        // 如果大于此块的header，则拆分
-                        if (newBlock >= current + VACANT_HEADER_SIZE) {
-                            // 首先从列表中删除
-                            removeFromList(current);
-                            // 重设尺寸
-                            currentSize = newBlock - current;
-                            setEmptySize(current, currentSize);
-                            // 用重置大小重新注册到列表
-                            insertToList(current, currentSize);
-                            // 设置新块
-                            setSize(newBlock, next - newBlock);
-#ifdef USE_DEBUG_INFO
-                            setDebugInfo(newBlock, debugInfo);
-#endif
-                            // 标志设定
-                            setPrevEmptyFlag(newBlock, currentSize); // 之前绝对是空的
-                            resetPrevEmptyFlag(next); // 使用下一个
-                            if (STRONG_DEBUG) check();
-                        } else { // 不会保留。该块按原样使用。
-                            removeFromList(current); //
-#ifdef USE_DEBUG_INFO
-                            setDebugInfo(current, debugInfo);
-#endif
-                            // 标志设定
-                            resetEmptyFlag(current); // 非空
-                            resetPrevEmptyFlag(next); // 告知不为空
-                            // 返回地址
-                            user = current + OCCUPYED_HEADER_SIZE;
-                            if (STRONG_DEBUG) check();
-                        }
-                        r = ptr(this) + user;
-#ifndef NDEBUG // 调试填充
-                        memset(r, 0xfb, size); // fb未使用
-                        char* paddingBegin = ptr(r) + size;
-                        U4 paddingSize = next + 4 - user - size; //+4超出的部分
-                        memset(paddingBegin, 0xf9, paddingSize); // 使用禁止区域是f9
-#endif
-                        break; // 确保结束
-                    }
-                }
-                return r;
-            }
-#else
             void* allocate(U4 size) {
-                if (STRONG_DEBUG) check();
                 void* r = 0;
                 U4 headIndex = getHeadIndex(size) + 1; // 需要一个符合这个尺寸的盒子，因此需要+1
                 for (U4 i = headIndex; i < TABLE_NUMBER; ++i) {
@@ -336,64 +231,30 @@ namespace GameLib {
                             insertToList(current, currentSize);
                             // 设置新块
                             setSize(newBlock, next - newBlock);
-#ifdef USE_DEBUG_INFO
-                            setDebugInfo(newBlock, debugInfo);
-#endif
                             // 标志设定
                             setPrevEmptyFlag(newBlock, currentSize); // 之前绝对是空的
                             resetPrevEmptyFlag(next); // 使用下一个
-                            if (STRONG_DEBUG) check();
                         } else { // 不会保留。该块按原样使用。
                             removeFromList(current); //
-#ifdef USE_DEBUG_INFO
-                            setDebugInfo(current, debugInfo);
-#endif
                             // 标志设定
                             resetEmptyFlag(current); // 非空
                             resetPrevEmptyFlag(next); // 告知不为空
                             // 返回地址
                             user = current + OCCUPYED_HEADER_SIZE;
-                            if (STRONG_DEBUG) check();
                         }
                         r = ptr(this) + user;
-#ifndef NDEBUG // 调试填充
-                        memset(r, 0xfb, size); // fb未使用
-                        char* paddingBegin = ptr(r) + size;
-                        U4 paddingSize = next + 4 - user - size; //+4超出的部分
-                        memset(paddingBegin, 0xf9, paddingSize); // 使用禁止区域是f9
-#endif
                         break; // 确保结束
                     }
                 }
                 return r;
             }
-#endif
             void deallocate(void* p) {
-                if (STRONG_DEBUG) check();
                 U4 addr = diff(p, this) - OCCUPYED_HEADER_SIZE;
                 U4 sizeWithFlag = getSize(addr);
                 // 删除首先检查它是否可以合并。
                 bool prevIsEmpty = ((sizeWithFlag & FLAG_PREV_EMPTY) != 0);
                 U4 size = (sizeWithFlag & SIZE_MASK);
                 U4 next = addr + size;
-#ifndef NDEBUG
-                // 附近一致性检查
-                if (prevIsEmpty) {
-                    U4 prevSize = getPrevSize(addr);
-                    U4 prev = addr - prevSize;
-                    U4 prevSizeWithFlag = getSize(prev);
-                    // STRONG_ASSERT(prevSizeWithFlag & FLAG_EMPTY);
-                    // STRONG_ASSERT(prevSize == (prevSizeWithFlag & SIZE_MASK));
-                }
-                U4 nextSizeWithFlagDebug = getSize(next);
-                // STRONG_ASSERT(!(nextSizeWithFlagDebug & FLAG_PREV_EMPTY)); // 正在用它所以不为空
-
-                // 填充释放标记
-                ptrdiff_t fillSize = ptr(this) + next - ptr(p);
-                if (fillSize > 0) {
-                    memset(p, 0xfd, fillSize); // 使用后则fb
-                }
-#endif
                 U4 nextSizeWithFlag = getSize(next);
                 bool nextIsEmpty = ((nextSizeWithFlag & FLAG_EMPTY) != 0);
                 U4 nextSize = (nextSizeWithFlag & SIZE_MASK);
@@ -412,7 +273,6 @@ namespace GameLib {
                         // 告诉下一块它是空的
                         U4 nextNext = prev + prevSize;
                         setPrevEmptyFlag(nextNext, prevSize);
-                        if (STRONG_DEBUG) check();
                     } else { // 只有前面空缺
                         removeFromList(prev);
                         // 调整大小
@@ -421,7 +281,6 @@ namespace GameLib {
                         insertToList(prev, prevSize);
                         // 告诉下一块它是空的
                         setPrevEmptyFlag(next, prevSize);
-                        if (STRONG_DEBUG) check();
                     }
                 } else {
                     if (nextIsEmpty) { // 下一个也为空
@@ -433,7 +292,6 @@ namespace GameLib {
                         // 告诉下一个空的区块的大小
                         U4 nextNext = addr + size;
                         setPrevSize(nextNext, size);
-                        if (STRONG_DEBUG) check();
                     } else { // 不粘
                         if (size >= VACANT_HEADER_SIZE) { // 仅在可以连接到列表的情况下连接
                             insertToList(addr, size);
@@ -441,7 +299,6 @@ namespace GameLib {
                         setEmptyFlag(addr);
                         // 告诉下一块它是空的
                         setPrevEmptyFlag(next, size);
-                        if (STRONG_DEBUG) check();
                     }
                 }
             }
@@ -455,9 +312,9 @@ namespace GameLib {
                 while (current < end) {
                     U4 sizeWithFlag = getSize(current);
                     if (sizeWithFlag & FLAG_PREV_EMPTY) {
-                        // STRONG_ASSERT(prevIsEmpty);
+                        STRONG_ASSERT(prevIsEmpty);
                         U4 prevSize = getPrevSize(current);
-                        // STRONG_ASSERT(prevSize == prevSizeCheck);
+                        STRONG_ASSERT(prevSize == prevSizeCheck);
                     }
                     prevIsEmpty = (sizeWithFlag & FLAG_EMPTY) ? true : false;
                     U4 size = sizeWithFlag & SIZE_MASK;
@@ -471,20 +328,20 @@ namespace GameLib {
                     current = mHeads[i][NEXT];
                     while (current != head) {
                         U4 sizeWithFlag = getSize(current);
-                        // STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
+                        STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
                         U4 size = sizeWithFlag & SIZE_MASK;
                         U4 idx = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
-                        // STRONG_ASSERT(idx == i);
+                        STRONG_ASSERT(idx == i);
                         current = getNext(current);
                     }
                     // 检查链接降序
                     current = mHeads[i][PREV];
                     while (current != head) {
                         U4 sizeWithFlag = getSize(current);
-                        // STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
+                        STRONG_ASSERT(sizeWithFlag & FLAG_EMPTY); // 它应该是空的。
                         U4 size = sizeWithFlag & SIZE_MASK;
                         U4 idx = getHeadIndex(size - OCCUPYED_HEADER_SIZE + 4); // 此大小为净值
-                        // STRONG_ASSERT(idx == i);
+                        STRONG_ASSERT(idx == i);
                         current = getPrev(current);
                     }
                 }
@@ -498,14 +355,8 @@ namespace GameLib {
                     U4 sizeWithFlag = getSize(current);
                     U4 size = sizeWithFlag & SIZE_MASK;
                     if (!(sizeWithFlag & FLAG_EMPTY)) {
-#ifdef USE_DEBUG_INFO
-                        U4 debugInfo = getDebugInfo(current);
-                        const char* filename = gFileNames[debugInfo & 0xffff];
-                        U4 line = debugInfo >> 16;
-#else
                         const char* filename = 0;
                         U4 line = 0;
-#endif
                         if (!filename) { filename = "unknown"; }
                         int l = sprintf_s(str, 8192, "%p\t\t%d\t\t%s\t\t%d\n", ptr(this) + current, size, filename, line);
                         if (fp) {
@@ -523,19 +374,12 @@ namespace GameLib {
             enum Header {
                 PREV_SIZE = 0, // 仅当前一个块为空时才使用此选项。在其他时间不可以。
                 SIZE = 1,
-#ifdef USE_DEBUG_INFO
-                DEBUG_INFO = 2, // 接下来是通用的
-#endif
                 NEXT = 2,
                 PREV = 3,
 
                 HEADER_MAX = 4,
             };
-#ifdef USE_DEBUG_INFO
-            static const U4 OCCUPYED_HEADER_SIZE = 12;
-#else
             static const U4 OCCUPYED_HEADER_SIZE = 8;
-#endif
             static const U4 VACANT_HEADER_SIZE = 16;
             // header操作功能
             void setNext(U4 addr, U4 target) { (cast<U4>(this, addr))[NEXT] = target; }
@@ -555,10 +399,6 @@ namespace GameLib {
             U4 getPrevSize(U4 addr) { return (cast<U4>(this, addr))[PREV_SIZE]; }
             U4 getNext(U4 addr) { return (cast<U4>(this, addr))[NEXT]; }
             U4 getPrev(U4 addr) { return (cast<U4>(this, addr))[PREV]; }
-#ifdef USE_DEBUG_INFO
-            void setDebugInfo(U4 addr, U4 debugInfo) { (cast<U4>(this, addr))[DEBUG_INFO] = debugInfo; }
-            U4 getDebugInfo(U4 addr) { return (cast<U4>(this, addr))[DEBUG_INFO]; }
-#endif
             void* mReserved; //
             Heap* mNext; // 下一个堆
             U4 mHeads[TABLE_NUMBER][HEADER_MAX]; //
@@ -567,34 +407,20 @@ namespace GameLib {
 
         class Impl {
           public:
-#ifdef USE_DEBUG_INFO
-            void* allocate(size_t sizeOrig, U4 debugInfo = FILE_INDEX_UNKNOWN) {
-#else
             void* allocate(size_t sizeOrig) {
-#endif
-#ifdef _WIN64
-                // STRONG_ASSERT(sizeoOrig <= 0xffffffff && "allocation over 4GB is forbidden");
-#endif
+
                 U4 size = static_cast<U4>(sizeOrig); // 4GB以上的
                 // 返回值
                 void* r = 0;
                 // 大小超出限制。准备专用块
                 if (size > MAX_NORMAL_BLOCK_SIZE) {
-#ifdef USE_DEBUG_INFO
-                    r = allocateLb(size, debugInfo);
-#else
                     r = allocateLb(size);
-#endif
                 } else {
                     // allocate分配堆。
                     Heap* current = mHead; // 无需锁。如果为0，则0为好。除0以外的任何值都可以。
                     while (current) {
                         if (current->tryLock()) {
-#ifdef USE_DEBUG_INFO
-                            r = current->allocate(size, debugInfo);
-#else
                             r = current->allocate(size);
-#endif
                             current->unlock();
                         }
                         if (r) { break; }
@@ -604,11 +430,7 @@ namespace GameLib {
                     if (!r) {
                         // 没有空间了 必须增加堆。
                         Heap* newHeap = Heap::create();
-#ifdef USE_DEBUG_INFO
-                        r = newHeap->allocate(size, debugInfo);
-#else
                         r = newHeap->allocate(size);
-#endif
                         // 添加到开头
                         mHeapLock.lock();
                         Heap* first = mHead;
@@ -618,7 +440,7 @@ namespace GameLib {
                         mHeapLock.unlock();
                     }
                 }
-                // STRONG_ASSERT(r && "BUG!"); // 这是不可能的。这是一个bug
+                STRONG_ASSERT(r && "BUG!"); // 这是不可能的。这是一个bug
                 return r;
             }
             void deallocate(void* p) {
@@ -643,7 +465,7 @@ namespace GameLib {
                 if (filename) {
                     setlocale(LC_ALL, "");
                     errno_t e = fopen_s(&fp, filename, "w");
-                    // STRONG_ASSERT((e == 0) && "MemoryManager::write() : can't open output file.");
+                    STRONG_ASSERT((e == 0) && "MemoryManager::write() : can't open output file.");
                 } else {
                     ::OutputDebugStringA("\n");
                 }
@@ -664,14 +486,8 @@ namespace GameLib {
                     void* begin = mLbHead;
                     void* block = begin;
                     do {
-#ifdef USE_DEBUG_INFO
-                        U4 debugInfo = getLbDebugInfo(block);
-                        const char* filename = gFileNames[debugInfo & 0xffff];
-                        U4 line = debugInfo >> 16;
-#else
                         const char* filename = 0;
                         U4 line = 0;
-#endif
                         if (!filename) { filename = "unknown"; }
                         U4 size = getLbSize(block);
                         l = sprintf_s(str, 8192, "%p\t\t%d\t\t%s\t\t%d\n", block, size, filename, line);
@@ -697,11 +513,7 @@ namespace GameLib {
                 checkLb();
                 checkHeap();
             }
-            ~Impl() {
-#ifndef NDEBUG
-                write(0);
-#endif
-            }
+            ~Impl() {}
             int totalSize() const { return mTotalSize; }
 
           private:
@@ -716,8 +528,8 @@ namespace GameLib {
                         void* prev = getLbPrev(block);
                         void* nextPrev = getLbPrev(next);
                         void* prevNext = getLbNext(prev);
-                        // STRONG_ASSERT(nextPrev == block);
-                        // STRONG_ASSERT(prevNext == block);
+                        STRONG_ASSERT(nextPrev == block);
+                        STRONG_ASSERT(prevNext == block);
                         block = next;
                     } while (begin != block);
                 }
@@ -736,12 +548,7 @@ namespace GameLib {
                 address &= ~(HEAP_REGION_SIZE - 1);
                 return reinterpret_cast<Heap*>(address);
             }
-#ifdef USE_DEBUG_INFO
-            void* allocateLb(U4 size, U4 debugInfo) {
-#else
             void* allocateLb(U4 size) {
-#endif
-                if (STRONG_DEBUG) checkLb();
 
                 // 使低2bit为0从而对齐
                 size = align(size, 8);
@@ -752,9 +559,6 @@ namespace GameLib {
                 // 返回给用户的指针
                 void* r = ptr(p) + alignedHeaderSize;
                 setLbSize(r, size);
-#ifdef USE_DEBUG_INFO
-                setLbDebugInfo(r, debugInfo);
-#endif
 
                 // 替换链接
                 mLbLock.lock();
@@ -773,22 +577,16 @@ namespace GameLib {
                 mLbHead = r;
                 mTotalSize += size;
                 mLbLock.unlock();
-                if (STRONG_DEBUG) checkLb();
+
                 return r;
             }
             void deallocateLb(void* p) {
-                if (STRONG_DEBUG) checkLb();
 
                 // 取消链接
                 mLbLock.lock();
                 void* prev = getLbPrev(p);
                 void* next = getLbNext(p);
-#ifndef NDEBUG
-                void* nextPrev = getLbPrev(next);
-                void* prevNext = getLbNext(prev);
-                // STRONG_ASSERT(nextPrev == p);
-                // STRONG_ASSERT(prevNext == p);
-#endif
+
                 setLbNext(prev, next);
                 setLbPrev(next, prev);
                 if (mLbHead == p) { // 开始删除了。
@@ -799,25 +597,21 @@ namespace GameLib {
                 }
                 mTotalSize -= getLbSize(p) & SIZE_MASK;
                 mLbLock.unlock();
-                if (STRONG_DEBUG) checkLb();
+
                 // 释放内存
                 char* origP = ptr(p) - LB_HEADER_SIZE;
                 U4 alignedHeaderSize = align(LB_HEADER_SIZE, ALIGN);
                 origP -= alignedHeaderSize - LB_HEADER_SIZE; // 如果对齐了，也要修改返回地址
                 deallocateMemory(origP);
             }
-/* //
-        void* next;
-        void* prev;
-        U4 size;
-        U4 debugInfo; //后续将其返还给用户
-*/
-#ifdef USE_DEBUG_INFO
-            static const int DEBUG_INFO = sizeof(U4);
-            static const int SIZE = DEBUG_INFO + sizeof(U4);
-#else
+            /* //
+                    void* next;
+                    void* prev;
+                    U4 size;
+                    U4 debugInfo; //后续将其返还给用户
+            */
+
             static const int SIZE = sizeof(U4);
-#endif
             static const int PREV = SIZE + sizeof(void*);
             static const int NEXT = PREV + sizeof(void*);
             static const int LB_HEADER_SIZE = NEXT;
@@ -826,10 +620,7 @@ namespace GameLib {
                 U4* up = cast<U4>(p, -SIZE);
                 return (*up & FLAG_LARGE_BLOCK);
             }
-#ifdef USE_DEBUG_INFO
-            static U4 getLbDebugInfo(void* p) { return *cast<U4>(p, -DEBUG_INFO); }
-            static void setLbDebugInfo(void* p, U4 di) { *cast<U4>(p, -DEBUG_INFO) = di; }
-#endif
+
             static U4 getLbSize(void* p) { return *cast<U4>(p, -SIZE); }
             static void* getLbPrev(void* p) { return *cast<void*>(p, -PREV); }
             static void* getLbNext(void* p) { return *cast<void*>(p, -NEXT); }
@@ -861,23 +652,9 @@ namespace GameLib {
 
 using namespace GameLib;
 
-#ifdef USE_DEBUG_INFO
-void* operator new(size_t size, const char* filename, int line) {
-    unsigned debugInfo = (line << 16) | getFileNameIndex(filename);
-    return gImpl.allocate(size, debugInfo);
-}
-#else
 void* operator new(size_t size, const char*, int) { return gImpl.allocate(size); }
-#endif
 
-#ifdef USE_DEBUG_INFO
-void* operator new[](size_t size, const char* filename, int line) {
-    unsigned debugInfo = (line << 16) | getFileNameIndex(filename);
-    return gImpl.allocate(size, debugInfo);
-}
-#else
 void* operator new[](size_t size, const char*, int) { return gImpl.allocate(size); }
-#endif
 
 void operator delete(void* p, const char*, int) { gImpl.deallocate(p); }
 

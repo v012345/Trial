@@ -8,6 +8,7 @@ add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
 add_executable(${PROJECT_NAME} main.cpp)
+add_definitions(-DNDEBUG)
 target_link_libraries(${PROJECT_NAME}
     liblua-5.4.6
     lfs
