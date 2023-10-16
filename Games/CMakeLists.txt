@@ -22,8 +22,16 @@ add_library(FileIOManager STATIC
     "src/FileIO/InFile.cpp"
     "src/FileIO/OutFile.cpp"
 )
-
 target_include_directories(FileIOManager PRIVATE src)
+
+add_library(GraphicsManager STATIC
+    "src/Graphics/IndexBuffer.cpp"
+    "src/Graphics/Manager.cpp"
+    "src/Graphics/Texture.cpp"
+    "src/Graphics/VertexBuffer.cpp"
+)
+target_include_directories(GraphicsManager PRIVATE src)
+
 add_library(ThreadingManager STATIC
     "src/Threading/Manager.cpp"
     "src/Threading/Mutex.cpp"
@@ -33,6 +41,15 @@ add_library(ThreadingManager STATIC
     "src/Threading/Semaphore.cpp"
 )
 target_include_directories(ThreadingManager PRIVATE src)
+
+add_library(PseudoXml STATIC
+    "src/PseudoXml/Attribute.cpp"
+    "src/PseudoXml/Document.cpp"
+    "src/PseudoXml/DocumentImpl.cpp"
+    "src/PseudoXml/Element.cpp"
+)
+target_include_directories(PseudoXml PRIVATE src)
+
 add_library(GameLib STATIC
     "Framework.cpp"
 )
@@ -41,4 +58,5 @@ target_link_libraries(test
     Base
     FileIOManager
     ThreadingManager
+    GraphicsManager
 )

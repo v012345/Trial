@@ -48,7 +48,7 @@ void halt(const char* filename, int line, const char* message);
 #include "Base/DebugStream.h"
 //  #include "Base/AutoPtr.h"
 //  #include "Base/SharedPtr.h"
-//  #include "Base/MemoryManager.h"
+ #include "Base/MemoryManager.h"
 #include <new>
 
 #endif
