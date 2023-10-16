@@ -49,7 +49,7 @@ target_link_libraries(Test
     GameLib
 )
 
-add_custom_command(TARGET Test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-    "${CMAKE_SOURCE_DIR}/log/stageData.txt"
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+# add_custom_command(TARGET Test POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy
+#     "${CMAKE_SOURCE_DIR}/log/stageData.txt"
+#     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
