@@ -187,9 +187,8 @@ namespace GameLib {
         };
 
         Impl* gImpl = 0;
-
+        lua_State* L = nullptr;
     } // namespace
-    lua_State* L = nullptr;
     static int lua_getHeight(lua_State* L) {
         Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
         lua_pushinteger(L, (*ppImpl)->mHeight);
@@ -226,7 +225,7 @@ namespace GameLib {
         lua_setglobal(L, "Impl");
         return 1;
     }
-
+    lua_State* Framework::getLuaState() { return L; }
     Framework::Framework() {
         // 不允许来自其他线程的调用
         ASSERT(WindowCreator::isMainThread() && "you must call from MAIN thread");

@@ -22,6 +22,8 @@ namespace GameLib {
         void requestEnd();
         // 检查Framework是否发出结束命令
         bool isEndRequested() const;
+        //
+        lua_State* getLuaState();
 
         // 以下库用户不需要知道
         void start(void* windowHandle);
