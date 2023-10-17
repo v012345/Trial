@@ -208,11 +208,115 @@ namespace GameLib {
         vram[w * gImpl->mWidth + h] = c;
         return 0;
     }
+    static int lua_ReadPngFile(lua_State* L) {
+        const char* filename = lua_tostring(L, 1);
+        lua_newtable(L);
+        FILE* fp = fopen(filename, "rb");
+        if (!fp) {
+            printf("Failed to open file %s for reading\n", filename);
+            return 1;
+        }
+
+        png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        if (!png) {
+            fclose(fp);
+            printf("png_create_read_struct failed\n");
+            return 1;
+        }
+
+        png_infop info = png_create_info_struct(png);
+        if (!info) {
+            fclose(fp);
+            png_destroy_read_struct(&png, NULL, NULL);
+            printf("png_create_info_struct failed\n");
+            return 1;
+        }
+
+        if (setjmp(png_jmpbuf(png))) {
+            fclose(fp);
+            png_destroy_read_struct(&png, &info, NULL);
+            printf("Error during init_io\n");
+            return 1;
+        }
+
+        png_init_io(png, fp);
+        png_read_info(png, info);
+
+        int width = png_get_image_width(png, info);
+        int height = png_get_image_height(png, info);
+        int bit_depth = png_get_bit_depth(png, info);
+        int color_type = png_get_color_type(png, info);
+
+        // printf("Image width: %d, height: %d\n", width, height);
+        // printf("Bit depth: %d, Color type: %d\n", bit_depth, color_type);
+        if (bit_depth != 8) {
+            fclose(fp);
+            png_destroy_read_struct(&png, &info, NULL);
+            printf("Only 8-bit per channel images are supported\n");
+            return 1;
+        }
+        if (color_type != PNG_COLOR_TYPE_RGB && color_type != PNG_COLOR_TYPE_RGBA) {
+            fclose(fp);
+            png_destroy_read_struct(&png, &info, NULL);
+            printf("Only RGB and RGBA images are supported\n");
+            return 1;
+        }
+
+        png_bytep* row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
+        if (!row_pointers) {
+            fclose(fp);
+            png_destroy_read_struct(&png, &info, NULL);
+            printf("Memory allocation failed\n");
+            return 1;
+        }
+        for (int y = 0; y < height; y++) { //
+            row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
+            if (!row_pointers[y]) {
+                fclose(fp);
+                for (int i = 0; i < y; i++) { free(row_pointers[i]); }
+                free(row_pointers);
+                png_destroy_read_struct(&png, &info, NULL);
+                printf("Memory allocation failed\n");
+                return 1;
+            }
+        }
+
+        png_read_image(png, row_pointers);
+        lua_Integer i = 1;
+        lua_pushstring(L, "RGB");
+        lua_newtable(L);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                lua_pushinteger(L, i++);
+                lua_Integer j = row_pointers[y][x * 3] << 16;
+                j += row_pointers[y][x * 3 + 1] << 8;
+                j += row_pointers[y][x * 3 + 2];
+                lua_pushinteger(L, j);
+                lua_settable(L, -3);
+            }
+        }
+        lua_settable(L, -3);
+        lua_pushstring(L, "height");
+        lua_pushinteger(L, height);
+        lua_settable(L, -3);
+        lua_pushstring(L, "width");
+        lua_pushinteger(L, width);
+        lua_settable(L, -3);
+        fclose(fp);
+        for (int y = 0; y < height; y++) { free(row_pointers[y]); }
+        free(row_pointers);
+        png_destroy_read_struct(&png, &info, NULL);
+        return 1;
+    }
+    static int luaopen_cfuncs(lua_State* L) {
+        lua_register(L, "ReadPngFile", lua_ReadPngFile);
+        return 1;
+    }
     static int luaopen_Impl(lua_State* L, Impl* gImpl) {
         luaL_Reg pImpl_metatable[] = {
             {"height", lua_getHeight},
-            {"width", lua_getWidth},
-            {"vram", lua_setVarm},
+            {"width", lua_getWidth}, //
+            {"vram", lua_setVarm}, //
             {NULL, NULL},
         };
         Impl** ppImpl = (Impl**)lua_newuserdata(L, sizeof(Impl**));
@@ -257,6 +361,7 @@ namespace GameLib {
         free(new_path);
 #endif
         luaopen_Impl(L, gImpl);
+        luaopen_cfuncs(L);
 #ifdef LUA_MAIN_SCRIPT
         luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
