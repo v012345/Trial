@@ -253,6 +253,7 @@ namespace GameLib {
         lua_pushstring(L, "path");
         lua_pushstring(L, new_path);
         lua_settable(L, -3);
+        lua_pop(L, 1);
         free(new_path);
 #endif
         luaopen_Impl(L, gImpl);
