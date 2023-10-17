@@ -24,3 +24,13 @@ function Impl:height() return 0 end
 ---窗口的宽
 ---@return integer
 function Impl:width() return 0 end
+
+---在 c 里解析 png 图片
+---@param path string png 图片的路径
+---@return image
+function ReadPngFile(path)
+    ---@class image
+    ---@field RGB table<integer>
+    local image = { width = 1, height = 1, RGB = { 1 } }
+    return image
+end
