@@ -2,6 +2,13 @@
     "cmake.debugConfig": {
         "console": "externalTerminal"
     },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/*.code-search": true,
+        "libs/**": true,
+        "lua-5.4.6/doc/**": true
+    },
     "files.associations": {
         "windows.h": "c",
         "lualib.h": "c",
