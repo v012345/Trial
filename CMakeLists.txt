@@ -7,6 +7,7 @@ add_subdirectory("lua-5.4.6/src")
 add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
+add_subdirectory("libs/zlib")
 
 # add_definitions(-DNDEBUG)
 add_executable(function_test main.cpp)
@@ -34,6 +35,7 @@ target_include_directories(Game PRIVATE
 
 target_link_libraries(Game
     GameLib
+    zlib
 )
 
 add_executable(Test WIN32
