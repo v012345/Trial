@@ -4,3 +4,6 @@
 [submodule "libs/libpng"]
 	path = libs/libpng
 	url = git@github.com:glennrp/libpng.git
+[submodule "libs/CMake"]
+	path = libs/CMake
+	url = git@github.com:Kitware/CMake.git
