@@ -4,25 +4,23 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(PNG_BUILD_ZLIB TRUE)
-set(ZLIB_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/libs/zlib;${CMAKE_SOURCE_DIR}/libs/include")
+add_subdirectory("libs")
 add_subdirectory("lua-5.4.6/src")
 add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
-add_subdirectory("libs/zlib")
-add_subdirectory("libs/libpng")
 
 # add_definitions(-DNDEBUG)
-add_executable(function_test main.cpp)
-target_link_libraries(function_test
+add_executable(Main main.cpp)
+target_link_libraries(Main
     liblua-5.4.6
     lfs
+    png_shared
 )
-target_include_directories(function_test PRIVATE
+target_include_directories(Main PRIVATE
     lua-5.4.6/src
 )
-target_compile_definitions(function_test PRIVATE
+target_compile_definitions(Main PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/main.lua"
     LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
@@ -39,7 +37,6 @@ target_include_directories(Game PRIVATE
 
 target_link_libraries(Game
     GameLib
-    zlib
 )
 
 add_executable(Test WIN32

@@ -116,4 +116,5 @@ target_link_libraries(GameLib
     dxguid
     liblua-5.4.6
     lfs
+    png_shared
 )
