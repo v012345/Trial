@@ -1,6 +1,0 @@
-[submodule "libs/zlib"]
-	path = libs/zlib
-	url = git@github.com:madler/zlib.git
-[submodule "libs/libpng"]
-	path = libs/libpng
-	url = git@github.com:glennrp/libpng.git
