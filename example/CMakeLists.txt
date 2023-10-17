@@ -1,6 +1,7 @@
 
+file(GLOB SRCS *.cpp)
 add_executable(Book WIN32
-    "book.cpp"
+    ${SRCS}
     "../Games/src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(Book PRIVATE
@@ -10,6 +11,7 @@ target_include_directories(Book PRIVATE
 
 target_compile_definitions(Book PRIVATE
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 
 target_link_libraries(Book

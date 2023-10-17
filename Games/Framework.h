@@ -12,11 +12,16 @@ namespace GameLib {
         /// 用户定义函数。
         void update();
         /// 获取实例
+        static Framework getInstance();
         static Framework instance();
+        unsigned* Framework::getVideoMemory();
         /// 获取画面宽度
         int width() const;
+        int getWidth() const;
+
         /// 获取画面高度
         int height() const;
+        int getHeight() const;
         // 获取VRAM
         unsigned* videoMemory();
         // 向Framework发出结束命令

@@ -370,6 +370,8 @@ namespace GameLib {
     void Framework::destroy() { SAFE_DELETE(gImpl); }
 
     Framework Framework::instance() { return Framework(); }
+    Framework Framework::getInstance() { return Framework(); }
+    unsigned* Framework::getVideoMemory() { return &gImpl->mVideoMemoryWithPadding[gImpl->mWidth]; }
 
     void Framework::start(void* windowHandle) { gImpl->start(windowHandle); }
 
@@ -378,8 +380,10 @@ namespace GameLib {
     void Framework::postUpdate() { gImpl->postUpdate(); }
 
     int Framework::width() const { return gImpl->mWidth; }
+    int Framework::getWidth() const { return gImpl->mWidth; }
 
     int Framework::height() const { return gImpl->mHeight; }
+    int Framework::getHeight() const { return gImpl->mHeight; }
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();
