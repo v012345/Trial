@@ -1,4 +1,5 @@
 set(PNG_TOOLS OFF)
+set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB TRUE)
 set(ZLIB_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/libs/zlib;${CMAKE_SOURCE_DIR}/libs/include")
 add_subdirectory(zlib)
