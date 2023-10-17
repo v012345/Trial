@@ -45,11 +45,15 @@ target_include_directories(Test PRIVATE
     "Games/include"
 )
 
+target_compile_definitions(Test PRIVATE
+    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
 target_link_libraries(Test
     GameLib
 )
 
 # add_custom_command(TARGET Test POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy
-#     "${CMAKE_SOURCE_DIR}/log/stageData.txt"
-#     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+# COMMAND ${CMAKE_COMMAND} -E copy
+# "${CMAKE_SOURCE_DIR}/log/stageData.txt"
+# ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
