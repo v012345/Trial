@@ -12,25 +12,40 @@ unsigned* gImageData = 0;
 
 namespace GameLib {
     void Framework::update() {
+        // 在第一帧读取文件
         if (gFirst) {
             gFirst = false;
             char* buffer = 0;
             int size = 0;
-            readFile(&buffer, &size, CMAKE_SOURCE_DIR "/res/shengyue.dds");
+            readFile(&buffer, &size, CMAKE_SOURCE_DIR "/res/bar.dds");
             gImageHeight = getUnsigned(&(buffer[12]));
             gImageWidth = getUnsigned(&(buffer[16]));
             gImageData = new unsigned[gImageWidth * gImageHeight];
             for (int i = 0; i < gImageWidth * gImageHeight; ++i) { gImageData[i] = getUnsigned(&(buffer[128 + i * 4])); }
         }
         unsigned* vram = videoMemory();
-        unsigned windowWidth = width();
-        for (int y = 0; y < gImageHeight; ++y) {
-            for (int x = 0; x < gImageWidth; ++x) { vram[y * windowWidth + x] = gImageData[y * gImageWidth + x]; }
+        int windowWidth = width();
+        int windowHeight = height();
+        int partX = 0;
+        int partY = 1;
+        //
+        for (int tileY = 0; tileY + 32 < windowHeight; tileY += 32) {
+            for (int tileX = 0; tileX + 32 < windowWidth; tileX += 32) {
+                for (int y = 0; y < 32; ++y) {
+                    for (int x = 0; x < 32; ++x) {
+                        unsigned* dst = &vram[(tileY + y) * windowWidth + (tileX + x)];
+                        *dst = gImageData[(partY * 32 + y) * gImageWidth + (partX * 32 + x)];
+                    }
+                }
+                // 适当选择一个标题。
+                partX = (partX + 9973) % 4;
+                partY = (partY + 9967) % 4;
+            }
         }
     }
 } // namespace GameLib
 
-// 读取文件
+// 读取档案
 void readFile(char** buffer, int* size, const char* filename) {
     ifstream in(filename, ifstream::binary);
     if (!in) {
@@ -45,7 +60,7 @@ void readFile(char** buffer, int* size, const char* filename) {
     }
 }
 
-// 转换为unsigned
+// 取出unsigned
 unsigned getUnsigned(const char* p) {
     const unsigned char* up;
     up = reinterpret_cast<const unsigned char*>(p);
