@@ -17,18 +17,20 @@ Image::~Image() {
     mData = 0;
 }
 
-int Image::getWidth() const { return mWidth; }
+int Image::width() const { return mWidth; }
 
-int Image::getHeight() const { return mHeight; }
+int Image::height() const { return mHeight; }
 
 void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const {
-    unsigned* vram = Framework::getInstance().getVideoMemory();
-    unsigned windowWidth = Framework::getInstance().getWidth();
-
+    unsigned* vram = Framework::instance().videoMemory();
+    unsigned windowWidth = Framework::instance().width();
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-            unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
-            *dst = mData[(y + srcY) * mWidth + (x + srcX)];
+            unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
+            if (src & 0x80000000) { // 如果Alpha通道值为128或更大
+                unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
+                *dst = src;
+            }
         }
     }
 }
