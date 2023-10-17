@@ -8,6 +8,7 @@ add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
 add_subdirectory("libs/zlib")
+add_subdirectory("libs/libpng")
 
 # add_definitions(-DNDEBUG)
 add_executable(function_test main.cpp)
