@@ -40,7 +40,7 @@ target_link_libraries(Game
 )
 
 add_executable(Book WIN32
-    "book.cpp"
+    "example/book.cpp"
     "Games/src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(Book PRIVATE
