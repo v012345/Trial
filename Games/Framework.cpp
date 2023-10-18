@@ -386,6 +386,18 @@ namespace GameLib {
         lua_setglobal(L, "Impl");
         return 1;
     }
+    static int lua_FrameworkSleep(lua_State* L) {
+        int ms = lua_tointeger(L, 1);
+        Threading::sleep(ms);
+        return 1;
+    }
+    static int luaopen_Framework(lua_State* L) {
+        luaL_Reg funcs[] = {
+            {"sleep", lua_FrameworkSleep}, //
+            {NULL, NULL}};
+        luaL_newlib(L, funcs);
+        return 1;
+    }
     lua_State* Framework::getLuaState() { return L; }
     Framework::Framework() {
         // 不允许来自其他线程的调用
@@ -419,6 +431,8 @@ namespace GameLib {
 #endif
         luaopen_Impl(L, gImpl);
         luaopen_cfuncs(L);
+        luaL_requiref(L, "Framework", luaopen_Framework, 1);
+        lua_pop(L, 1); /* remove lib */
 #ifdef LUA_MAIN_SCRIPT
         luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif

@@ -41,3 +41,8 @@ function ReadPngFile(path)
     local image = { width = 1, height = 1, ARGB = { 1 } }
     return image
 end
+
+Framework = {}
+---休息多少毫秒
+---@param ms integer
+function Framework.sleep(ms) end
