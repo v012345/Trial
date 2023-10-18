@@ -1,15 +1,37 @@
 cmake_minimum_required(VERSION 3.20)
 project(libs)
+
+include_directories(include)
+
+# 如果是第一个构建可以使用 add_subdirectory(zlib)
+# 不然就用 add_library(zlib SHARED ...) 因为 zlib
+# 是作为 submodule 引入的 但是在构建过程中会改变(删除 zconf.h 文件)
+# add_subdirectory(zlib)
+add_library(zlib SHARED
+    zlib/adler32.c
+    zlib/compress.c
+    zlib/crc32.c
+    zlib/deflate.c
+    zlib/gzclose.c
+    zlib/gzlib.c
+    zlib/gzread.c
+    zlib/gzwrite.c
+    zlib/inflate.c
+    zlib/infback.c
+    zlib/inftrees.c
+    zlib/inffast.c
+    zlib/trees.c
+    zlib/uncompr.c
+    zlib/zutil.c
+    zlib/win32/zlib1.rc
+)
+set_target_properties(zlib PROPERTIES DEFINE_SYMBOL ZLIB_DLL)
+
+# 给 libpng 的设置
 set(PNG_TOOLS OFF CACHE BOOL "" FORCE)
 set(PNG_TESTS OFF CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_ALL TRUE)
 set(PNG_BUILD_ZLIB TRUE CACHE BOOL "Custom zlib location" FORCE)
 set(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/zlib;${CMAKE_CURRENT_SOURCE_DIR}/include")
-add_subdirectory(zlib)
+set(ZLIB_LIBRARIES zlib)
 add_subdirectory(libpng)
-
-# 目前还不清楚为什么会出现这个问题
-# 如果 Build 不出来, 那么就把下面这行注释了
-# 之后多点几次 Build, 到出现 `png.obj : error LNK2019: unresolved external symbol _inflateReset` 为止
-# 再把下面的注释解开, 再 Build 几次就成功了
-# 我怀疑是 zlib 构建顺序的问题, 先构建出 zlib.lib 就行了
-target_link_libraries(png_shared PUBLIC zlib)
