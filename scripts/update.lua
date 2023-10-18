@@ -13,7 +13,7 @@ xpcall(function()
                 local srcR = argb & 0xff0000;
                 local srcG = argb & 0x00ff00;
                 local srcB = argb & 0x0000ff;
-                local dst = 0
+                local dst = Impl:colorAt(atX + i - 1, atY + y)
                 local dstR = dst & 0xff0000;
                 local dstG = dst & 0x00ff00;
                 local dstB = dst & 0x0000ff;
@@ -204,27 +204,53 @@ xpcall(function()
             local function draw()
                 for x, row in ipairs(factory) do
                     for y, cell in ipairs(row) do
+                        drawCell(nimotsuKunImage, 5, x * 32, y * 32)
                         if worker_pos.x == x and worker_pos.y == y then
                             if cell == 5 then
                                 io.write(OBJ[2])
+                                drawCell(nimotsuKunImage, 4, x * 32, y * 32)
                             else
                                 io.write(OBJ[1])
                             end
+                            drawCell(nimotsuKunImage, 1, x * 32, y * 32)
                         else
                             local has_horse = false
                             for _, horse in ipairs(HORSES) do
                                 if horse.x == x and horse.y == y then
                                     if cell == 5 then
                                         io.write(OBJ[4])
+                                        drawCell(nimotsuKunImage, 4, x * 32, y * 32)
                                     else
                                         io.write(OBJ[3])
                                     end
+                                    drawCell(nimotsuKunImage, 3, x * 32, y * 32)
                                     has_horse = true
                                     break
                                 end
                             end
                             if not has_horse then
                                 io.write(OBJ[cell])
+                                -- if cell == 0 then
+                                --     drawCell(nimotsuKunImage, 5, x * 32, y * 32)
+                                -- end
+                                if cell == 1 then
+                                    drawCell(nimotsuKunImage, 1, x * 32, y * 32)
+                                end
+                                if cell == 2 then
+                                    drawCell(nimotsuKunImage, 1, x * 32, y * 32)
+                                end
+                                if cell == 3 then
+                                    drawCell(nimotsuKunImage, 3, x * 32, y * 32)
+                                end
+                                if cell == 4 then
+                                    drawCell(nimotsuKunImage, 3, x * 32, y * 32)
+                                end
+                                if cell == 5 then
+                                    drawCell(nimotsuKunImage, 4, x * 32, y * 32)
+                                end
+                                if cell == 6 then
+                                    drawCell(nimotsuKunImage, 2, x * 32, y * 32)
+                                end
                             end
                         end
                     end
@@ -301,22 +327,27 @@ xpcall(function()
                 if not (old_x == worker_pos.x and old_y == worker_pos.y) or input == "r" then
                     SetConsoleCursorPosition(0, 2)
                     draw()
+                    coroutine.yield(stageId, true)
                 end
                 if input == "q" then
                     break
                 end
             end
-            stageId = coroutine.yield(stageId)
+            stageId = coroutine.yield(stageId, false)
         end
     end)
     local stageId = 1
+    local PlayGameThreadLoop = false
     function MainLoop()
         -- for i = 1, 5, 1 do
         -- drawCell(nimotsuKunImage, i, i * 32, i * 32)
         -- end
         -- drawImage(nimotsuKunImage, 0, 0)
-        _, stageId = coroutine.resume(SelectStageThread, stageId)
-        _, stageId = coroutine.resume(PlayGameThread, stageId)
+        -- drawCell(nimotsuKunImage, 1, 1 * 32, 1 * 32)
+        if not PlayGameThreadLoop then
+            _, stageId = coroutine.resume(SelectStageThread, stageId)
+        end
+        _, stageId, PlayGameThreadLoop = coroutine.resume(PlayGameThread, stageId)
         -- print(_getch)
         -- print(_getch())
     end
