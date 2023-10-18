@@ -1,4 +1,5 @@
 #include "GameLib/GameLib.h"
+#include <conio.h>
 //
 #include "GameLib/FileIO/Manager.h"
 #include "GameLib/Graphics/Manager.h"
@@ -327,8 +328,14 @@ namespace GameLib {
         png_destroy_read_struct(&png, &info, NULL);
         return 1;
     }
+    static int Lua__getch(lua_State* L) {
+        int c = _getch();
+        lua_pushinteger(L, c);
+        return 1;
+    }
     static int luaopen_cfuncs(lua_State* L) {
         lua_register(L, "ReadPngFile", lua_ReadPngFile);
+        lua_register(L, "_getch", Lua__getch);
         return 1;
     }
     static int luaopen_Impl(lua_State* L, Impl* gImpl) {
