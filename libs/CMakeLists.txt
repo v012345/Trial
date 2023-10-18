@@ -1,7 +1,9 @@
+cmake_minimum_required(VERSION 3.20)
+project(libs)
 set(PNG_TOOLS OFF)
 set(PNG_TESTS OFF)
 set(PNG_BUILD_ZLIB TRUE)
-set(ZLIB_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/libs/zlib;${CMAKE_SOURCE_DIR}/libs/include")
+set(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/zlib;${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_subdirectory(zlib)
 add_subdirectory(libpng)
 
