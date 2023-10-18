@@ -29,7 +29,7 @@ target_compile_definitions(Main PRIVATE
 )
 
 add_executable(Game WIN32
-    "update.cpp"
+    "game.cpp"
     "Games/src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(Game PRIVATE
