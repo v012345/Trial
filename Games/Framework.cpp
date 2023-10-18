@@ -1,5 +1,9 @@
 #include "GameLib/GameLib.h"
 #include <conio.h>
+#include <windows.h>
+#undef min
+#undef max
+
 //
 #include "GameLib/FileIO/Manager.h"
 #include "GameLib/Graphics/Manager.h"
@@ -333,9 +337,19 @@ namespace GameLib {
         lua_pushinteger(L, c);
         return 1;
     }
+    static int Lua_SetConsoleCursorPosition(lua_State* L) {
+        int column = lua_tointeger(L, 1);
+        int line = lua_tointeger(L, 2);
+        COORD coord;
+        coord.X = column;
+        coord.Y = line;
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+        return 0;
+    }
     static int luaopen_cfuncs(lua_State* L) {
         lua_register(L, "ReadPngFile", lua_ReadPngFile);
         lua_register(L, "_getch", Lua__getch);
+        lua_register(L, "SetConsoleCursorPosition", Lua_SetConsoleCursorPosition);
         return 1;
     }
     static int luaopen_Impl(lua_State* L, Impl* gImpl) {
