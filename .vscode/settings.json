@@ -1,6 +1,6 @@
 {
     "cmake.debugConfig": {
-        "console": "integratedTerminal"
+        // "console": "integratedTerminal"
     },
     "search.exclude": {
         "**/node_modules": true,
