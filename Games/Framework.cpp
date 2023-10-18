@@ -209,7 +209,12 @@ namespace GameLib {
         unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
         unsigned w = lua_tointeger(L, 2);
         unsigned h = lua_tointeger(L, 3);
-        lua_pushinteger(L, vram[w * gImpl->mWidth + h]);
+        int pos = w * gImpl->mWidth + h;
+        if (pos <= gImpl->mWidth * gImpl->mHeight) {
+            lua_pushinteger(L, vram[pos]);
+        } else {
+            lua_pushinteger(L, 0);
+        }
         return 1;
     }
     static int lua_setVarm(lua_State* L) {
@@ -218,7 +223,9 @@ namespace GameLib {
         unsigned w = lua_tointeger(L, 2);
         unsigned h = lua_tointeger(L, 3);
         unsigned c = lua_tointeger(L, 4);
-        vram[w * gImpl->mWidth + h] = c;
+        int pos = w * gImpl->mWidth + h;
+        if (pos <= gImpl->mWidth * gImpl->mHeight) { vram[pos] = c; }
+
         return 0;
     }
     static int lua_ReadPngFile(lua_State* L) {
