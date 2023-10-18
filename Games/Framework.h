@@ -30,6 +30,12 @@ namespace GameLib {
         bool isEndRequested() const;
         //
         lua_State* getLuaState();
+        // 获取时间（毫秒）
+        unsigned time() const;
+        // 睡眠（以毫秒为单位）
+        void sleep(int milliSeconds) const;
+        // 输入
+        bool isKeyOn(int c) const;
 
         // 以下库用户不需要知道
         void start(void* windowHandle);

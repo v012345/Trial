@@ -441,6 +441,10 @@ namespace GameLib {
 
     int Framework::height() const { return gImpl->mHeight; }
     int Framework::getHeight() const { return gImpl->mHeight; }
+    unsigned Framework::time() const { return WindowCreator().time(); }
+    void Framework::sleep(int ms) const { Threading::sleep(ms); }
+    bool Framework::isKeyOn(int c) const { return Input::Manager().keyboard().isOn(c); }
+
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();

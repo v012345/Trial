@@ -21,10 +21,10 @@ int Image::width() const { return mWidth; }
 
 int Image::height() const { return mHeight; }
 
-// 叠加混合
+// 与Alpha混合
 void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const {
     unsigned* vram = Framework::instance().videoMemory();
-    unsigned windowWidth = Framework::instance().width();
+    int windowWidth = Framework::instance().width();
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
@@ -36,13 +36,9 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
             unsigned dstR = *dst & 0xff0000;
             unsigned dstG = *dst & 0x00ff00;
             unsigned dstB = *dst & 0x0000ff;
-            unsigned r = srcR * srcA / 255 + dstR;
-            unsigned g = srcG * srcA / 255 + dstG;
-            unsigned b = srcB * srcA / 255 + dstB;
-            // 如果大于255则设置为255
-            r = (r > 0xff0000) ? 0xff0000 : r;
-            g = (g > 0x00ff00) ? 0x00ff00 : g;
-            b = (b > 0x0000ff) ? 0x0000ff : b;
+            unsigned r = (srcR - dstR) * srcA / 255 + dstR;
+            unsigned g = (srcG - dstG) * srcA / 255 + dstG;
+            unsigned b = (srcB - dstB) * srcA / 255 + dstB;
             *dst = (r & 0xff0000) | (g & 0x00ff00) | b;
         }
     }
