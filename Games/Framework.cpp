@@ -199,6 +199,14 @@ namespace GameLib {
         lua_pushinteger(L, (*ppImpl)->mWidth);
         return 1;
     }
+    static int lua_colorAt(lua_State* L) {
+        Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
+        unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
+        unsigned w = lua_tointeger(L, 2);
+        unsigned h = lua_tointeger(L, 3);
+        lua_pushinteger(L, vram[w * gImpl->mWidth + h]);
+        return 1;
+    }
     static int lua_setVarm(lua_State* L) {
         Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
         unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
@@ -299,7 +307,7 @@ namespace GameLib {
                 j += row_pointers[y][x * bytes_per_pixel + 1] << 8;
                 j += row_pointers[y][x * bytes_per_pixel + 2];
                 if (bytes_per_pixel == 4) { //
-                    j += row_pointers[y][x * bytes_per_pixel + 4] << 24;
+                    j += row_pointers[y][x * bytes_per_pixel + 3] << 24;
                 }
 
                 lua_pushinteger(L, j);
@@ -328,6 +336,7 @@ namespace GameLib {
             {"height", lua_getHeight},
             {"width", lua_getWidth}, //
             {"vram", lua_setVarm}, //
+            {"colorAt", lua_colorAt}, //
             {NULL, NULL},
         };
         Impl** ppImpl = (Impl**)lua_newuserdata(L, sizeof(Impl**));
