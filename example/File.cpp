@@ -22,7 +22,7 @@ int File::size() const { return mSize; }
 
 const char* File::data() const { return mData; }
 
-// 取出unsigned
+// 转换为unsigned
 unsigned File::getUnsigned(int p) const {
     const unsigned char* up;
     up = reinterpret_cast<const unsigned char*>(mData);
