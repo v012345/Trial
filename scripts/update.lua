@@ -125,6 +125,7 @@ xpcall(function()
     local PlayGameThread = coroutine.create(function(stageId)
         while true do
             os.execute("cls")
+            Impl:clear()
             print("Stage " .. stageId)
             local MAN = '😁' -- 1
             local MAN_ON_GRASS = '😬' -- 2

@@ -228,6 +228,14 @@ namespace GameLib {
 
         return 0;
     }
+    static int lua_clear(lua_State* L) {
+        Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
+        unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
+        for (int y = 0; y < (*ppImpl)->mHeight; ++y) {
+            for (int x = 0; x < (*ppImpl)->mWidth; ++x) { vram[y * gImpl->mWidth + x] = 0; }
+        }
+        return 0;
+    }
     static int lua_ReadPngFile(lua_State* L) {
         const char* filename = lua_tostring(L, 1);
         lua_newtable(L);
@@ -365,6 +373,7 @@ namespace GameLib {
             {"width", lua_getWidth}, //
             {"vram", lua_setVarm}, //
             {"colorAt", lua_colorAt}, //
+            {"clear", lua_clear}, //
             {NULL, NULL},
         };
         Impl** ppImpl = (Impl**)lua_newuserdata(L, sizeof(Impl**));

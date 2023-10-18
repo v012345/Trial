@@ -29,6 +29,9 @@ function Impl:width() return 0 end
 ---@return integer
 function Impl:colorAt(x, y) return 0 end
 
+---清空屏幕
+function Impl:clear() end
+
 ---在 c 里解析 png 图片
 ---@param path string png 图片的路径
 ---@return image
