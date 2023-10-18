@@ -25,6 +25,10 @@ function Impl:height() return 0 end
 ---@return integer
 function Impl:width() return 0 end
 
+---返回指定点的颜色
+---@return integer
+function Impl:colorAt(x, y) return 0 end
+
 ---在 c 里解析 png 图片
 ---@param path string png 图片的路径
 ---@return image
