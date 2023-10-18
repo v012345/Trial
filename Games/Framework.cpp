@@ -269,6 +269,7 @@ namespace GameLib {
             printf("Memory allocation failed\n");
             return 1;
         }
+
         for (int y = 0; y < height; y++) { //
             row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
             if (!row_pointers[y]) {
@@ -283,14 +284,24 @@ namespace GameLib {
 
         png_read_image(png, row_pointers);
         lua_Integer i = 1;
-        lua_pushstring(L, "RGB");
+        lua_pushstring(L, "ARGB");
+        int bytes_per_pixel;
+        if (color_type & PNG_COLOR_MASK_ALPHA) {
+            bytes_per_pixel = 4; // The image has an alpha channel
+        } else {
+            bytes_per_pixel = 3; // The image does not have an alpha channel
+        }
         lua_newtable(L);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 lua_pushinteger(L, i++);
-                lua_Integer j = row_pointers[y][x * 3] << 16;
-                j += row_pointers[y][x * 3 + 1] << 8;
-                j += row_pointers[y][x * 3 + 2];
+                lua_Integer j = row_pointers[y][x * bytes_per_pixel] << 16;
+                j += row_pointers[y][x * bytes_per_pixel + 1] << 8;
+                j += row_pointers[y][x * bytes_per_pixel + 2];
+                if (bytes_per_pixel == 4) { //
+                    j += row_pointers[y][x * bytes_per_pixel + 4] << 24;
+                }
+
                 lua_pushinteger(L, j);
                 lua_settable(L, -3);
             }

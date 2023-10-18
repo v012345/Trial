@@ -30,7 +30,7 @@ function Impl:width() return 0 end
 ---@return image
 function ReadPngFile(path)
     ---@class image
-    ---@field RGB table<integer>
-    local image = { width = 1, height = 1, RGB = { 1 } }
+    ---@field ARGB table<integer>
+    local image = { width = 1, height = 1, ARGB = { 1 } }
     return image
 end
