@@ -35,8 +35,8 @@ xpcall(function()
     end
 
     Game.entity = require "ConertStagesToImage"
-    -- require "Keyboard"
-    -- require "MainLoop"
+    require "Keyboard"
+    require "MainLoop"
 end, function(msg)
     print(msg)
 end)

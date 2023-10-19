@@ -1,3 +1,24 @@
+local function dealInput()
+    if Framework.isKeyOn(Keyboard.A) then
+        print("A")
+    end
+    if Framework.isKeyOn(Keyboard.S) then
+        print("S")
+    end
+    if Framework.isKeyOn(Keyboard.D) then
+        print("D")
+    end
+    if Framework.isKeyOn(Keyboard.W) then
+        print("W")
+    end
+    if Framework.isKeyOn(Keyboard.Q) then
+        print("Q")
+    end
+    if Framework.isKeyOn(Keyboard.R) then
+        print("R")
+    end
+end
+
 function MainLoop()
     xpcall(function()
         local currentTime = Framework.time()
@@ -14,10 +35,7 @@ function MainLoop()
         --     print(Game.Counter, "frameInterval:", frameInterval10 / 10)
         --     print(Game.Counter, " FrameRate:", 10 * 1000 / frameInterval10)
         -- end
-        if Framework.isKeyOn(Keyboard.A) then
-            print(Game.Counter, "frameInterval:", frameInterval10 / 10)
-            print(Game.Counter, " FrameRate:", 10 * 1000 / frameInterval10)
-        end
+        dealInput()
         Game.Counter = Game.Counter + 1
     end, function(msg)
         print(msg)
