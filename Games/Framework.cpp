@@ -207,9 +207,9 @@ namespace GameLib {
     static int lua_colorAt(lua_State* L) {
         Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
         unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
-        unsigned w = lua_tointeger(L, 2);
-        unsigned h = lua_tointeger(L, 3);
-        int pos = w * gImpl->mWidth + h;
+        unsigned x = lua_tointeger(L, 2);
+        unsigned y = lua_tointeger(L, 3);
+        int pos = y * gImpl->mWidth + x;
         if (pos <= gImpl->mWidth * gImpl->mHeight) {
             lua_pushinteger(L, vram[pos]);
         } else {
