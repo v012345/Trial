@@ -36,7 +36,7 @@ xpcall(function()
 
     Game.entity = require "ConertStagesToImage"
 
-    Game.stage = require "Stages"[3]
+    Game.stage = require "Stages"[4]
     Game.player = { x = 1, y = 1 }
     Game.box = {}
     Game.isMoving = false

@@ -1,28 +1,29 @@
 local function dealInput()
-    if not Game.isMoving then
-        if Framework.isKeyOn(Keyboard.A) then
-            print("A")
-            Game.dx = -1
-        end
-        if Framework.isKeyOn(Keyboard.S) then
-            print("S")
-            Game.dy = 1
-        end
-        if Framework.isKeyOn(Keyboard.D) then
-            print("D")
-            Game.dx = 1
-        end
-        if Framework.isKeyOn(Keyboard.W) then
-            print("W")
-            Game.dy = -1
-        end
-        if Framework.isKeyOn(Keyboard.Q) then
-            print("Q")
-        end
-        if Framework.isKeyOn(Keyboard.R) then
-            print("R")
-        end
+    if Framework.isKeyOn(Keyboard.A) then
+        print("A")
+        Game.dx = -1
         Game.isMoving = true
+    end
+    if Framework.isKeyOn(Keyboard.S) then
+        print("S")
+        Game.dy = 1
+        Game.isMoving = true
+    end
+    if Framework.isKeyOn(Keyboard.D) then
+        print("D")
+        Game.dx = 1
+        Game.isMoving = true
+    end
+    if Framework.isKeyOn(Keyboard.W) then
+        print("W")
+        Game.dy = -1
+        Game.isMoving = true
+    end
+    if Framework.isKeyOn(Keyboard.Q) then
+        print("Q")
+    end
+    if Framework.isKeyOn(Keyboard.R) then
+        print("R")
     end
 end
 
@@ -43,32 +44,22 @@ local function drawBackground()
 end
 
 local function drawForeground()
-    if Game.isMoving then
-        if Game.step <= 32 then
-            Game.drawImage(Game.entity.worker, (Game.player.x - 1) * 32 + (Game.dx * Game.step),
-                (Game.player.y - 1) * 32 + (Game.dy * Game.step),
-                false)
-            Game.step = Game.step + 1
-        else
-            Game.step     = 0
-            Game.isMoving = false
-            Game.player.x = Game.player.x + Game.dx
-            Game.player.y = Game.player.y + Game.dy
-            Game.dx       = 0
-            Game.dy       = 0
-        end
-    else
-        Game.drawImage(Game.entity.worker, (Game.player.x - 1) * 32, (Game.player.y - 1) * 32, false)
-        for _, box in ipairs(Game.box) do
-            Game.drawImage(Game.entity.box, (box.x - 1) * 32, (box.y - 1) * 32, false)
-        end
+    for _, box in ipairs(Game.box) do
+        Game.drawImage(Game.entity.box, (box.x - 1) * 32, (box.y - 1) * 32, false)
     end
+    local x = (Game.player.x - 1) * 32 + (Game.dx * Game.step)
+    local y = (Game.player.y - 1) * 32 + (Game.dy * Game.step)
+    if G then
+        
+    end
+    Game.drawImage(Game.entity.worker, (Game.player.x - 1) * 32 + (Game.dx * Game.step),
+        (Game.player.y - 1) * 32 + (Game.dy * Game.step),
+        false)
 end
-
 function MainLoop()
     xpcall(function()
         local currentTime = Framework.time()
-        while currentTime - Game.PreviousTime[10] < 3 do
+        while currentTime - Game.PreviousTime[10] < 16 do
             currentTime = Framework.time()
             Framework.sleep(1);
         end
@@ -81,7 +72,9 @@ function MainLoop()
         --     print(Game.Counter, "frameInterval:", frameInterval10 / 10)
         --     print(Game.Counter, " FrameRate:", 10 * 1000 / frameInterval10)
         -- end
-        dealInput()
+        if not Game.isMoving then
+            dealInput()
+        end
         drawBackground()
         drawForeground()
         Game.Counter = Game.Counter + 1
