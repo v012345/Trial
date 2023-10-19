@@ -7,7 +7,7 @@
         "**/bower_components": true,
         "**/*.code-search": true,
         "libs/**": true,
-        "lua-5.4.6/doc/**": true
+        "lua/doc/**": true
     },
     "files.associations": {
         "windows.h": "c",

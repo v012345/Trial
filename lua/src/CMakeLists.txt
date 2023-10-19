@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(liblua-5.4.6)
+project(liblua)
 
 # 如果还作为动态库
 # add_definitions(-DLUA_BUILD_AS_DLL)

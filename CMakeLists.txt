@@ -6,7 +6,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory("libs")
-add_subdirectory("lua-5.4.6/src")
+add_subdirectory("lua/src")
 add_subdirectory("lua-extensions")
 add_subdirectory("tools")
 add_subdirectory("Games")
@@ -15,12 +15,12 @@ add_subdirectory("example")
 # add_definitions(-DNDEBUG)
 add_executable(Main main.cpp)
 target_link_libraries(Main
-    liblua-5.4.6
+    liblua
     lfs
     png_shared
 )
 target_include_directories(Main PRIVATE
-    lua-5.4.6/src
+    lua/src
 )
 target_compile_definitions(Main PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/job/main.lua"
