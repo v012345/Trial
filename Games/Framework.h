@@ -2,7 +2,7 @@
 #define INCLUDED_GAMELIB_FRAMEWORK_H
 #include "../libs/libpng/png.h"
 #include "../lua/src/lua.hpp"
-#include "../lua-extensions/lfs.h"
+#include "../extensions/lfs.h"
 
 namespace GameLib {
 
