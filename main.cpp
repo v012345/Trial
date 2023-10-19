@@ -4,7 +4,7 @@ static int Lua__getch(lua_State* L);
 static void read_png_file(const char* filename);
 
 int main(int argc, char const* argv[]) {
-    read_png_file(CMAKE_SOURCE_DIR "/res/shengyue.png");
+    read_png_file(CMAKE_SOURCE_DIR "res/shengyue.png");
 #ifdef _WIN32
     system("chcp 65001 > NUL");
 #endif

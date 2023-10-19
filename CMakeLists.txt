@@ -25,7 +25,7 @@ target_include_directories(Main PRIVATE
 target_compile_definitions(Main PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/job/main.lua"
     LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/job/?.lua"
-    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
 )
 
 add_executable(Game WIN32

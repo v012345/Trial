@@ -12,8 +12,8 @@ int main(int argc, const char** argv) {
     const char* outFile = 0;
 #ifdef CMAKE_SOURCE_DIR
     // 直接在 CMAKE 里定义, 省得传参
-    inFiles.push_back(CMAKE_SOURCE_DIR "/GameLib/font.tga");
-    outFile = CMAKE_SOURCE_DIR "/GameLib/fontTextureGenerated.h";
+    inFiles.push_back(CMAKE_SOURCE_DIR "GameLib/font.tga");
+    outFile = CMAKE_SOURCE_DIR "GameLib/fontTextureGenerated.h";
 #else
     // 解析命令行参数
     for (int i = 1; i < argc; ++i) {

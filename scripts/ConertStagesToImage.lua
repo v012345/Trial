@@ -1,4 +1,4 @@
-local NimotsuKunImags = ReadPngFile(CMAKE_SOURCE_DIR .. "/res/nimotsuKunImageAlpha.png")
+local NimotsuKunImags = ReadPngFile(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
 ---@param IMAGE table<table<integer>>
 local function cutImage(IMAGE)
     local r = {}

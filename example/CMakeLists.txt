@@ -10,7 +10,7 @@ target_include_directories(Book PRIVATE
 )
 
 target_compile_definitions(Book PRIVATE
-    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
     CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 

@@ -1,7 +1,7 @@
 xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
-    local nimotsuKunImage = ReadPngFile(CMAKE_SOURCE_DIR .. "/res/nimotsuKunImageAlpha.png")
+    local nimotsuKunImage = ReadPngFile(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
     ---@param IMAGE image
     ---@param TYPE integer
     local function drawCell(IMAGE, TYPE, atX, atY)

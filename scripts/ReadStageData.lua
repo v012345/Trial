@@ -1,0 +1,1 @@
+local file = io.open(CMAKE_SOURCE_DIR.."")
