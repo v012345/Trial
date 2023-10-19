@@ -6,6 +6,7 @@ xpcall(function()
         Game.PreviousTime[i] = Framework.time();
     end
     Game.Counter = 0;
+    require "ConertStagesToImage"
     require "Keyboard"
     require "MainLoop"
 end, function(msg)

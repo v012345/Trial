@@ -23,8 +23,8 @@ target_include_directories(Main PRIVATE
     lua-5.4.6/src
 )
 target_compile_definitions(Main PRIVATE
-    LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/main.lua"
-    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
+    LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/job/main.lua"
+    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/job/?.lua"
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 
