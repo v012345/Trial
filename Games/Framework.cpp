@@ -396,11 +396,17 @@ namespace GameLib {
         lua_pushinteger(L, time);
         return 1;
     }
-
+    static int lua_FrameworkIsKeyOn(lua_State* L) {
+        int c = lua_tointeger(L, 1);
+        bool isOn = Input::Manager().keyboard().isOn(c);
+        lua_pushboolean(L, isOn);
+        return 1;
+    }
     static int luaopen_Framework(lua_State* L) {
         luaL_Reg funcs[] = {
             {"sleep", lua_FrameworkSleep}, //
             {"time", lua_FrameworkTime}, //
+            {"isKeyOn", lua_FrameworkIsKeyOn}, //
             {NULL, NULL}};
         luaL_newlib(L, funcs);
         return 1;

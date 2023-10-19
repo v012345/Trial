@@ -75,7 +75,9 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "chrono": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"

@@ -51,6 +51,11 @@ function Framework.sleep(ms) end
 ---@return integer
 function Framework.time() return 0 end
 
+---是否按了某个键
+---@param c integer
+---@return boolean
+function Framework.isKeyOn(c) return true end
+
 ---游戏使用到的数据
 Game = {
     --- 前一帧时间
