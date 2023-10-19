@@ -1,6 +1,21 @@
 xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
+    require "enum"
+    local map = require "ReadStageData"
+    for index, value in ipairs(map) do
+        for index, value in ipairs(value) do
+            io.write(value, "\t")
+        end
+        print()
+    end
+    function MainLoop()
+
+    end
+
+    do
+        return
+    end
     Game.PreviousTime = {}
     for i = 1, 10, 1 do
         Game.PreviousTime[i] = Framework.time();
