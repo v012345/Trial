@@ -39,6 +39,10 @@ xpcall(function()
     Game.stage = require "Stages"[3]
     Game.player = { x = 1, y = 1 }
     Game.box = {}
+    Game.isMoving = false
+    Game.step = 0
+    Game.dx = 0
+    Game.dy = 0
     local background = {}
     for y, data in ipairs(Game.stage) do
         local row = {}
