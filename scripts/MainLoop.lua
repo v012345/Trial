@@ -35,6 +35,13 @@ local function drawBackground()
     end
 end
 
+local function drawForeground()
+    Game.drawImage(Game.entity.worker, (Game.player.x - 1) * 32, (Game.player.y - 1) * 32, false)
+    for _, box in ipairs(Game.box) do
+        Game.drawImage(Game.entity.box, (box.x - 1) * 32, (box.y - 1) * 32, false)
+    end
+end
+
 function MainLoop()
     xpcall(function()
         local currentTime = Framework.time()
@@ -53,6 +60,7 @@ function MainLoop()
         -- end
         dealInput()
         drawBackground()
+        drawForeground()
         Game.Counter = Game.Counter + 1
     end, function(msg)
         print(msg)

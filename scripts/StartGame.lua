@@ -37,19 +37,27 @@ xpcall(function()
     Game.entity = require "ConertStagesToImage"
 
     Game.stage = require "Stages"[3]
+    Game.player = { x = 1, y = 1 }
+    Game.box = {}
     local background = {}
-    for _, data in ipairs(Game.stage) do
+    for y, data in ipairs(Game.stage) do
         local row = {}
-        for _, obj in ipairs(data) do
+        for x, obj in ipairs(data) do
             if obj == 0 then
                 row[#row + 1] = 0
             elseif obj == 1 then
+                Game.player.x = x
+                Game.player.y = y
                 row[#row + 1] = 0
             elseif obj == 6 then
                 row[#row + 1] = 6
             elseif obj == 5 then
                 row[#row + 1] = 5
             elseif obj == 3 then
+                Game.box[#Game.box + 1] = {
+                    x = x,
+                    y = y
+                }
                 row[#row + 1] = 0
             else
                 row[#row + 1] = 7
