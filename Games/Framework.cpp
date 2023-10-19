@@ -238,18 +238,17 @@ namespace GameLib {
     }
     static int lua_ReadPngFile(lua_State* L) {
         const char* filename = lua_tostring(L, 1);
-        lua_newtable(L);
         FILE* fp = fopen(filename, "rb");
         if (!fp) {
             printf("Failed to open file %s for reading\n", filename);
-            return 1;
+            return 0;
         }
 
         png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (!png) {
             fclose(fp);
             printf("png_create_read_struct failed\n");
-            return 1;
+            return 0;
         }
 
         png_infop info = png_create_info_struct(png);
@@ -257,14 +256,14 @@ namespace GameLib {
             fclose(fp);
             png_destroy_read_struct(&png, NULL, NULL);
             printf("png_create_info_struct failed\n");
-            return 1;
+            return 0;
         }
 
         if (setjmp(png_jmpbuf(png))) {
             fclose(fp);
             png_destroy_read_struct(&png, &info, NULL);
             printf("Error during init_io\n");
-            return 1;
+            return 0;
         }
 
         png_init_io(png, fp);
@@ -281,13 +280,13 @@ namespace GameLib {
             fclose(fp);
             png_destroy_read_struct(&png, &info, NULL);
             printf("Only 8-bit per channel images are supported\n");
-            return 1;
+            return 0;
         }
         if (color_type != PNG_COLOR_TYPE_RGB && color_type != PNG_COLOR_TYPE_RGBA) {
             fclose(fp);
             png_destroy_read_struct(&png, &info, NULL);
             printf("Only RGB and RGBA images are supported\n");
-            return 1;
+            return 0;
         }
 
         png_bytep* row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
@@ -295,7 +294,7 @@ namespace GameLib {
             fclose(fp);
             png_destroy_read_struct(&png, &info, NULL);
             printf("Memory allocation failed\n");
-            return 1;
+            return 0;
         }
 
         for (int y = 0; y < height; y++) { //
@@ -306,12 +305,11 @@ namespace GameLib {
                 free(row_pointers);
                 png_destroy_read_struct(&png, &info, NULL);
                 printf("Memory allocation failed\n");
-                return 1;
+                return 0;
             }
         }
 
         png_read_image(png, row_pointers);
-        lua_Integer i = 1;
         lua_pushstring(L, "ARGB");
         int bytes_per_pixel;
         if (color_type & PNG_COLOR_MASK_ALPHA) {
@@ -321,26 +319,21 @@ namespace GameLib {
         }
         lua_newtable(L);
         for (int y = 0; y < height; y++) {
+            lua_pushinteger(L, y + 1);
+            lua_newtable(L);
             for (int x = 0; x < width; x++) {
-                lua_pushinteger(L, i++);
+                lua_pushinteger(L, x + 1);
                 lua_Integer j = row_pointers[y][x * bytes_per_pixel] << 16;
                 j += row_pointers[y][x * bytes_per_pixel + 1] << 8;
                 j += row_pointers[y][x * bytes_per_pixel + 2];
                 if (bytes_per_pixel == 4) { //
                     j += row_pointers[y][x * bytes_per_pixel + 3] << 24;
                 }
-
                 lua_pushinteger(L, j);
                 lua_settable(L, -3);
             }
+            lua_settable(L, -3);
         }
-        lua_settable(L, -3);
-        lua_pushstring(L, "height");
-        lua_pushinteger(L, height);
-        lua_settable(L, -3);
-        lua_pushstring(L, "width");
-        lua_pushinteger(L, width);
-        lua_settable(L, -3);
         fclose(fp);
         for (int y = 0; y < height; y++) { free(row_pointers[y]); }
         free(row_pointers);
