@@ -46,3 +46,6 @@ Framework = {}
 ---休息多少毫秒
 ---@param ms integer
 function Framework.sleep(ms) end
+
+---游戏使用到的数据
+Game = {}
