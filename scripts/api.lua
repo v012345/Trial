@@ -34,11 +34,10 @@ function Impl:clear() end
 
 ---在 c 里解析 png 图片
 ---@param path string png 图片的路径
----@return image
+---@return table<table<integer>>
 function ReadPngFile(path)
-    ---@class image
-    ---@field ARGB table<integer>
-    local image = { width = 1, height = 1, ARGB = { 1 } }
+    ---@type table<table<integer>>
+    local image = { { 1 } }
     return image
 end
 
