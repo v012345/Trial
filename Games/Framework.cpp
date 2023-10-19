@@ -389,11 +389,18 @@ namespace GameLib {
     static int lua_FrameworkSleep(lua_State* L) {
         int ms = lua_tointeger(L, 1);
         Threading::sleep(ms);
+        return 0;
+    }
+    static int lua_FrameworkTime(lua_State* L) {
+        lua_Integer time = WindowCreator().time();
+        lua_pushinteger(L, time);
         return 1;
     }
+
     static int luaopen_Framework(lua_State* L) {
         luaL_Reg funcs[] = {
             {"sleep", lua_FrameworkSleep}, //
+            {"time", lua_FrameworkTime}, //
             {NULL, NULL}};
         luaL_newlib(L, funcs);
         return 1;
@@ -433,6 +440,8 @@ namespace GameLib {
         luaopen_cfuncs(L);
         luaL_requiref(L, "Framework", luaopen_Framework, 1);
         lua_pop(L, 1); /* remove lib */
+        lua_newtable(L);
+        lua_setglobal(L, "Game");
 #ifdef LUA_MAIN_SCRIPT
         luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif

@@ -47,5 +47,12 @@ Framework = {}
 ---@param ms integer
 function Framework.sleep(ms) end
 
+---返回时间毫秒
+---@return integer
+function Framework.time() return 0 end
+
 ---游戏使用到的数据
-Game = {}
+Game = {
+    --- 前一帧时间
+    PreviousTime = {}
+}
