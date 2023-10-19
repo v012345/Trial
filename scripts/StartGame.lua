@@ -2,13 +2,11 @@ xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
     require "enum"
+    require "Game"
     local map = require "ReadStageData"
-    for index, value in ipairs(map) do
-        for index, value in ipairs(value) do
-            io.write(value, "\t")
-        end
-        print()
-    end
+    Game:loadBackground(map)
+    Game:dumpBackground()
+
     function MainLoop()
 
     end
@@ -58,33 +56,7 @@ xpcall(function()
     Game.step = 0
     Game.dx = 0
     Game.dy = 0
-    local background = {}
-    for y, data in ipairs(Game.stage) do
-        local row = {}
-        for x, obj in ipairs(data) do
-            if obj == 0 then
-                row[#row + 1] = 0
-            elseif obj == 1 then
-                Game.player.x = x
-                Game.player.y = y
-                row[#row + 1] = 0
-            elseif obj == 6 then
-                row[#row + 1] = 6
-            elseif obj == 5 then
-                row[#row + 1] = 5
-            elseif obj == 3 then
-                Game.box[#Game.box + 1] = {
-                    x = x,
-                    y = y
-                }
-                row[#row + 1] = 0
-            else
-                row[#row + 1] = 7
-            end
-        end
-        background[#background + 1] = row
-    end
-    Game.background = background
+
     require "Keyboard"
     require "MainLoop"
 end, function(msg)
