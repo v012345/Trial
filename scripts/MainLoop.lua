@@ -19,6 +19,22 @@ local function dealInput()
     end
 end
 
+local function drawBackground()
+    for y, row in ipairs(Game.background) do
+        for x, obj in ipairs(row) do
+            if obj == 6 then
+                Game.drawImage(Game.entity.wall, (x - 1) * 32, (y - 1) * 32, true)
+            end
+            if obj == 5 then
+                Game.drawImage(Game.entity.goal, (x - 1) * 32, (y - 1) * 32, true)
+            end
+            if obj == 0 then
+                Game.drawImage(Game.entity.floor, (x - 1) * 32, (y - 1) * 32, true)
+            end
+        end
+    end
+end
+
 function MainLoop()
     xpcall(function()
         local currentTime = Framework.time()
@@ -36,6 +52,7 @@ function MainLoop()
         --     print(Game.Counter, " FrameRate:", 10 * 1000 / frameInterval10)
         -- end
         dealInput()
+        drawBackground()
         Game.Counter = Game.Counter + 1
     end, function(msg)
         print(msg)

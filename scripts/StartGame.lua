@@ -35,6 +35,29 @@ xpcall(function()
     end
 
     Game.entity = require "ConertStagesToImage"
+
+    Game.stage = require "Stages"[3]
+    local background = {}
+    for _, data in ipairs(Game.stage) do
+        local row = {}
+        for _, obj in ipairs(data) do
+            if obj == 0 then
+                row[#row + 1] = 0
+            elseif obj == 1 then
+                row[#row + 1] = 0
+            elseif obj == 6 then
+                row[#row + 1] = 6
+            elseif obj == 5 then
+                row[#row + 1] = 5
+            elseif obj == 3 then
+                row[#row + 1] = 0
+            else
+                row[#row + 1] = 7
+            end
+        end
+        background[#background + 1] = row
+    end
+    Game.background = background
     require "Keyboard"
     require "MainLoop"
 end, function(msg)
