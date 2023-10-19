@@ -8,7 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory("libs")
 add_subdirectory("lua/src")
 add_subdirectory("extensions")
-add_subdirectory("tools")
+# add_subdirectory("tools")
 add_subdirectory("Games")
 add_subdirectory("example")
 

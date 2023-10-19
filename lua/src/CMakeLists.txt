@@ -39,8 +39,8 @@ add_library(${PROJECT_NAME} STATIC # lua.c luac.c
     lzio.c
 )
 
-add_executable(lua lua.c)
-target_link_libraries(lua ${PROJECT_NAME})
+# add_executable(lua lua.c)
+# target_link_libraries(lua ${PROJECT_NAME})
 
-add_executable(luac luac.c)
-target_link_libraries(luac ${PROJECT_NAME})
+# add_executable(luac luac.c)
+# target_link_libraries(luac ${PROJECT_NAME})
