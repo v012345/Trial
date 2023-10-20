@@ -45,7 +45,11 @@ function Game:loadBackground(map)
     self.renderBackground = {}
     for y, xRow in ipairs(self.background) do
         for x, obj in ipairs(xRow) do
-
+            self.renderBackground[#self.renderBackground + 1] = {
+                screenX = (x - 1) * self.SpriteSize,
+                screenY = (y - 1) * self.SpriteSize,
+                obj = obj
+            }
         end
     end
 end
@@ -116,7 +120,9 @@ function Game:dumpMapWithEmoji()
 end
 
 function Game:drawBackground()
-
+    for _, renderObj in ipairs(self.renderBackground) do
+        self:drawImage(self.renderEntity[renderObj.obj], renderObj.screenX, renderObj.screenY, true)
+    end
 end
 
 function Game:loadRenderImage(path)

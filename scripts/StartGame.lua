@@ -10,6 +10,7 @@ xpcall(function()
     Game:dumpEntities()
     Game:dumpMapWithEmoji()
     Game:loadRenderImage(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
+    Game:drawBackground()
     function MainLoop()
 
     end
@@ -22,7 +23,7 @@ xpcall(function()
         Game.PreviousTime[i] = Framework.time();
     end
     Game.Counter = 0;
-    
+
 
     Game.entity = require "ConertStagesToImage"
 
