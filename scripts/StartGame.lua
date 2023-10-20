@@ -3,7 +3,7 @@ xpcall(function()
     print("Hello 👋")
     require "init"
     Game:init()
-    Game:readStageData(CMAKE_SOURCE_DIR .. "example/stageData.txt")
+    Game:readStageData(CMAKE_SOURCE_DIR .. "example/data/stageData/1.txt")
     Game:loadRenderImage(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
     Game:dumpBackground()
     Game:dumpMapWithEmoji()
