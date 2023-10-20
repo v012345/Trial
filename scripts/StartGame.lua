@@ -5,8 +5,8 @@ xpcall(function()
     require "Engine"
     require "Enum"
     require "Game"
-    local map = require "ReadStageData"
-    Game:loadBackground(map)
+    Game:init()
+    Game:readStageData(CMAKE_SOURCE_DIR .. "example/stageData.txt")
     Game:dumpBackground()
     Game:loadEntities(map)
     Game:dumpEntities()

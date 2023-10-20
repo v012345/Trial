@@ -1,10 +1,42 @@
-require "Player"
-require "Framework"
-Game.SpriteSize = 32
+function Game:init()
+    self.SpriteSize = 32
+    ---@type StageData
+    self.StageData = {}
+    ---@type StageData
+    self.Background = {}
+end
 
-function Game:loadBackground(map)
-    self.background = {}
-    for _, v in ipairs(map) do
+function Game:readStageData(path)
+    local file = io.open(path, "r") or error("can't open " .. path)
+    local rawStageData = file:read()
+    while rawStageData do
+        local row = {}
+        for i = 1, #rawStageData do
+            local char = string.sub(rawStageData, i, i)
+            if char == " " then
+                row[#row + 1] = Enum.ground
+            elseif char == "#" then
+                row[#row + 1] = Enum.wall
+            elseif char == "p" then
+                row[#row + 1] = Enum.player
+            elseif char == "." then
+                row[#row + 1] = Enum.goal
+            elseif char == "o" then
+                row[#row + 1] = Enum.box
+            else
+                error(string.format("wrong char '%s' at line %s:%s", char, #map + 1, i))
+            end
+        end
+        self.StageData[#self.StageData + 1] = row
+        rawStageData = file:read()
+    end
+    file:close()
+    self:loadBackground()
+end
+
+---@private
+function Game:loadBackground()
+    for _, v in ipairs(self.StageData) do
         local row = {}
         for _, obj in ipairs(v) do
             if obj == Enum.box then
@@ -15,10 +47,10 @@ function Game:loadBackground(map)
                 row[#row + 1] = obj
             end
         end
-        self.background[#self.background + 1] = row
+        self.Background[#self.Background + 1] = row
     end
     self.renderBackground = {}
-    for y, xRow in ipairs(self.background) do
+    for y, xRow in ipairs(self.Background) do
         for x, obj in ipairs(xRow) do
             self.renderBackground[#self.renderBackground + 1] = {
                 screenX = (x - 1) * self.SpriteSize,
@@ -30,7 +62,7 @@ function Game:loadBackground(map)
 end
 
 function Game:dumpBackground()
-    for _, v in ipairs(self.background) do
+    for _, v in ipairs(self.Background) do
         for _, o in ipairs(v) do
             io.write(o)
         end
@@ -77,7 +109,7 @@ function Game:dumpMapWithEmoji()
         [Enum.wall] = "🧱",
     }
     local EmojiMap = {}
-    for _, xRow in ipairs(self.background) do
+    for _, xRow in ipairs(self.Background) do
         local row = {}
         for _, obj in ipairs(xRow) do
             row[#row + 1] = EmojiEntity[obj]

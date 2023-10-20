@@ -69,3 +69,10 @@ Image = {
     { 0xffff0000, 0xffff0000, 0xffff0000 },
     { 0xffff0000, 0xffff0000, 0xffff0000 },
 }
+
+---@class StageData
+StageData = {
+    { 0, 0, 0 },
+    { 0, 0, 0 },
+    { 0, 0, 0 }
+}
