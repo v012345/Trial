@@ -1,3 +1,4 @@
+require "Player"
 Game.SpriteSize = 32
 function Game:drawImage(IMAGE, atX, atY, isBG)
     for y, row in ipairs(IMAGE) do
@@ -65,7 +66,6 @@ end
 
 function Game:loadEntities(map)
     self.box = {}
-    self.player = {}
     for y, v in ipairs(map) do
         for x, obj in ipairs(v) do
             if obj == ENUM.box then
@@ -77,40 +77,17 @@ function Game:loadEntities(map)
                 }
                 self.box[#self.box + 1] = box
             elseif obj == ENUM.player then
-                self.player.x = x
-                self.player.y = y
-                self.player.screenX = (x - 1) * self.SpriteSize
-                self.player.screenY = (y - 1) * self.SpriteSize
-                self.player.isMoving = false
-                self.player.toX = x
-                self.player.toY = y
-            end
-        end
-    end
-    self.player.move = function(this, dx, dy)
-        if this.toX == this.x and this.toY == this.y then
-            this.toX = this.x + dx
-            this.toY = this.y + dy
-        end
-    end
-    self.player.update = function(this)
-        if this.toX ~= this.x or this.toY ~= this.y then
-            local dx = this.toX - this.x
-            local dy = this.toY - this.y
-            this.screenX = this.screenX + dx
-            this.screenY = this.screenY + dy
-            if this.toX * self.SpriteSize == this.screenX then
-                this.x = this.toX
-            end
-            if this.toY * self.SpriteSize == this.screenY then
-                this.y = this.toY
+                Player.x = x
+                Player.y = y
+                Player.screenX = (x - 1) * self.SpriteSize
+                Player.screenY = (y - 1) * self.SpriteSize
             end
         end
     end
 end
 
 function Game:dumpEntities()
-    io.write(string.format("player at (%s,%s)\n", self.player.x, self.player.y))
+    io.write(string.format("player at (%s,%s)\n", Player.x, Player.y))
     for _, box in ipairs(self.box) do
         io.write(string.format("box at (%s,%s)\n", box.x, box.y))
     end
@@ -137,7 +114,7 @@ function Game:dumpMapWithEmoji()
     for _, box in ipairs(self.box) do
         EmojiMap[box.y][box.x] = EmojiEntity[ENUM.box]
     end
-    EmojiMap[self.player.y][self.player.x] = EmojiEntity[ENUM.player]
+    EmojiMap[Player.y][Player.x] = EmojiEntity[ENUM.player]
     for _, xRow in ipairs(EmojiMap) do
         for _, emoji in ipairs(xRow) do
             io.write(emoji)
@@ -153,8 +130,6 @@ function Game:drawBackground()
 end
 
 function Game:drawEntities()
-    local player = self.player
-    self:drawImage(self.renderEntity[ENUM.player], player.screenX, player.screenY, false)
     for _, box in ipairs(self.box) do
         self:drawImage(self.renderEntity[ENUM.box], box.screenX, box.screenY, false)
     end
@@ -195,16 +170,16 @@ end
 
 function Game:dealInput()
     if Framework.isKeyOn(Keyboard.A) then
-        self.player:move(-1, 0)
+        Player:move(-1, 0)
     end
     if Framework.isKeyOn(Keyboard.S) then
-        self.player:move(0, 1)
+        Player:move(0, 1)
     end
     if Framework.isKeyOn(Keyboard.D) then
-        self.player:move(1, 0)
+        Player:move(1, 0)
     end
     if Framework.isKeyOn(Keyboard.W) then
-        self.player:move(0, -1)
+        Player:move(0, -1)
     end
     if Framework.isKeyOn(Keyboard.Q) then
 
