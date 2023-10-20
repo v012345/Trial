@@ -1,8 +1,3 @@
-Game.PreviousTime = {}
-for i = 1, 10, 1 do
-    Game.PreviousTime[i] = Framework.time()
-end
-
 function MainLoop()
     xpcall(function()
         local currentTime = Framework.time()
@@ -19,10 +14,8 @@ function MainLoop()
         --     print(Game.Counter, "frameInterval:", frameInterval10 / 10)
         --     print(Game.Counter, " FrameRate:", 10 * 1000 / frameInterval10)
         -- end
-        Game:drawBackground()
         Game:dealInput()
-        Game:drawEntities()
-        Player:update()
+        Game:update()
     end, function(msg)
         print(msg)
     end)

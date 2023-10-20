@@ -56,13 +56,8 @@ function Framework.time() return 0 end
 ---@return boolean
 function Framework.isKeyOn(c) return true end
 
----游戏使用到的数据
-Game = {
-    -- 前一帧时间
-    PreviousTime = {},
-    --背景
-    background = {}
-}
+---游戏使用到的数据, 在 c 中定义的空表
+Game = {}
 ---@class Image
 Image = {
     { 0xffff0000, 0xffff0000, 0xffff0000 },

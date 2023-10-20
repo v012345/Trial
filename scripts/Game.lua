@@ -4,8 +4,17 @@ function Game:init()
     self.StageData = {}
     ---@type StageData
     self.Background = {}
+    ---@type table<integer,Entity>
+    self.BackgroundEntities = {}
+    ---@type table<integer,Entity>
+    self.ForegroundEntities = {}
+    self.PreviousTime = {}
+    for i = 1, 10, 1 do
+        self.PreviousTime[i] = Framework.time()
+    end
 end
 
+---@param path string
 function Game:readStageData(path)
     local file = io.open(path, "r") or error("can't open " .. path)
     local rawStageData = file:read()
@@ -32,6 +41,7 @@ function Game:readStageData(path)
     end
     file:close()
     self:loadBackground()
+    self:loadForeground()
 end
 
 ---@private
@@ -49,14 +59,17 @@ function Game:loadBackground()
         end
         self.Background[#self.Background + 1] = row
     end
-    self.renderBackground = {}
+
     for y, xRow in ipairs(self.Background) do
         for x, obj in ipairs(xRow) do
-            self.renderBackground[#self.renderBackground + 1] = {
+            self.BackgroundEntities[#self.BackgroundEntities + 1] = CreateEntity({
+                x = x,
+                y = y,
                 screenX = (x - 1) * self.SpriteSize,
                 screenY = (y - 1) * self.SpriteSize,
-                obj = obj
-            }
+                eRenderEntity = obj,
+                isBackground = true
+            })
         end
     end
 end
@@ -70,32 +83,22 @@ function Game:dumpBackground()
     end
 end
 
-function Game:loadEntities(map)
-    self.box = {}
-    for y, v in ipairs(map) do
+---@private
+function Game:loadForeground()
+    for y, v in ipairs(self.StageData) do
         for x, obj in ipairs(v) do
-            if obj == Enum.box then
+            if obj == Enum.box or obj == Enum.player then
                 local box = {
                     x = x,
                     y = y,
                     screenX = (x - 1) * self.SpriteSize,
-                    screenY = (y - 1) * self.SpriteSize
+                    screenY = (y - 1) * self.SpriteSize,
+                    eRenderEntity = obj,
+                    isBackground = false
                 }
-                self.box[#self.box + 1] = box
-            elseif obj == Enum.player then
-                Player.x = x
-                Player.y = y
-                Player.screenX = (x - 1) * self.SpriteSize
-                Player.screenY = (y - 1) * self.SpriteSize
+                self.ForegroundEntities[#self.ForegroundEntities + 1] = CreateEntity(box)
             end
         end
-    end
-end
-
-function Game:dumpEntities()
-    io.write(string.format("player at (%s,%s)\n", Player.x, Player.y))
-    for _, box in ipairs(self.box) do
-        io.write(string.format("box at (%s,%s)\n", box.x, box.y))
     end
 end
 
@@ -117,10 +120,9 @@ function Game:dumpMapWithEmoji()
         EmojiMap[#EmojiMap + 1] = row
     end
 
-    for _, box in ipairs(self.box) do
-        EmojiMap[box.y][box.x] = EmojiEntity[Enum.box]
+    for _, entity in ipairs(self.ForegroundEntities) do
+        EmojiMap[entity.y][entity.x] = EmojiEntity[entity.eRenderEntity]
     end
-    EmojiMap[Player.y][Player.x] = EmojiEntity[Enum.player]
     for _, xRow in ipairs(EmojiMap) do
         for _, emoji in ipairs(xRow) do
             io.write(emoji)
@@ -130,14 +132,19 @@ function Game:dumpMapWithEmoji()
 end
 
 function Game:drawBackground()
-    for _, renderObj in ipairs(self.renderBackground) do
-        Framework:draw(RenderEntity[renderObj.obj], renderObj.screenX, renderObj.screenY, true)
+    for _, renderObj in ipairs(self.BackgroundEntities) do
+        renderObj:draw()
     end
 end
 
-function Game:drawEntities()
-    for _, box in ipairs(self.box) do
-        Framework:draw(RenderEntity[Enum.box], box.screenX, box.screenY, false)
+function Game:update()
+    self:drawBackground()
+    self:drawForeground()
+end
+
+function Game:drawForeground()
+    for _, renderObj in ipairs(self.ForegroundEntities) do
+        renderObj:update()
     end
 end
 
@@ -174,16 +181,16 @@ end
 
 function Game:dealInput()
     if Framework.isKeyOn(Keyboard.A) then
-        Player:move(-1, 0)
+        -- Player:move(-1, 0)
     end
     if Framework.isKeyOn(Keyboard.S) then
-        Player:move(0, 1)
+        -- Player:move(0, 1)
     end
     if Framework.isKeyOn(Keyboard.D) then
-        Player:move(1, 0)
+        -- Player:move(1, 0)
     end
     if Framework.isKeyOn(Keyboard.W) then
-        Player:move(0, -1)
+        -- Player:move(0, -1)
     end
     if Framework.isKeyOn(Keyboard.Q) then
 
