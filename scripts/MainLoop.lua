@@ -10,11 +10,11 @@ function MainLoop()
             Game.PreviousTime[i] = Game.PreviousTime[i + 1];
         end
         Game.PreviousTime[10] = currentTime
-        local frameInterval10 = Game.PreviousTime[10] - Game.PreviousTime[1];
-        if Game.iCounter % 60 == 0 then
-            print(Game.iCounter // 60, "frameInterval:", frameInterval10 / 10)
-            print(Game.iCounter // 60, " FrameRate:", 10 * 1000 / frameInterval10)
-        end
+        -- local frameInterval10 = Game.PreviousTime[10] - Game.PreviousTime[1];
+        -- if Game.iCounter % 60 == 0 then
+        --     print(Game.iCounter // 60, "frameInterval:", frameInterval10 / 10)
+        --     print(Game.iCounter // 60, " FrameRate:", 10 * 1000 / frameInterval10)
+        -- end
         Game:dealInput()
         Game:update()
         Game.iCounter = Game.iCounter + 1

@@ -11,6 +11,8 @@ function Game:init()
     self.PreviousTime = {}
     ---@type Entity
     self.player = {}
+    ---@type table<integer,Entity>
+    self.boxes = {}
     for i = 1, 10, 1 do
         self.PreviousTime[i] = Framework.time()
     end
@@ -102,6 +104,8 @@ function Game:loadForeground()
                 local entity = CreateEntity(box)
                 if obj == Enum.player then
                     self.player = entity
+                else
+                    self.boxes[#self.boxes + 1] = entity
                 end
                 self.ForegroundEntities[#self.ForegroundEntities + 1] = entity
             end
@@ -186,19 +190,76 @@ function Game:loadRenderImage(path)
     RenderEntity[Enum.empty] = empty
 end
 
+function Game:isBox(x, y)
+    for _, box in ipairs(self.boxes) do
+        if box.x == x and box.y == y then
+            return true
+        end
+    end
+    return false
+end
+
+function Game:getBoxAt(x, y)
+    for _, box in ipairs(self.boxes) do
+        if box.x == x and box.y == y then
+            return box
+        end
+    end
+    error("not a box")
+end
+
+function Game:isWall(x, y)
+    if y > #self.Background or x > #self.Background[1] or y < 1 or x < 1 then
+        return true
+    end
+    if self.Background[y][x] == Enum.wall then
+        return true
+    end
+    return false
+end
+
+function Game:canMoveTo(toX, toY, dx, dy)
+    if self:isWall(toX, toY) then
+        return false
+    end
+
+    if self:isBox(toX, toY) then
+        if self:isBox(toX + dx, toY + dy) then
+            return false
+        end
+        if self:isWall(toX + dx, toY + dy) then
+            return false
+        end
+    end
+    return true
+end
+
 function Game:dealInput()
+    local dx = 0
+    local dy = 0
     if Framework.isKeyOn(Keyboard.A) then
-        self.player:move(-1, 0)
+        dx = -1
     end
     if Framework.isKeyOn(Keyboard.S) then
-        self.player:move(0, 1)
+        dy = 1
     end
     if Framework.isKeyOn(Keyboard.D) then
-        self.player:move(1, 0)
+        dx = 1
     end
     if Framework.isKeyOn(Keyboard.W) then
-        self.player:move(0, -1)
+        dy = -1
     end
+    if dx ~= 0 or dy ~= 0 then
+        local toX, toY = self.player.x + dx, self.player.y + dy
+        if self:canMoveTo(toX, toY, dx, dy) then
+            if self:isBox(toX, toY) then
+                local box = self:getBoxAt(toX, toY)
+                box:move(dx, dy)
+            end
+            self.player:move(dx, dy)
+        end
+    end
+
     if Framework.isKeyOn(Keyboard.Q) then
 
     end

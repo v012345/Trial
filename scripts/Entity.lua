@@ -6,29 +6,34 @@ function CreateEntity(data)
     Entity = {
         x = 0,
         y = 0,
+        dx = 0,
+        dy = 0,
         screenX = 0,
         screenY = 0,
         toScreenX = 0,
         toScreenY = 0,
         eRenderEntity = 0,
         isBackground = false,
-        counter = 0
+        counter = 0,
     }
     function Entity:move(dx, dy)
-        if self.counter <= 0 then
-            self.dx = dx
-            self.dy = dy
-            self.counter = Game.SpriteSize
+        if dx ~= 0 or dy ~= 0 then
+            if self.screenX == self.toScreenX and self.screenY == self.toScreenY then
+                self.x = self.x + dx
+                self.y = self.y + dy
+                self.dx = dx
+                self.dy = dy
+                self.toScreenX = self.screenX + dx * Game.SpriteSize
+                self.toScreenY = self.screenY + dy * Game.SpriteSize
+            end
         end
     end
 
     function Entity:update(dt)
-        if self.counter >= 1 then
+        if not (self.screenX == self.toScreenX and self.screenY == self.toScreenY) then
             self.screenX = self.screenX + self.dx
             self.screenY = self.screenY + self.dy
-            self.counter = self.counter - 1
         else
-            self.counter = 0
             self.dx = 0
             self.dy = 0
         end
@@ -41,6 +46,8 @@ function CreateEntity(data)
 
     Entity.screenX = data.screenX
     Entity.screenY = data.screenY
+    Entity.toScreenX = data.screenX
+    Entity.toScreenY = data.screenY
     Entity.eRenderEntity = data.eRenderEntity
     Entity.x = data.x or 0
     Entity.y = data.y or 0
