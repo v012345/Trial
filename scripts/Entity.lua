@@ -6,8 +6,6 @@ function CreateEntity(data)
     Entity = {
         x = 0,
         y = 0,
-        dx = 0,
-        dy = 0,
         screenX = 0,
         screenY = 0,
         toScreenX = 0,
@@ -15,27 +13,33 @@ function CreateEntity(data)
         eRenderEntity = 0,
         isBackground = false,
         counter = 0,
+        isMoving = false
     }
-    function Entity:move(dx, dy)
-        if dx ~= 0 or dy ~= 0 then
-            if self.screenX == self.toScreenX and self.screenY == self.toScreenY then
-                self.x = self.x + dx
-                self.y = self.y + dy
-                self.dx = dx
-                self.dy = dy
-                self.toScreenX = self.screenX + dx * Game.SpriteSize
-                self.toScreenY = self.screenY + dy * Game.SpriteSize
-            end
-        end
+    function Entity:moveTo(toX, toY)
+        self.isMoving = true
+        self.x = toX
+        self.y = toY
+        self.toScreenX = (toX - 1) * Game.SpriteSize
+        self.toScreenY = (toY - 1) * Game.SpriteSize
     end
 
     function Entity:update(dt)
-        if not (self.screenX == self.toScreenX and self.screenY == self.toScreenY) then
-            self.screenX = self.screenX + self.dx
-            self.screenY = self.screenY + self.dy
-        else
-            self.dx = 0
-            self.dy = 0
+        if self.screenX ~= self.toScreenX then
+            if self.screenX > self.toScreenX then
+                self.screenX = self.screenX - 1
+            else
+                self.screenX = self.screenX + 1
+            end
+        end
+        if self.screenY ~= self.toScreenY then
+            if self.screenY > self.toScreenY then
+                self.screenY = self.screenY - 1
+            else
+                self.screenY = self.screenY + 1
+            end
+        end
+        if self.screenX == self.toScreenX and self.screenY == self.toScreenY then
+            self.isMoving = false
         end
         Framework:draw(RenderEntity[self.eRenderEntity], self.screenX, self.screenY, self.isBackground)
     end

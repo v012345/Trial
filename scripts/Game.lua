@@ -250,13 +250,15 @@ function Game:dealInput()
         dy = -1
     end
     if dx ~= 0 or dy ~= 0 then
-        local toX, toY = self.player.x + dx, self.player.y + dy
-        if self:canMoveTo(toX, toY, dx, dy) then
-            if self:isBox(toX, toY) then
-                local box = self:getBoxAt(toX, toY)
-                box:move(dx, dy)
+        if not self.player.isMoving then
+            local toX, toY = self.player.x + dx, self.player.y + dy
+            if self:canMoveTo(toX, toY, dx, dy) then
+                if self:isBox(toX, toY) then
+                    local box = self:getBoxAt(toX, toY)
+                    box:moveTo(toX + dx, toY + dy)
+                end
+                self.player:moveTo(toX, toY)
             end
-            self.player:move(dx, dy)
         end
     end
 
