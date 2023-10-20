@@ -275,7 +275,7 @@ function Game:dealInput()
 
 
     if Framework.isKeyOn(Keyboard.Q) then
-
+        os.exit(0, true)
     end
     if Framework.isKeyOn(Keyboard.R) then
 
