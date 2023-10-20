@@ -2,6 +2,7 @@
 #define INCLUDED_GAMELIB_FRAMEWORK_H
 #include "../libs/libpng/png.h"
 #include "../lua/src/lua.hpp"
+//
 #include "../extensions/luafilesystem/src/lfs.h"
 
 namespace GameLib {
@@ -36,6 +37,10 @@ namespace GameLib {
         void sleep(int milliSeconds) const;
         // 输入
         bool isKeyOn(int c) const;
+        /// 帧速率设置（内部可循环等待）
+        void setFrameRate(int);
+        /// 获得帧速率
+        int frameRate() const;
 
         // 以下库用户不需要知道
         void start(void* windowHandle);

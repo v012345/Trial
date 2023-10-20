@@ -1,7 +1,7 @@
 ﻿#include "Image.h"
-#include "File.h"
-
 #include "../Games/Framework.h"
+#include "File.h"
+#include "GameLib/Gamelib.h"
 using namespace GameLib;
 
 Image::Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
@@ -12,10 +12,7 @@ Image::Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
     for (int i = 0; i < mWidth * mHeight; ++i) { mData[i] = f.getUnsigned(128 + i * 4); }
 }
 
-Image::~Image() {
-    delete[] mData;
-    mData = 0;
-}
+Image::~Image() { SAFE_DELETE_ARRAY(mData); }
 
 int Image::width() const { return mWidth; }
 

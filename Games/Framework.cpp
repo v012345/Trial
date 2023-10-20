@@ -34,8 +34,14 @@ namespace GameLib {
         class Impl {
           public:
             Impl()
-                : mWidth(320), mHeight(240), mFullScreen(false), mFullScreenForbidden(true), mVSync(false), mAntiAlias(false), mTitle("A GameLib Framework Application"), mArchiveNames(0),
-                  mArchiveNumber(0), mLoadMode(FileIO::Manager::MODE_DIRECT_FIRST), mPreviousFrameInterval(0), mFrameRate(0), mEndRequested(false), mStarted(false) {
+                : mWidth(320), mHeight(240), mFullScreen(false), //
+                  mFullScreenForbidden(true), mVSync(false), //
+                  mAntiAlias(false), mTitle("A GameLib Framework Application"), //
+                  mArchiveNames(0), mArchiveNumber(0), //
+                  mIdealFrameInterval(0), //
+                  mLoadMode(FileIO::Manager::MODE_DIRECT_FIRST), //
+                  mPreviousFrameInterval(0), mFrameRate(0), //
+                  mEndRequested(false), mStarted(false) {
                 // cout初始化
                 cout.begin();
                 // 帧历史记录重置
@@ -187,6 +193,7 @@ namespace GameLib {
             int mFrameRate;
             bool mEndRequested;
             bool mStarted;
+            unsigned mIdealFrameInterval;
             Scene::StringRenderer mDebugStringRenderer;
             Scene::Font mDebugFont;
         };
@@ -466,7 +473,8 @@ namespace GameLib {
     unsigned Framework::time() const { return WindowCreator().time(); }
     void Framework::sleep(int ms) const { Threading::sleep(ms); }
     bool Framework::isKeyOn(int c) const { return Input::Manager().keyboard().isOn(c); }
-
+    void Framework::setFrameRate(int fr) { gImpl->mIdealFrameInterval = 1000 / fr; }
+    int Framework::frameRate() const { return gImpl->mFrameRate; }
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();

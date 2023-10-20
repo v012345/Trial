@@ -1,6 +1,9 @@
 ﻿#include "State.h"
 #include "Image.h"
 
+#include "../Games/Framework.h"
+using namespace GameLib;
+
 // 对象类
 class State::Object {
   public:
@@ -65,9 +68,10 @@ class State::Object {
             id = IMAGE_ID_PLAYER;
         }
         if (id != IMAGE_ID_SPACE) { // 背景以外
+            const int m = State::MAX_MOVE_COUNT; // 太长了使用别名
             // 计算移动
-            int dx = mMoveX * (32 - moveCount);
-            int dy = mMoveY * (32 - moveCount);
+            int dx = (mMoveX * (m - moveCount) * 32) / m;
+            int dy = (mMoveY * (m - moveCount) * 32) / m;
             image->draw(x * 32 - dx, y * 32 - dy, id * 32, 0, 32, 32);
         }
     }
@@ -116,13 +120,9 @@ State::State(const char* stageData, int size) : mImage(0), mMoveCount(0) {
     mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "nimotsuKunImage2.dds");
 }
 
-State::~State() {
-    delete mImage;
-    mImage = 0;
-}
+State::~State() { SAFE_DELETE(mImage); }
 
 void State::setSize(const char* stageData, int size) {
-    const char* d = stageData; // 读取指针
     mWidth = mHeight = 0; // 初始化
     // 当前位置
     int x = 0;
@@ -159,8 +159,8 @@ void State::draw() const {
 }
 
 void State::update(int dx, int dy) {
-    // 如果移动计数达到32
-    if (mMoveCount == 32) {
+    // 当移动计数达到MAX_MOVE_COUNT
+    if (mMoveCount >= MAX_MOVE_COUNT) {
         mMoveCount = 0; //
         // 初始化移动
         for (int y = 0; y < mHeight; ++y) {

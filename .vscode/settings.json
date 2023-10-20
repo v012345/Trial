@@ -78,7 +78,11 @@
         "chrono": "cpp",
         "random": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "array": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "string_view": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"
