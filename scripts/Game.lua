@@ -79,6 +79,15 @@ function Game:loadBackground()
     end
 end
 
+function Game:checkClear()
+    for _, box in ipairs(self.boxes) do
+        if self.Background[box.y][box.x] ~= Enum.goal then
+            return false
+        end
+    end
+    return true
+end
+
 function Game:dumpBackground()
     for _, v in ipairs(self.Background) do
         for _, o in ipairs(v) do
@@ -235,32 +244,35 @@ function Game:canMoveTo(toX, toY, dx, dy)
 end
 
 function Game:dealInput()
-    local dx = 0
-    local dy = 0
-    if Framework.isKeyOn(Keyboard.A) then
-        dx = -1
-    end
-    if Framework.isKeyOn(Keyboard.S) then
-        dy = 1
-    end
-    if Framework.isKeyOn(Keyboard.D) then
-        dx = 1
-    end
-    if Framework.isKeyOn(Keyboard.W) then
-        dy = -1
-    end
-    if dx ~= 0 or dy ~= 0 then
-        if not self.player.isMoving then
-            local toX, toY = self.player.x + dx, self.player.y + dy
-            if self:canMoveTo(toX, toY, dx, dy) then
-                if self:isBox(toX, toY) then
-                    local box = self:getBoxAt(toX, toY)
-                    box:moveTo(toX + dx, toY + dy)
+    if not self:checkClear() then
+        local dx = 0
+        local dy = 0
+        if Framework.isKeyOn(Keyboard.A) then
+            dx = -1
+        end
+        if Framework.isKeyOn(Keyboard.S) then
+            dy = 1
+        end
+        if Framework.isKeyOn(Keyboard.D) then
+            dx = 1
+        end
+        if Framework.isKeyOn(Keyboard.W) then
+            dy = -1
+        end
+        if dx ~= 0 or dy ~= 0 then
+            if not self.player.isMoving then
+                local toX, toY = self.player.x + dx, self.player.y + dy
+                if self:canMoveTo(toX, toY, dx, dy) then
+                    if self:isBox(toX, toY) then
+                        local box = self:getBoxAt(toX, toY)
+                        box:moveTo(toX + dx, toY + dy)
+                    end
+                    self.player:moveTo(toX, toY)
                 end
-                self.player:moveTo(toX, toY)
             end
         end
     end
+
 
     if Framework.isKeyOn(Keyboard.Q) then
 
