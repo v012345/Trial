@@ -9,6 +9,7 @@ xpcall(function()
     Game:loadEntities(map)
     Game:dumpEntities()
     Game:dumpMapWithEmoji()
+    Game:loadRenderImage(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
     function MainLoop()
 
     end

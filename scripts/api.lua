@@ -8,7 +8,8 @@ function SetConsoleCursorPosition(column, line) end
 ---@diagnostic disable-next-line
 function _getch() return 0 end
 
-CMAKE_SOURCE_DIR = "源码目录"
+---源码目录
+CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}/"
 
 Impl = {}
 ---在窗口的指定位置画一个点

@@ -6,14 +6,18 @@ function Game:loadBackground(map)
             if obj == ENUM.box then
                 row[#row + 1] = ENUM.ground
             elseif obj == ENUM.player then
-                -- Game.player.x = x
-                -- Game.player.y = y
                 row[#row + 1] = ENUM.ground
             else
                 row[#row + 1] = obj
             end
         end
-        Game.background[#Game.background + 1] = row
+        self.background[#self.background + 1] = row
+    end
+    self.renderBackground = {}
+    for y, xRow in ipairs(self.background) do
+        for x, obj in ipairs(xRow) do
+
+        end
     end
 end
 
@@ -80,4 +84,12 @@ function Game:dumpMapWithEmoji()
         end
         io.write("\n")
     end
+end
+
+function Game:drawBackground()
+
+end
+
+function Game:loadRenderImage(path)
+
 end
