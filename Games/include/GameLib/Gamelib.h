@@ -2,11 +2,11 @@
 #define INCLUDED_GAMELIB_GAMELIB_H
 
 namespace GameLib {
-enum Exception {
-    EXCEPTION_IGNORE,
-    EXCEPTION_EXIT,
-};
-void halt(const char* filename, int line, const char* message);
+    enum Exception {
+        EXCEPTION_IGNORE,
+        EXCEPTION_EXIT,
+    };
+    void halt(const char* filename, int line, const char* message);
 } // namespace GameLib
 
 // 宏
@@ -31,12 +31,9 @@ void halt(const char* filename, int line, const char* message);
 
 // 判断调试和发布的分支
 #ifndef NDEBUG
-// #define NEW new( __FILE__, __LINE__ )
-// #define OPERATOR_NEW( x ) operator new( ( x ), __FILE__, __LINE__ )
-// #define ASSERT( exp ) ( ( !! ( exp ) ) || ( GameLib::halt( __FILE__, __LINE__, #exp ), 0 ) )
-#define NEW new
-#define OPERATOR_NEW(x) operator new(x)
-#define ASSERT(exp)
+#define NEW new (__FILE__, __LINE__)
+#define OPERATOR_NEW(x) operator new((x), __FILE__, __LINE__)
+#define ASSERT(exp) ((!!(exp)) || (GameLib::halt(__FILE__, __LINE__, #exp), 0))
 #else // NDEBUG
 #define NEW new
 #define OPERATOR_NEW(x) operator new(x)
@@ -48,7 +45,7 @@ void halt(const char* filename, int line, const char* message);
 #include "Base/DebugStream.h"
 //  #include "Base/AutoPtr.h"
 //  #include "Base/SharedPtr.h"
- #include "Base/MemoryManager.h"
+#include "Base/MemoryManager.h"
 #include <new>
 
 #endif
