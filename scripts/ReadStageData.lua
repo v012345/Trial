@@ -7,15 +7,15 @@ while rawStageData do
     for i = 1, #rawStageData do
         local char = string.sub(rawStageData, i, i)
         if char == " " then
-            row[#row + 1] = ENUM.ground
+            row[#row + 1] = Enum.ground
         elseif char == "#" then
-            row[#row + 1] = ENUM.wall
+            row[#row + 1] = Enum.wall
         elseif char == "p" then
-            row[#row + 1] = ENUM.player
+            row[#row + 1] = Enum.player
         elseif char == "." then
-            row[#row + 1] = ENUM.goal
+            row[#row + 1] = Enum.goal
         elseif char == "o" then
-            row[#row + 1] = ENUM.box
+            row[#row + 1] = Enum.box
         else
             error(string.format("wrong char '%s' at line %s:%s", char, #map + 1, i))
         end

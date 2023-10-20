@@ -1,4 +1,4 @@
-ENUM = {
+Enum = {
     wall = 1,
     box = 2,
     player = 3,

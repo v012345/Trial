@@ -7,10 +7,10 @@ function Game:loadBackground(map)
     for _, v in ipairs(map) do
         local row = {}
         for _, obj in ipairs(v) do
-            if obj == ENUM.box then
-                row[#row + 1] = ENUM.ground
-            elseif obj == ENUM.player then
-                row[#row + 1] = ENUM.ground
+            if obj == Enum.box then
+                row[#row + 1] = Enum.ground
+            elseif obj == Enum.player then
+                row[#row + 1] = Enum.ground
             else
                 row[#row + 1] = obj
             end
@@ -42,7 +42,7 @@ function Game:loadEntities(map)
     self.box = {}
     for y, v in ipairs(map) do
         for x, obj in ipairs(v) do
-            if obj == ENUM.box then
+            if obj == Enum.box then
                 local box = {
                     x = x,
                     y = y,
@@ -50,7 +50,7 @@ function Game:loadEntities(map)
                     screenY = (y - 1) * self.SpriteSize
                 }
                 self.box[#self.box + 1] = box
-            elseif obj == ENUM.player then
+            elseif obj == Enum.player then
                 Player.x = x
                 Player.y = y
                 Player.screenX = (x - 1) * self.SpriteSize
@@ -69,12 +69,12 @@ end
 
 function Game:dumpMapWithEmoji()
     local EmojiEntity = {
-        [ENUM.box] = "📦",
-        [ENUM.empty] = "⬜",
-        [ENUM.goal] = "🔴",
-        [ENUM.ground] = "⬛",
-        [ENUM.player] = "😁",
-        [ENUM.wall] = "🧱",
+        [Enum.box] = "📦",
+        [Enum.empty] = "⬜",
+        [Enum.goal] = "🔴",
+        [Enum.ground] = "⬛",
+        [Enum.player] = "😁",
+        [Enum.wall] = "🧱",
     }
     local EmojiMap = {}
     for _, xRow in ipairs(self.background) do
@@ -86,9 +86,9 @@ function Game:dumpMapWithEmoji()
     end
 
     for _, box in ipairs(self.box) do
-        EmojiMap[box.y][box.x] = EmojiEntity[ENUM.box]
+        EmojiMap[box.y][box.x] = EmojiEntity[Enum.box]
     end
-    EmojiMap[Player.y][Player.x] = EmojiEntity[ENUM.player]
+    EmojiMap[Player.y][Player.x] = EmojiEntity[Enum.player]
     for _, xRow in ipairs(EmojiMap) do
         for _, emoji in ipairs(xRow) do
             io.write(emoji)
@@ -105,7 +105,7 @@ end
 
 function Game:drawEntities()
     for _, box in ipairs(self.box) do
-        Framework:draw(self.renderEntity[ENUM.box], box.screenX, box.screenY, false)
+        Framework:draw(self.renderEntity[Enum.box], box.screenX, box.screenY, false)
     end
 end
 
@@ -133,12 +133,12 @@ function Game:loadRenderImage(path)
         empty[#empty + 1] = row
     end
     self.renderEntity = {}
-    self.renderEntity[ENUM.player] = slice(png, 1, self.SpriteSize)
-    self.renderEntity[ENUM.wall] = slice(png, 1 + self.SpriteSize, self.SpriteSize * 2)
-    self.renderEntity[ENUM.box] = slice(png, 1 + self.SpriteSize * 2, self.SpriteSize * 3)
-    self.renderEntity[ENUM.goal] = slice(png, 1 + self.SpriteSize * 3, self.SpriteSize * 4)
-    self.renderEntity[ENUM.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
-    self.renderEntity[ENUM.empty] = empty
+    self.renderEntity[Enum.player] = slice(png, 1, self.SpriteSize)
+    self.renderEntity[Enum.wall] = slice(png, 1 + self.SpriteSize, self.SpriteSize * 2)
+    self.renderEntity[Enum.box] = slice(png, 1 + self.SpriteSize * 2, self.SpriteSize * 3)
+    self.renderEntity[Enum.goal] = slice(png, 1 + self.SpriteSize * 3, self.SpriteSize * 4)
+    self.renderEntity[Enum.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
+    self.renderEntity[Enum.empty] = empty
 end
 
 function Game:dealInput()

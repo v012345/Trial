@@ -26,5 +26,5 @@ function Player:update(dt)
         self.dx = 0
         self.dy = 0
     end
-    Framework:draw(Game.renderEntity[ENUM.player], self.screenX, self.screenY, false)
+    Framework:draw(Game.renderEntity[Enum.player], self.screenX, self.screenY, false)
 end
