@@ -21,6 +21,7 @@ end
 
 ---@param path string
 function Game:readStageData(path)
+    self.StageDataPath = path
     local file = io.open(path, "r") or error("can't open " .. path)
     local rawStageData = file:read()
     while rawStageData do
@@ -278,6 +279,7 @@ function Game:dealInput()
         os.exit(0, true)
     end
     if Framework.isKeyOn(Keyboard.R) then
-
+        Game:init()
+        Game:readStageData(self.StageDataPath)
     end
 end
