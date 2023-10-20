@@ -51,3 +51,33 @@ function Game:dumpEntities()
         io.write(string.format("box at (%s,%s)\n", box.x, box.y))
     end
 end
+
+function Game:dumpMapWithEmoji()
+    local EmojiEntity = {
+        [ENUM.box] = "📦",
+        [ENUM.empty] = "⬜",
+        [ENUM.goal] = "🔴",
+        [ENUM.ground] = "⬛",
+        [ENUM.player] = "😁",
+        [ENUM.wall] = "🧱",
+    }
+    local EmojiMap = {}
+    for _, xRow in ipairs(self.background) do
+        local row = {}
+        for _, obj in ipairs(xRow) do
+            row[#row + 1] = EmojiEntity[obj]
+        end
+        EmojiMap[#EmojiMap + 1] = row
+    end
+
+    for _, box in ipairs(self.box) do
+        EmojiMap[box.y][box.x] = EmojiEntity[ENUM.box]
+    end
+    EmojiMap[self.player.y][self.player.x] = EmojiEntity[ENUM.player]
+    for _, xRow in ipairs(EmojiMap) do
+        for _, emoji in ipairs(xRow) do
+            io.write(emoji)
+        end
+        io.write("\n")
+    end
+end

@@ -8,6 +8,7 @@ xpcall(function()
     Game:dumpBackground()
     Game:loadEntities(map)
     Game:dumpEntities()
+    Game:dumpMapWithEmoji()
     function MainLoop()
 
     end
