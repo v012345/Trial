@@ -210,7 +210,7 @@ namespace GameLib {
         unsigned x = lua_tointeger(L, 2);
         unsigned y = lua_tointeger(L, 3);
         int pos = y * gImpl->mWidth + x;
-        if (pos <= gImpl->mWidth * gImpl->mHeight) {
+        if (pos >= 0 && pos <= gImpl->mWidth * gImpl->mHeight) {
             lua_pushinteger(L, vram[pos]);
         } else {
             lua_pushinteger(L, 0);
@@ -224,7 +224,7 @@ namespace GameLib {
         unsigned y = lua_tointeger(L, 3);
         unsigned c = lua_tointeger(L, 4);
         int pos = y * gImpl->mWidth + x;
-        if (pos <= gImpl->mWidth * gImpl->mHeight) { vram[pos] = c; }
+        if (pos >= 0 && pos <= gImpl->mWidth * gImpl->mHeight) { vram[pos] = c; }
 
         return 0;
     }
