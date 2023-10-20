@@ -1,6 +1,7 @@
 xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
+    require "RenderEntity"
     require "Engine"
     require "Enum"
     require "Game"

@@ -99,13 +99,13 @@ end
 
 function Game:drawBackground()
     for _, renderObj in ipairs(self.renderBackground) do
-        Framework:draw(self.renderEntity[renderObj.obj], renderObj.screenX, renderObj.screenY, true)
+        Framework:draw(RenderEntity[renderObj.obj], renderObj.screenX, renderObj.screenY, true)
     end
 end
 
 function Game:drawEntities()
     for _, box in ipairs(self.box) do
-        Framework:draw(self.renderEntity[Enum.box], box.screenX, box.screenY, false)
+        Framework:draw(RenderEntity[Enum.box], box.screenX, box.screenY, false)
     end
 end
 
@@ -113,7 +113,7 @@ function Game:loadRenderImage(path)
     local png = ReadPngFile(path)
     local function slice(IMAGE, fromX, toX)
         local res = {}
-        for y, xRow in ipairs(IMAGE) do
+        for _, xRow in ipairs(IMAGE) do
             local row = {}
             for x, argb in ipairs(xRow) do
                 if fromX <= x and x <= toX then
@@ -125,20 +125,19 @@ function Game:loadRenderImage(path)
         return res
     end
     local empty = {}
-    for i = 1, self.SpriteSize do
+    for _ = 1, self.SpriteSize do
         local row = {}
-        for j = 1, self.SpriteSize do
+        for _ = 1, self.SpriteSize do
             row[#row + 1] = 0
         end
         empty[#empty + 1] = row
     end
-    self.renderEntity = {}
-    self.renderEntity[Enum.player] = slice(png, 1, self.SpriteSize)
-    self.renderEntity[Enum.wall] = slice(png, 1 + self.SpriteSize, self.SpriteSize * 2)
-    self.renderEntity[Enum.box] = slice(png, 1 + self.SpriteSize * 2, self.SpriteSize * 3)
-    self.renderEntity[Enum.goal] = slice(png, 1 + self.SpriteSize * 3, self.SpriteSize * 4)
-    self.renderEntity[Enum.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
-    self.renderEntity[Enum.empty] = empty
+    RenderEntity[Enum.player] = slice(png, 1, self.SpriteSize)
+    RenderEntity[Enum.wall] = slice(png, 1 + self.SpriteSize, self.SpriteSize * 2)
+    RenderEntity[Enum.box] = slice(png, 1 + self.SpriteSize * 2, self.SpriteSize * 3)
+    RenderEntity[Enum.goal] = slice(png, 1 + self.SpriteSize * 3, self.SpriteSize * 4)
+    RenderEntity[Enum.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
+    RenderEntity[Enum.empty] = empty
 end
 
 function Game:dealInput()
