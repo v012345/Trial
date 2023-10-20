@@ -71,12 +71,39 @@ function Game:loadEntities(map)
             if obj == ENUM.box then
                 local box = {
                     x = x,
-                    y = y
+                    y = y,
+                    screenX = (x - 1) * self.SpriteSize,
+                    screenY = (y - 1) * self.SpriteSize
                 }
                 self.box[#self.box + 1] = box
             elseif obj == ENUM.player then
                 self.player.x = x
                 self.player.y = y
+                self.player.screenX = (x - 1) * self.SpriteSize
+                self.player.screenY = (y - 1) * self.SpriteSize
+                self.player.isMoving = false
+                self.player.toX = x
+                self.player.toY = y
+            end
+        end
+    end
+    self.player.move = function(this, dx, dy)
+        if this.toX == this.x and this.toY == this.y then
+            this.toX = this.x + dx
+            this.toY = this.y + dy
+        end
+    end
+    self.player.update = function(this)
+        if this.toX ~= this.x or this.toY ~= this.y then
+            local dx = this.toX - this.x
+            local dy = this.toY - this.y
+            this.screenX = this.screenX + dx
+            this.screenY = this.screenY + dy
+            if this.toX * self.SpriteSize == this.screenX then
+                this.x = this.toX
+            end
+            if this.toY * self.SpriteSize == this.screenY then
+                this.y = this.toY
             end
         end
     end
@@ -125,6 +152,14 @@ function Game:drawBackground()
     end
 end
 
+function Game:drawEntities()
+    local player = self.player
+    self:drawImage(self.renderEntity[ENUM.player], player.screenX, player.screenY, false)
+    for _, box in ipairs(self.box) do
+        self:drawImage(self.renderEntity[ENUM.box], box.screenX, box.screenY, false)
+    end
+end
+
 function Game:loadRenderImage(path)
     local png = ReadPngFile(path)
     local function slice(IMAGE, fromX, toX)
@@ -156,4 +191,25 @@ function Game:loadRenderImage(path)
     self.renderEntity[ENUM.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
     self.renderEntity[ENUM.empty] = empty
     -- self:drawImage(self.renderEntity[ENUM.box], 0, 0, true)
+end
+
+function Game:dealInput()
+    if Framework.isKeyOn(Keyboard.A) then
+        self.player:move(-1, 0)
+    end
+    if Framework.isKeyOn(Keyboard.S) then
+        self.player:move(0, 1)
+    end
+    if Framework.isKeyOn(Keyboard.D) then
+        self.player:move(1, 0)
+    end
+    if Framework.isKeyOn(Keyboard.W) then
+        self.player:move(0, -1)
+    end
+    if Framework.isKeyOn(Keyboard.Q) then
+
+    end
+    if Framework.isKeyOn(Keyboard.R) then
+
+    end
 end
