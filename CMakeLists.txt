@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory("libs")
 add_subdirectory("lua/src")
 add_subdirectory("extensions")
+
 # add_subdirectory("tools")
 add_subdirectory("Games")
 add_subdirectory("example")
@@ -19,9 +20,9 @@ target_link_libraries(Main
     lfs
     png_shared
 )
-target_include_directories(Main PRIVATE
-    lua/src
-)
+
+# 把是显示找不到, 所以直接写出路径了
+# target_include_directories(Main PRIVATE lua/src)
 target_compile_definitions(Main PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/job/main.lua"
     LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/job/?.lua"
