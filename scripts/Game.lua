@@ -9,9 +9,12 @@ function Game:init()
     ---@type table<integer,Entity>
     self.ForegroundEntities = {}
     self.PreviousTime = {}
+    ---@type Entity
+    self.player = {}
     for i = 1, 10, 1 do
         self.PreviousTime[i] = Framework.time()
     end
+    self.iCounter = 0
 end
 
 ---@param path string
@@ -96,7 +99,11 @@ function Game:loadForeground()
                     eRenderEntity = obj,
                     isBackground = false
                 }
-                self.ForegroundEntities[#self.ForegroundEntities + 1] = CreateEntity(box)
+                local entity = CreateEntity(box)
+                if obj == Enum.player then
+                    self.player = entity
+                end
+                self.ForegroundEntities[#self.ForegroundEntities + 1] = entity
             end
         end
     end
@@ -181,16 +188,16 @@ end
 
 function Game:dealInput()
     if Framework.isKeyOn(Keyboard.A) then
-        -- Player:move(-1, 0)
+        self.player:move(-1, 0)
     end
     if Framework.isKeyOn(Keyboard.S) then
-        -- Player:move(0, 1)
+        self.player:move(0, 1)
     end
     if Framework.isKeyOn(Keyboard.D) then
-        -- Player:move(1, 0)
+        self.player:move(1, 0)
     end
     if Framework.isKeyOn(Keyboard.W) then
-        -- Player:move(0, -1)
+        self.player:move(0, -1)
     end
     if Framework.isKeyOn(Keyboard.Q) then
 
