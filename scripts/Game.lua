@@ -1,3 +1,4 @@
+Game.SpriteSize = 32
 function Game:drawImage(IMAGE, atX, atY, isBG)
     for y, row in ipairs(IMAGE) do
         for x, argb in ipairs(row) do
@@ -134,19 +135,19 @@ function Game:loadRenderImage(path)
         return res
     end
     local empty = {}
-    for i = 1, 32 do
+    for i = 1, self.SpriteSize do
         local row = {}
-        for j = 1, 32 do
+        for j = 1, self.SpriteSize do
             row[#row + 1] = 0
         end
         empty[#empty + 1] = row
     end
     self.renderEntity = {}
-    self.renderEntity[ENUM.player] = slice(png, 1 + 32 * 0, 32 + 32 * 0)
-    self.renderEntity[ENUM.wall] = slice(png, 1 + 32 * 1, 32 + 32 * 1)
-    self.renderEntity[ENUM.box] = slice(png, 1 + 32 * 2, 32 + 32 * 2)
-    self.renderEntity[ENUM.goal] = slice(png, 1 + 32 * 3, 32 + 32 * 3)
-    self.renderEntity[ENUM.ground] = slice(png, 1 + 32 * 4, 32 + 32 * 4)
+    self.renderEntity[ENUM.player] = slice(png, 1, self.SpriteSize)
+    self.renderEntity[ENUM.wall] = slice(png, 1 + self.SpriteSize, self.SpriteSize * 2)
+    self.renderEntity[ENUM.box] = slice(png, 1 + self.SpriteSize * 2, self.SpriteSize * 3)
+    self.renderEntity[ENUM.goal] = slice(png, 1 + self.SpriteSize * 3, self.SpriteSize * 4)
+    self.renderEntity[ENUM.ground] = slice(png, 1 + self.SpriteSize * 4, self.SpriteSize * 5)
     self.renderEntity[ENUM.empty] = empty
     -- self:drawImage(self.renderEntity[ENUM.box], 0, 0, true)
 end
