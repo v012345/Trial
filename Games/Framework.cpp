@@ -475,6 +475,8 @@ namespace GameLib {
     bool Framework::isKeyOn(int c) const { return Input::Manager().keyboard().isOn(c); }
     void Framework::setFrameRate(int fr) { gImpl->mIdealFrameInterval = 1000 / fr; }
     int Framework::frameRate() const { return gImpl->mFrameRate; }
+    bool Framework::isKeyTriggered(int c) const { return Input::Manager().keyboard().isTriggered(c); }
+
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();

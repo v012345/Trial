@@ -1,8 +1,9 @@
-﻿#include "State.h"
-#include "Image.h"
-
-#include "../Games/Framework.h"
+﻿#include "Games/Framework.h"
+#include "GameLib/Gamelib.h"
 using namespace GameLib;
+
+#include "Image.h"
+#include "State.h"
 
 // 对象类
 class State::Object {
@@ -88,18 +89,34 @@ class State::Object {
     int mMoveY;
 };
 
-State::State(const char* stageData, int size) : mImage(0), mMoveCount(0) {
+State::State(const char* stageData, int size) : mImage(0), mMoveCount(0), mStageData(0), mStageDataSize(size) {
+    // 复制舞台数据以进行reset（）
+    mStageData = new char[size + 1]; // 0末尾部分。
+    for (int i = 0; i < size; ++i) { mStageData[i] = stageData[i]; }
+    mStageData[size] = '\0'; // NULL终止
+    // 初始化舞台
+    reset();
+    // 图片载入
+    mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "data/image/nimotsuKunImage2.dds");
+}
+
+State::~State() {
+    SAFE_DELETE(mImage);
+    SAFE_DELETE_ARRAY(mStageData); // 不要忘记
+}
+
+void State::reset() {
     // 尺寸测量
-    setSize(stageData, size);
+    setSize();
     // 数组分配
     mObjects.setSize(mWidth, mHeight);
     // 初始化舞台
     int x = 0;
     int y = 0;
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < mStageDataSize; ++i) {
         Object t;
         bool goalFlag = false;
-        switch (stageData[i]) {
+        switch (mStageData[i]) {
             case '#':
             case ' ':
             case 'o':
@@ -107,7 +124,7 @@ State::State(const char* stageData, int size) : mImage(0), mMoveCount(0) {
             case '.':
             case 'p':
             case 'P':
-                mObjects(x, y).set(stageData[i]);
+                mObjects(x, y).set(mStageData[i]);
                 ++x;
                 break;
             case '\n':
@@ -116,19 +133,15 @@ State::State(const char* stageData, int size) : mImage(0), mMoveCount(0) {
                 break; // 换行处理
         }
     }
-    // 图片载入
-    mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "nimotsuKunImage2.dds");
 }
 
-State::~State() { SAFE_DELETE(mImage); }
-
-void State::setSize(const char* stageData, int size) {
+void State::setSize() {
     mWidth = mHeight = 0; // 初始化
     // 当前位置
     int x = 0;
     int y = 0;
-    for (int i = 0; i < size; ++i) {
-        switch (stageData[i]) {
+    for (int i = 0; i < mStageDataSize; ++i) {
+        switch (mStageData[i]) {
             case '#':
             case ' ':
             case 'o':

@@ -1,5 +1,5 @@
 
-file(GLOB SRCS *.cpp)
+file(GLOB_RECURSE SRCS *.cpp)
 add_executable(Book WIN32
     ${SRCS}
     "../Games/src/WindowCreator/WindowCreator.cpp"
@@ -7,6 +7,8 @@ add_executable(Book WIN32
 target_include_directories(Book PRIVATE
     "../Games/src"
     "../Games/include"
+    ".."
+    "."
 )
 
 target_compile_definitions(Book PRIVATE

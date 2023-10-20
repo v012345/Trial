@@ -37,6 +37,8 @@ namespace GameLib {
         void sleep(int milliSeconds) const;
         // 输入
         bool isKeyOn(int c) const;
+        /// 输入（瞬间）
+        bool isKeyTriggered(int c) const;
         /// 帧速率设置（内部可循环等待）
         void setFrameRate(int);
         /// 获得帧速率
