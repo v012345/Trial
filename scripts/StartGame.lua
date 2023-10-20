@@ -6,7 +6,8 @@ xpcall(function()
     local map = require "ReadStageData"
     Game:loadBackground(map)
     Game:dumpBackground()
-
+    Game:loadEntities(map)
+    Game:dumpEntities()
     function MainLoop()
 
     end

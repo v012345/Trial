@@ -44,3 +44,10 @@ function Game:loadEntities(map)
         end
     end
 end
+
+function Game:dumpEntities()
+    io.write(string.format("player at (%s,%s)\n", self.player.x, self.player.y))
+    for _, box in ipairs(self.box) do
+        io.write(string.format("box at (%s,%s)\n", box.x, box.y))
+    end
+end
