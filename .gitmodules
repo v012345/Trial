@@ -7,3 +7,6 @@
 [submodule "libs/CMake"]
 	path = libs/CMake
 	url = git@github.com:Kitware/CMake.git
+[submodule "extensions/luafilesystem"]
+	path = extensions/luafilesystem
+	url = git@github.com:lunarmodules/luafilesystem.git
