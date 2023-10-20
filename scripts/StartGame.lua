@@ -1,7 +1,8 @@
 xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
-    require "enum"
+    require "Engine"
+    require "Enum"
     require "Game"
     local map = require "ReadStageData"
     Game:loadBackground(map)

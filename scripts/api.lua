@@ -63,3 +63,9 @@ Game = {
     --背景
     background = {}
 }
+---@class Image
+Image = {
+    { 0xffff0000, 0xffff0000, 0xffff0000 },
+    { 0xffff0000, 0xffff0000, 0xffff0000 },
+    { 0xffff0000, 0xffff0000, 0xffff0000 },
+}
