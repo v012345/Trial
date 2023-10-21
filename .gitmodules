@@ -10,3 +10,6 @@
 [submodule "extensions/luafilesystem"]
 	path = extensions/luafilesystem
 	url = git@github.com:lunarmodules/luafilesystem.git
+[submodule "libs/freetype"]
+	path = libs/freetype
+	url = git@github.com:freetype/freetype.git
