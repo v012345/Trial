@@ -1,0 +1,12 @@
+xpcall(function()
+    os.execute("chcp 65001 > NUL")
+    print("Hello 👋")
+    require "init"
+    Game:init()
+    Game:readStageData(CMAKE_SOURCE_DIR .. "example/data/stageData/1.txt")
+    Game:loadRenderImage(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
+    Game:dumpBackground()
+    Game:dumpMapWithEmoji()
+end, function(msg)
+    print(msg)
+end)
