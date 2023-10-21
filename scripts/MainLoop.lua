@@ -15,9 +15,10 @@ function MainLoop()
         --     print(Game.iCounter // 60, "frameInterval:", frameInterval10 / 10)
         --     print(Game.iCounter // 60, " FrameRate:", 10 * 1000 / frameInterval10)
         -- end
-        Game:dealInput()
-        Game:update()
-        Game.iCounter = Game.iCounter + 1
+        -- Game:dealInput()
+        -- Game:update()
+        -- Game.iCounter = Game.iCounter + 1
+        SceneManager:update()
     end, function(msg)
         print(msg)
     end)

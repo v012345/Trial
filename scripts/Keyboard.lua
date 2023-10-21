@@ -5,4 +5,5 @@ Keyboard = {
     W = 119,
     Q = 113,
     R = 114,
+    Space = 32,
 }
