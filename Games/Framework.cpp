@@ -370,9 +370,9 @@ namespace GameLib {
         int height = lua_tointeger(L, 3);
         unsigned color = lua_tointeger(L, 4);
         const char* font = lua_tostring(L, 5);
-        unsigned A = 0x00ff000000;
-        unsigned R = color & 0x00ff0000;
-        unsigned G = color & 0x0000ff00;
+        unsigned A = 0xff;
+        unsigned R = (color & 0x00ff0000);
+        unsigned G = (color & 0x0000ff00);
         unsigned B = color & 0x000000ff;
 
         // 初始化FreeType库
@@ -408,10 +408,11 @@ namespace GameLib {
             lua_newtable(L);
             for (int x = 0; x < bitmap.width; x++) {
                 unsigned char pixel_value = bitmap.buffer[y * bitmap.width + x];
-                unsigned a = ((A * pixel_value / 255) << 8) & 0xff000000;
+                unsigned a = ((A * pixel_value / 255) << 24) & 0xff000000;
                 unsigned r = (R * pixel_value / 255) & 0x00ff0000;
                 unsigned g = (G * pixel_value / 255) & 0x0000ff00;
                 unsigned b = (B * pixel_value / 255) & 0x000000ff;
+
                 lua_pushinteger(L, x + 1);
                 lua_pushinteger(L, a | r | g | b);
                 lua_settable(L, -3);
