@@ -361,10 +361,68 @@ namespace GameLib {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
         return 0;
     }
+    static int lua_getFontBmp(lua_State* L) {
+        FT_Library library;
+        FT_Face face;
+        FT_Error error;
+        int unicode = lua_tointeger(L, 1);
+        int width = lua_tointeger(L, 2);
+        int height = lua_tointeger(L, 3);
+        const char* font = lua_tostring(L, 4);
+        // 初始化FreeType库
+        if (FT_Init_FreeType(&library)) {
+            fprintf(stderr, "Failed to initialize FreeType library\n");
+            return 1;
+        }
+
+        // 打开TTF字体文件
+        if (FT_New_Face(library, font, 0, &face)) {
+            fprintf(stderr, "Failed to open font file\n");
+            FT_Done_FreeType(library);
+            return 1;
+        }
+
+        // 设置字符大小
+        FT_Set_Pixel_Sizes(face, width, height);
+
+        // 加载字符图像
+        if (FT_Load_Char(face, unicode, FT_LOAD_RENDER)) {
+            fprintf(stderr, "Failed to load character 'A'\n");
+            FT_Done_Face(face);
+            FT_Done_FreeType(library);
+            return 1;
+        }
+
+        // 获取字符的位图
+        FT_Bitmap bitmap = face->glyph->bitmap;
+        lua_newtable(L);
+        // 将字符位图保存为BMP文件
+        for (int y = 0; y < bitmap.rows; y++) {
+            lua_pushinteger(L, y + 1);
+            lua_newtable(L);
+            for (int x = 0; x < bitmap.width; x++) {
+                unsigned char pixel_value = bitmap.buffer[y * bitmap.width + x];
+                lua_pushinteger(L, x + 1);
+                if (pixel_value != 0) {
+                    lua_pushinteger(L, 1);
+                } else {
+                    lua_pushinteger(L, 0);
+                }
+                lua_settable(L, -3);
+                // 在这里处理像素值，可以输出到屏幕、保存到文件等
+            }
+            lua_settable(L, -3);
+        }
+        // 释放资源
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
+    }
     static int luaopen_cfuncs(lua_State* L) {
         lua_register(L, "ReadPngFile", lua_ReadPngFile);
         lua_register(L, "_getch", Lua__getch);
         lua_register(L, "SetConsoleCursorPosition", Lua_SetConsoleCursorPosition);
+        lua_register(L, "GetFontBmp", lua_getFontBmp);
         return 1;
     }
     static int luaopen_Impl(lua_State* L, Impl* gImpl) {
