@@ -368,7 +368,13 @@ namespace GameLib {
         int unicode = lua_tointeger(L, 1);
         int width = lua_tointeger(L, 2);
         int height = lua_tointeger(L, 3);
-        const char* font = lua_tostring(L, 4);
+        unsigned color = lua_tointeger(L, 4);
+        const char* font = lua_tostring(L, 5);
+        unsigned A = 0x00ff000000;
+        unsigned R = color & 0x00ff0000;
+        unsigned G = color & 0x0000ff00;
+        unsigned B = color & 0x000000ff;
+
         // 初始化FreeType库
         if (FT_Init_FreeType(&library)) {
             fprintf(stderr, "Failed to initialize FreeType library\n");
@@ -402,12 +408,12 @@ namespace GameLib {
             lua_newtable(L);
             for (int x = 0; x < bitmap.width; x++) {
                 unsigned char pixel_value = bitmap.buffer[y * bitmap.width + x];
+                unsigned a = ((A * pixel_value / 255) << 8) & 0xff000000;
+                unsigned r = (R * pixel_value / 255) & 0x00ff0000;
+                unsigned g = (G * pixel_value / 255) & 0x0000ff00;
+                unsigned b = (B * pixel_value / 255) & 0x000000ff;
                 lua_pushinteger(L, x + 1);
-                if (pixel_value != 0) {
-                    lua_pushinteger(L, 1);
-                } else {
-                    lua_pushinteger(L, 0);
-                }
+                lua_pushinteger(L, a | r | g | b);
                 lua_settable(L, -3);
                 // 在这里处理像素值，可以输出到屏幕、保存到文件等
             }

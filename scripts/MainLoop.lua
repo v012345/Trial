@@ -18,6 +18,7 @@ function MainLoop()
         Game:dealInput()
         Game:update()
         Game.iCounter = Game.iCounter + 1
+        Framework:string("我i爱你", 60, 60, 0, 20)
     end, function(msg)
         print(msg)
     end)

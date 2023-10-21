@@ -71,3 +71,21 @@ StageData = {
     { 0, 0, 0 },
     { 0, 0, 0 }
 }
+
+---@class BitMatrix
+BitMatrix = {
+    { 0, 0, 0 },
+    { 0, 0, 0 },
+    { 0, 0, 0 }
+}
+
+---comment
+---@param char integer unicode
+---@param width integer
+---@param height integer
+---@param color integer
+---@param font string
+---@return BitMatrix
+function GetFontBmp(char, width, height, color, font)
+    return BitMatrix
+end
