@@ -9,9 +9,9 @@ end
 
 function Title:update()
     Impl:clear()
-    Framework:string("推箱子", 10, 10, 30, 30, 0xffffff)
+    Framework:string("欢迎游玩推箱子", 10, 10, 30, 30, 0xffffff)
     if Framework.isKeyTriggered(Keyboard.Space) then
-        SceneManager:load("Game")
+        SceneManager:load("Stage")
     end
 end
 

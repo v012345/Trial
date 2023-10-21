@@ -16,6 +16,7 @@ function SceneManager:load(path)
         scene:destroy()
         package.loaded[v] = nil
     end
+    self.mScenes = {}
     local loadScene = "Scene." .. path
     self.mScenes[#self.mScenes + 1] = loadScene
     self.mCurrentScence = require(loadScene)
