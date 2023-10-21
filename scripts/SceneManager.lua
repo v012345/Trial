@@ -1,6 +1,6 @@
 SceneManager = {
     mScenes = {},
-    mLoading = require "Scene.Loading",
+    mLoading = require "Scenes.Loading",
 }
 function SceneManager:init()
     self.mCurrentScence = self.mLoading
@@ -17,7 +17,7 @@ function SceneManager:load(path)
         package.loaded[v] = nil
     end
     self.mScenes = {}
-    local loadScene = "Scene." .. path
+    local loadScene = "Scenes." .. path
     self.mScenes[#self.mScenes + 1] = loadScene
     self.mCurrentScence = require(loadScene)
     self.mCurrentScence:init()
