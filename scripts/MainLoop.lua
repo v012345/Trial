@@ -19,6 +19,7 @@ function MainLoop()
         -- Game:update()
         -- Game.iCounter = Game.iCounter + 1
         SceneManager:update()
+        ViewManager:update()
     end, function(msg)
         print(msg)
     end)

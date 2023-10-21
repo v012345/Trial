@@ -4,6 +4,7 @@ xpcall(function()
     require "init"
     Game:init()
     SceneManager:init()
+    ViewManager:init()
     SceneManager:load("Title")
     -- Game:readStageData(CMAKE_SOURCE_DIR .. "example/data/stageData/1.txt")
     -- Game:loadRenderImage(CMAKE_SOURCE_DIR .. "res/nimotsuKunImageAlpha.png")
