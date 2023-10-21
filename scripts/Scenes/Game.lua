@@ -5,7 +5,7 @@ function Game:init()
     self.showMenu = false
     self.Menu = require "Views.Menu"
 
-    self.SpriteSize = 32
+    self.SpriteSize = Framework.SpriteSize
     ---@type StageData
     self.StageData = {}
     ---@type StageData
@@ -284,9 +284,9 @@ function Game:dealInput()
             end
         end
     end
-    if Framework.isKeyOn(Keyboard.R) then
-        Game:init()
-        Game:readStageData(self.StageDataPath)
+    if Framework.isKeyTriggered(Keyboard.R) then
+        self:init()
+        self:readStageData(self.StageDataPath)
     elseif Framework.isKeyTriggered(Keyboard.E) then
         ViewManager:show("Menu")
     end

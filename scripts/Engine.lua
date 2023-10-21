@@ -2,6 +2,7 @@ Framework.PreviousTime = {}
 for i = 1, 10, 1 do
     Framework.PreviousTime[i] = Framework.time()
 end
+Framework.SpriteSize = 32
 ---在 (atX,atY) 画 what
 ---@param what Image
 ---@param atX integer

@@ -19,8 +19,8 @@ function CreateEntity(data)
         self.isMoving = true
         self.x = toX
         self.y = toY
-        self.toScreenX = (toX - 1) * Game.SpriteSize
-        self.toScreenY = (toY - 1) * Game.SpriteSize
+        self.toScreenX = (toX - 1) * Framework.SpriteSize
+        self.toScreenY = (toY - 1) * Framework.SpriteSize
     end
 
     function Entity:update(dt)

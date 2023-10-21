@@ -2,7 +2,6 @@ xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
     require "init"
-    Game:init()
     SceneManager:init()
     ViewManager:init()
     SceneManager:load("Title")
