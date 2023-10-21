@@ -39,7 +39,7 @@ function Game:readStageData(path)
             elseif char == "o" then
                 row[#row + 1] = Enum.box
             else
-                error(string.format("wrong char '%s' at line %s:%s", char, #map + 1, i))
+                error(string.format("wrong char '%s' at line %s:%s", char, #self.StageData + 1, i))
             end
         end
         self.StageData[#self.StageData + 1] = row
