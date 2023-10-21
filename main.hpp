@@ -1,4 +1,6 @@
 #include "libs/libpng/png.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include "lua/src/lua.hpp"
 // 防止自动格式换位置
 #include "Games/Framework.h"

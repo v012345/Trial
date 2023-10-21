@@ -82,7 +82,8 @@
         "array": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "lauxlib.h": "c"
     },
     "Lua.diagnostics.globals": [
         "lfs"

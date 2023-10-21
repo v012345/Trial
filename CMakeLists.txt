@@ -19,6 +19,7 @@ target_link_libraries(Main
     liblua
     lfs
     png_shared
+    freetype
 )
 
 # 把是显示找不到, 所以直接写出路径了

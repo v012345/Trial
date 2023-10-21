@@ -4,6 +4,9 @@
 #include "../lua/src/lua.hpp"
 //
 #include "../extensions/luafilesystem/src/lfs.h"
+//
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 namespace GameLib {
 
