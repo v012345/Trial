@@ -43,12 +43,14 @@ end
 ---@param width integer|nil
 ---@param height integer|nil
 ---@param color integer|nil
+---@param isBG boolean
 ---@param font string|nil
-function Framework:string(msg, atX, atY, width, height, color, font)
+function Framework:string(msg, atX, atY, width, height, color, isBG, font)
     width = width or 18
     height = height or 18
     font = font or CMAKE_SOURCE_DIR .. "res/MsYahei.ttf"
     color = color or 0x00ff0000
+    isBG = isBG or false
     local unicodes = {}
     local i = 1
     while i <= #msg do
@@ -81,7 +83,12 @@ function Framework:string(msg, atX, atY, width, height, color, font)
     end
     local offset = 0
     for _, bmp in ipairs(bmps) do
-        Framework:draw(bmp, atX + offset, atY, false)
+        Framework:draw(bmp, atX + offset, atY, isBG)
         offset = offset + #bmp[1]
     end
+end
+
+function Framework:showFPS()
+    local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
+    self:string(tostring(frameInterval10), Impl:width() - 50, 0, 14, 14, 0xffffff, true)
 end
