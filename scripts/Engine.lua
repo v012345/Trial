@@ -92,3 +92,16 @@ function Framework:showFPS()
     local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
     self:string(string.format("FPS:%s", frameInterval10 / 10), Impl:width() - 50, 10, 14, 14, 0xffffff, true)
 end
+
+function Framework:fixFPS()
+    local currentTime = self.time()
+    -- 这里有溢出问题
+    while currentTime - Framework.PreviousTime[10] < 16 do
+        currentTime = Framework.time()
+        Framework.sleep(1);
+    end
+    for i = 1, 9, 1 do
+        Framework.PreviousTime[i] = Framework.PreviousTime[i + 1];
+    end
+    Framework.PreviousTime[10] = currentTime
+end
