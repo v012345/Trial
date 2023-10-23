@@ -3,7 +3,10 @@ xpcall(function()
     print("Hello 👋")
     require "init"
     Framework:init()
-    local BlueMan = Sprite:new(require("Config.BlueMan"))
+    local BlueManSprite = Sprite:new(require("Config.BlueMan"))
+    local BlueManEntity = Entity:new({
+        Sprite = BlueManSprite
+    })
     -- local Link = require "Config.Boss"
     -- ViewManager:init()
     -- SceneManager:load("Title")
@@ -11,6 +14,7 @@ xpcall(function()
     function MainLoop()
         xpcall(function()
             Framework:fixFPS()
+            BlueManEntity:update()
             -- Impl:clear()
             -- x:update()
             -- if Framework.isKeyOn(Keyboard.A) then
