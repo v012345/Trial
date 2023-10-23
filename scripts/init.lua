@@ -1,3 +1,4 @@
+require "Class.init"
 require "Entity.Entity"
 require "Engine"
 require "Enum"
