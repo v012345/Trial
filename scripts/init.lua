@@ -1,6 +1,7 @@
-require "Entity"
+require "Entity.Entity"
 require "Engine"
 require "Enum"
 require "Keyboard"
 require "SceneManager"
+require "InputManager"
 require "ViewManager"
