@@ -13,17 +13,28 @@ function SpriteManager:create(data)
         actions = {},
         x = 400,
         y = 0,
-        canControl = true
+        oldX = 0,
+        oldY = 0,
+        canControl = true,
+        eToward = Direction.Left
     }
 
     function res:update()
         local now = Framework.time()
-        if now - self.lastUpdateAt > 42 then
+        local status = "idle"
+        if self.x ~= self.oldX or self.y ~= self.oldY then
+            status = "walk"
+        end
+        local actions = self.actions[self.eToward][status]
+
+        if now - self.lastUpdateAt > 125 then
             self.age = self.age + 1
             self.lastUpdateAt = now
-            self.looklike = self.actions[Direction.Left]["idle"][1]
+            self.looklike = actions[self.age % #actions + 1]
         end
-        Framework:draw(self.looklike, math.floor(self.x + 0.5), math.floor(self.y + 0.5), false)
+        Framework:draw(self.looklike, self.x, self.y, false)
+        self.oldX = self.x
+        self.oldY = self.y
     end
 
     function res:move(direction)
@@ -37,6 +48,7 @@ function SpriteManager:create(data)
         elseif direction == Direction.Right then
             dx = 1
         end
+        self.eToward = direction
         self.x = self.x + dx * self.velocity
         self.y = self.y + dy * self.velocity
     end

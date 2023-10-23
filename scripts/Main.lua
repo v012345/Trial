@@ -2,7 +2,7 @@ xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
     require "init"
-    local Link = require "Config.Link"
+    local Link = require "Config.Boss"
     ViewManager:init()
     SceneManager:load("Title")
     local x = SpriteManager:create(Link)
