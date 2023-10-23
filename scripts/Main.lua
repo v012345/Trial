@@ -18,8 +18,8 @@ xpcall(function()
                 Framework.PreviousTime[i] = Framework.PreviousTime[i + 1];
             end
             Framework.PreviousTime[10] = currentTime
-            SceneManager:update()
-            ViewManager:update()
+            -- SceneManager:update()
+            -- ViewManager:update()
             Framework:showFPS()
         end, function(msg)
             print(msg)
