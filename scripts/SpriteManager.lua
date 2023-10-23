@@ -8,12 +8,13 @@ function SpriteManager:create(data)
     local png = ReadPngFile(data.path)
     local res = {
         lastUpdateAt = 0,
-        velocity = 20,
+        velocity = 1,
         age = 0,
         looklike = { {} },
         actions = {},
         x = 400,
         y = 0,
+        canControl = true
     }
     function res:update()
         local now = Framework.time()
@@ -22,7 +23,26 @@ function SpriteManager:create(data)
             self.lastUpdateAt = now
             self.looklike = self.actions[self.age % 10 + 1]
         end
-        Framework:draw(self.looklike, self.x, self.y, false)
+        Framework:draw(self.looklike, math.floor(self.x + 0.5), math.floor(self.y + 0.5), false)
+    end
+
+    function res:move(direction)
+        local dx, dy = 0, 0
+        if direction == Direction.Up then
+            dy = -1
+        elseif direction == Direction.Down then
+            dy = 1
+        elseif direction == Direction.Left then
+            dx = -1
+        elseif direction == Direction.Right then
+            dx = 1
+        end
+        self.x = self.x + dx * self.velocity
+        self.y = self.y + dy * self.velocity
+    end
+
+    function res:moveTo(toX, toY, canIntercept)
+
     end
 
     local r = {}

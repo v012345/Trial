@@ -46,8 +46,17 @@ xpcall(function()
             -- sprite.count = (sprite.count) % 10 + 1
             -- Framework:draw(sprite.x[sprite.count], 0, 0, false)
             x:update()
-            if x.x > 1 then
-                x.x = x.x - 1
+            if Framework.isKeyOn(Keyboard.A) then
+                x:move(Direction.Left)
+            end
+            if Framework.isKeyOn(Keyboard.S) then
+                x:move(Direction.Down)
+            end
+            if Framework.isKeyOn(Keyboard.D) then
+                x:move(Direction.Right)
+            end
+            if Framework.isKeyOn(Keyboard.W) then
+                x:move(Direction.Up)
             end
             Framework:showFPS()
         end, function(msg)
