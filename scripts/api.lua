@@ -35,12 +35,8 @@ function Impl:clear() end
 
 ---在 c 里解析 png 图片
 ---@param path string png 图片的路径
----@return table<table<integer>>
-function ReadPngFile(path)
-    ---@type table<table<integer>>
-    local image = { { 1 } }
-    return image
-end
+---@return Image
+function ReadPngFile(path) return {} end
 
 Framework = {}
 ---休息多少毫秒
