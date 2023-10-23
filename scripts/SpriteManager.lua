@@ -11,7 +11,9 @@ function SpriteManager:create(data)
         velocity = 20,
         age = 0,
         looklike = { {} },
-        actions = {}
+        actions = {},
+        x = 400,
+        y = 0,
     }
     function res:update()
         local now = Framework.time()
@@ -20,6 +22,7 @@ function SpriteManager:create(data)
             self.lastUpdateAt = now
             self.looklike = self.actions[self.age % 10 + 1]
         end
+        Framework:draw(self.looklike, self.x, self.y, false)
     end
 
     local r = {}

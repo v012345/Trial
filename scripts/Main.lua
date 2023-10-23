@@ -45,8 +45,10 @@ xpcall(function()
             Impl:clear()
             -- sprite.count = (sprite.count) % 10 + 1
             -- Framework:draw(sprite.x[sprite.count], 0, 0, false)
-            Framework:draw(x.looklike, 0, 0, false)
             x:update()
+            if x.x > 1 then
+                x.x = x.x - 1
+            end
             Framework:showFPS()
         end, function(msg)
             print(msg)
