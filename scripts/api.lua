@@ -94,3 +94,11 @@ BitMatrix = {
 function GetFontBmp(char, width, height, color, font)
     return BitMatrix
 end
+
+---@class Res_Sprite
+ResSprite = {
+    path        = "",
+    cell_height = 0,
+    cell_width  = 0,
+    action      = {},
+}
