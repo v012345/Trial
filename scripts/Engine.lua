@@ -90,5 +90,5 @@ end
 
 function Framework:showFPS()
     local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
-    self:string(tostring(frameInterval10), Impl:width() - 50, 0, 14, 14, 0xffffff, true)
+    self:string(string.format("FPS:%s", frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff, true)
 end
