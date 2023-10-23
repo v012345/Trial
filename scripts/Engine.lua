@@ -1,8 +1,12 @@
-Framework.PreviousTime = {}
-for i = 1, 10, 1 do
-    Framework.PreviousTime[i] = Framework.time()
+function Framework:init()
+    Framework.PreviousTime = {}
+    for i = 1, 10, 1 do
+        Framework.PreviousTime[i] = Framework.time()
+    end
+    Framework.SpriteSize = 32
+    self.mLastShowFPSTime = 0
 end
-Framework.SpriteSize = 32
+
 ---在 (atX,atY) 画 what
 ---@param what Image
 ---@param atX integer
@@ -89,15 +93,18 @@ function Framework:string(msg, atX, atY, width, height, color, isBG, font)
 end
 
 function Framework:showFPS()
-    local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
-    self:string(string.format("FPS:%s", 10000 // frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff,
-        true)
+    if self.time() - self.mLastShowFPSTime > 1000 then
+        local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
+        self:string(string.format("FPS:%s", 10000 // frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff,
+            true)
+        self.mLastShowFPSTime = self.time()
+    end
 end
 
 function Framework:fixFPS()
     local currentTime = self.time()
     -- 这里有溢出问题
-    while currentTime - Framework.PreviousTime[10] <= 16 do
+    while currentTime - Framework.PreviousTime[10] <= 17 do
         currentTime = Framework.time()
         Framework.sleep(1);
     end
