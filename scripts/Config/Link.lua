@@ -1,5 +1,6 @@
----@class Res_Sprite
+---@class SpriteConfig
 local LinkSprite = {
+    image = CMAKE_SOURCE_DIR .. "res/Link.png",
     path = CMAKE_SOURCE_DIR .. "res/Link.png",
     cell_height = 104,
     cell_width = 96,

@@ -1,4 +1,4 @@
----@class Res_Sprite
+---@type SpriteConfig
 local LinkSprite = {
     path = CMAKE_SOURCE_DIR .. "res/professor_walk_cycle_no_hat.png",
     cell_height = 64,
