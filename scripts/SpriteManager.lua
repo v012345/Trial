@@ -1,5 +1,4 @@
 ---@class SpriteManager
----@field private getBlock function
 SpriteManager = SpriteManager or {}
 
 ---comment
@@ -16,12 +15,13 @@ function SpriteManager:create(data)
         y = 0,
         canControl = true
     }
+
     function res:update()
         local now = Framework.time()
         if now - self.lastUpdateAt > 42 then
             self.age = self.age + 1
             self.lastUpdateAt = now
-            self.looklike = self.actions[self.age % 10 + 1]
+            self.looklike = self.actions[Direction.Left]["idle"][1]
         end
         Framework:draw(self.looklike, math.floor(self.x + 0.5), math.floor(self.y + 0.5), false)
     end
@@ -45,13 +45,21 @@ function SpriteManager:create(data)
 
     end
 
-    local r = {}
-    for i = 0, 9 do
-        r[#r + 1] = self:getBlock(png, i * data.cell_width, 5 * data.cell_height, (i + 1) * data.cell_width,
-            6 * data.cell_height)
+    local actions = {}
+    for _, direction in pairs(Direction) do
+        actions[direction] = {}
+        for state, config in pairs(data[direction]) do
+            local sequence = {}
+            for i = 0, config.frame - 1 do
+                sequence[#sequence + 1] = self:getBlock(png, i * data.cell_width + 1,
+                    (config.row - 1) * data.cell_height + 1,
+                    (i + 1) * data.cell_width, config.row * data.cell_height)
+            end
+            actions[direction][state] = sequence
+        end
     end
-    res.looklike = r[1]
-    res.actions = r
+    res.looklike = actions[Direction.Left]["idle"][1]
+    res.actions = actions
 
     return res
 end
