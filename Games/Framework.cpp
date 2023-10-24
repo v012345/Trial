@@ -440,7 +440,7 @@ namespace GameLib {
         luaL_Reg pImpl_metatable[] = {
             {"height", lua_getHeight},
             {"width", lua_getWidth}, //
-            {"vram", lua_setVarm}, //
+            {"setColor", lua_setVarm}, //
             {"colorAt", lua_colorAt}, //
             {"clear", lua_clear}, //
             {NULL, NULL},
@@ -452,7 +452,7 @@ namespace GameLib {
         luaL_setfuncs(L, pImpl_metatable, 0);
         lua_setfield(L, -2, "__index");
         lua_setmetatable(L, -2);
-        lua_setglobal(L, "Impl");
+        lua_setglobal(L, "Screen");
         return 1;
     }
     static int lua_FrameworkSleep(lua_State* L) {

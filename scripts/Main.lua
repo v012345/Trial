@@ -52,7 +52,7 @@ xpcall(function()
     function MainLoop()
         xpcall(function()
             Framework:fixFPS()
-            Impl:clear()
+            Screen:clear()
             Framework:draw(grass, 0, 0, true)
             BlueManEntity:update()
 

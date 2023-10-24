@@ -22,13 +22,13 @@ function Framework:draw(what, atX, atY, isBackground)
     for y, row in ipairs(what) do
         for x, argb in ipairs(row) do
             if isBackground then
-                Impl:vram(atX + x - 1, atY + y - 1, argb)
+                Screen:setColor(atX + x - 1, atY + y - 1, argb)
             else
                 local srcA = (argb & 0xff000000) >> 24
                 local srcR = argb & 0xff0000;
                 local srcG = argb & 0x00ff00;
                 local srcB = argb & 0x0000ff;
-                local dst = Impl:colorAt(atX + x - 1, atY + y - 1)
+                local dst = Screen:colorAt(atX + x - 1, atY + y - 1)
                 local dstR = dst & 0xff0000;
                 local dstG = dst & 0x00ff00;
                 local dstB = dst & 0x0000ff;
@@ -40,7 +40,7 @@ function Framework:draw(what, atX, atY, isBackground)
                 g = (g > 0x00ff00) and 0x00ff00 or g;
                 b = (b > 0x0000ff) and 0x0000ff or b;
                 dst = (r & 0xff0000) | (g & 0x00ff00) | b;
-                Impl:vram(atX + x - 1, atY + y - 1, dst)
+                Screen:setColor(atX + x - 1, atY + y - 1, dst)
             end
         end
     end
@@ -100,7 +100,7 @@ end
 
 function Framework:showFPS()
     local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
-    self:string(string.format("FPS:%s", 10000 // frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff,
+    self:string(string.format("FPS:%s", 10000 // frameInterval10), Screen:width() - 50, 10, 14, 14, 0xffffff,
         true)
     self.mLastShowFPSTime = self:time()
 end

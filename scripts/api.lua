@@ -11,27 +11,27 @@ function _getch() return 0 end
 ---源码目录
 CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}/"
 
-Impl = {}
+Screen = {}
 ---在窗口的指定位置画一个点
 ---@param w integer 第几行
 ---@param h integer 第几列
 ---@param c integer 什么颜色
-function Impl:vram(w, h, c) end
+function Screen:setColor(w, h, c) end
 
 ---窗口的高
 ---@return integer
-function Impl:height() return 0 end
+function Screen:height() return 0 end
 
 ---窗口的宽
 ---@return integer
-function Impl:width() return 0 end
+function Screen:width() return 0 end
 
 ---返回指定点的颜色
 ---@return integer
-function Impl:colorAt(x, y) return 0 end
+function Screen:colorAt(x, y) return 0 end
 
 ---清空屏幕
-function Impl:clear() end
+function Screen:clear() end
 
 ---在 c 里解析 png 图片
 ---@param path string png 图片的路径
