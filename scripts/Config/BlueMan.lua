@@ -3,6 +3,7 @@ local BlueMan = {
     image = CMAKE_SOURCE_DIR .. "res/8D MZ RTP/8Directionals/8D_0005_actor2-1[VS8].png",
     cell_height = 100,
     cell_width = 100,
+    interval = 8,
     actions = { "walk", "run" },
     [Direction.Up] = {
         walk = { 1, 2, 3 },

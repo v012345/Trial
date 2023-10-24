@@ -9,8 +9,9 @@ function Sprite:new(SpriteConfig)
     local object = {
         mDirection = Direction.Down,
         SpriteConfig = SpriteConfig,
-        mAction = "walk",
-        mFrame = 1
+        mAction = "run",
+        mFrame = 1,
+        counter = 1
     }
     setmetatable(object, { __index = mt })
     return object
@@ -22,7 +23,11 @@ function mt:getNextFrame()
         self.mFrame = 1
     end
     local frame = action[self.mFrame]
-    self.mFrame = self.mFrame + 1
+    if self.counter > self.SpriteConfig.interval then
+        self.mFrame = self.mFrame + 1
+        self.counter = 1
+    end
+    self.counter = self.counter + 1
     return frame
 end
 

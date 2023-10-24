@@ -12,5 +12,6 @@ function Entity:new(EntityConfig)
 end
 
 function mt:update()
-    Framework:draw(self.Sprite:getNextFrame(), 0, 0, true)
+    Impl:clear()
+    Framework:draw(self.Sprite:getNextFrame(), 0, 0, false)
 end
