@@ -5,6 +5,12 @@ function Framework:init()
     end
     Framework.SpriteSize = 32
     self.mLastShowFPSTime = 0
+    self.mFps = 60
+    self.mInterval = math.ceil(1000 / 60)
+end
+
+function Framework:getFps()
+    return self.mFps
 end
 
 ---在 (atX,atY) 画 what
@@ -93,19 +99,17 @@ function Framework:string(msg, atX, atY, width, height, color, isBG, font)
 end
 
 function Framework:showFPS()
-    if self.time() - self.mLastShowFPSTime > 1000 then
-        local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
-        self:string(string.format("FPS:%s", 10000 // frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff,
-            true)
-        self.mLastShowFPSTime = self.time()
-    end
+    local frameInterval10 = self.PreviousTime[10] - self.PreviousTime[1];
+    self:string(string.format("FPS:%s", 10000 // frameInterval10), Impl:width() - 50, 10, 14, 14, 0xffffff,
+        true)
+    self.mLastShowFPSTime = self.time()
 end
 
 function Framework:fixFPS()
     local currentTime = self.time()
     -- 这里有溢出问题
-    -- while currentTime - Framework.PreviousTime[10] <= 17 do
-    while currentTime - Framework.PreviousTime[10] <= 50 do
+    while currentTime - Framework.PreviousTime[10] <= self.mInterval do
+        -- while currentTime - Framework.PreviousTime[10] <= 50 do
         currentTime = Framework.time()
         Framework.sleep(1);
     end
