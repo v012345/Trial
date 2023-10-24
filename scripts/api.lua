@@ -41,21 +41,21 @@ function ReadPngFile(path) return {} end
 Framework = {}
 ---休息多少毫秒
 ---@param ms integer
-function Framework.sleep(ms) end
+function Framework:sleep(ms) end
 
 ---返回时间毫秒
 ---@return integer
-function Framework.time() return 0 end
+function Framework:time() return 0 end
 
 ---是否按了某个键
 ---@param c integer
 ---@return boolean
-function Framework.isKeyOn(c) return true end
+function Framework:isKeyOn(c) return true end
 
 ---是否按了某个键(一次)
 ---@param c integer
 ---@return boolean
-function Framework.isKeyTriggered(c) return true end
+function Framework:isKeyTriggered(c) return true end
 
 ---游戏使用到的数据, 在 c 中定义的空表
 Game = {}

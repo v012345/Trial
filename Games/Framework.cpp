@@ -452,7 +452,7 @@ namespace GameLib {
         return 1;
     }
     static int lua_FrameworkSleep(lua_State* L) {
-        int ms = lua_tointeger(L, 1);
+        int ms = lua_tointeger(L, 2);
         Threading::sleep(ms);
         return 0;
     }
@@ -462,13 +462,13 @@ namespace GameLib {
         return 1;
     }
     static int lua_FrameworkIsKeyOn(lua_State* L) {
-        int c = lua_tointeger(L, 1);
+        int c = lua_tointeger(L, 2);
         bool isOn = Input::Manager().keyboard().isOn(c);
         lua_pushboolean(L, isOn);
         return 1;
     }
     static int lua_FrameworkIsKeyTriggered(lua_State* L) {
-        int c = lua_tointeger(L, 1);
+        int c = lua_tointeger(L, 2);
         bool isOn = Input::Manager().keyboard().isTriggered(c);
         lua_pushboolean(L, isOn);
         return 1;

@@ -10,23 +10,23 @@ xpcall(function()
     ---@diagnostic disable-next-line
     function BlueManEntity:dealInput()
         local direction = Direction.Null
-        if Framework.isKeyOn(Keyboard.W) then
+        if Framework:isKeyOn(Keyboard.W) then
             direction = direction | Input[Keyboard.W]
         end
-        if Framework.isKeyOn(Keyboard.S) then
+        if Framework:isKeyOn(Keyboard.S) then
             direction = direction | Input[Keyboard.S]
         end
-        if Framework.isKeyOn(Keyboard.A) then
+        if Framework:isKeyOn(Keyboard.A) then
             direction = direction | Input[Keyboard.A]
         end
-        if Framework.isKeyOn(Keyboard.D) then
+        if Framework:isKeyOn(Keyboard.D) then
             direction = direction | Input[Keyboard.D]
         end
         self.Sprite:setDiretion(InputToDirection[direction])
         if direction == Direction.Null then
             self.Sprite:setAction("idle")
         else
-            if Framework.isKeyOn(Keyboard.Shift) then
+            if Framework:isKeyOn(Keyboard.Shift) then
                 self.Sprite:setAction("run")
             else
                 self.Sprite:setAction("walk")
