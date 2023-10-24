@@ -26,10 +26,15 @@ function mt:update()
         direction = direction | Input[Keyboard.D]
     end
     self.Sprite:setDiretion(InputToDirection[direction])
-    if Framework.isKeyOn(Keyboard.Shift) then
-        self.Sprite:setAction("run")
+    if direction == Direction.Null then
+        self.Sprite:setAction("idle")
     else
-        self.Sprite:setAction("walk")
+        if Framework.isKeyOn(Keyboard.Shift) then
+            self.Sprite:setAction("run")
+        else
+            self.Sprite:setAction("walk")
+        end
     end
+
     Framework:draw(self.Sprite:getNextFrame(), 0, 0, false)
 end

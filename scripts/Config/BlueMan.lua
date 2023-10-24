@@ -4,71 +4,87 @@ local BlueMan = {
     cell_height = 100,
     cell_width = 100,
     interval = 8,
-    actions = { "walk", "run" },
+    actions = { "walk", "run", "idle" },
     [Direction.Up] = {
+        idle = { 38 },
         walk = { 37, 38, 39, 38 },
         run = { 43, 44, 45, 44 },
     },
     [Direction.Down] = {
+        idle = { 2 },
         walk = { 1, 2, 3, 2 },
         run = { 7, 8, 9, 8 },
     },
     [Direction.Left] = {
+        idle = { 14 },
         walk = { 13, 14, 15, 14 },
         run = { 19, 20, 21, 20 },
     },
     [Direction.Right] = {
+        idle = { 26 },
         walk = { 25, 26, 27, 26 },
         run = { 31, 32, 33, 32 },
     },
     [Direction.RightDown] = {
+        idle = { 17 },
         walk = { 16, 17, 18, 17 },
         run = { 22, 23, 24, 23 },
     },
     [Direction.RightUp] = {
+        idle = { 41 },
         walk = { 40, 41, 42, 41 },
         run = { 46, 47, 48, 47 },
     },
     [Direction.LeftDown] = {
+        idle = { 5 },
         walk = { 4, 5, 6, 5 },
         run = { 10, 11, 12, 11 },
     },
     [Direction.LeftUp] = {
+        idle = { 29 },
         walk = { 28, 29, 30, 29 },
         run = { 34, 35, 36, 35 },
     },
     sequence = {
         [Direction.Up] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.Down] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.Left] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.Right] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.RightUp] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.RightDown] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.LeftUp] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
         [Direction.LeftDown] = {
+            idle = {},
             walk = {},
-            run = {},
+            run  = {},
         },
     }
 }
