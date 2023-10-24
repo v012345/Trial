@@ -104,7 +104,8 @@ end
 function Framework:fixFPS()
     local currentTime = self.time()
     -- 这里有溢出问题
-    while currentTime - Framework.PreviousTime[10] <= 17 do
+    -- while currentTime - Framework.PreviousTime[10] <= 17 do
+    while currentTime - Framework.PreviousTime[10] <= 50 do
         currentTime = Framework.time()
         Framework.sleep(1);
     end

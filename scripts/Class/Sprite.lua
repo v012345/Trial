@@ -7,11 +7,23 @@ local mt = {}
 function Sprite:new(SpriteConfig)
     ---@class Sprite
     local object = {
-        mDirection = Direction.Down
+        mDirection = Direction.Down,
+        SpriteConfig = SpriteConfig,
+        mAction = "walk",
+        mFrame = 1
     }
     setmetatable(object, { __index = mt })
-    local rawImage = ReadPngFile(SpriteConfig.image)
     return object
+end
+
+function mt:getNextFrame()
+    local action = self.SpriteConfig.sequence[self.mDirection][self.mAction]
+    if self.mFrame > #action then
+        self.mFrame = 1
+    end
+    local frame = action[self.mFrame]
+    self.mFrame = self.mFrame + 1
+    return frame
 end
 
 function mt:setDiretion(direction)
@@ -20,27 +32,4 @@ end
 
 function mt:getDiretion()
     return self.mDirection
-end
-
-function mt:convertIdxToXY()
-    
-end
-
----@param PNG Image
----@param fromX integer 包括
----@param fromY integer 包括
----@param toX integer 不包括
----@param toY integer 不包括
----@return Image
-function mt:getBlock(PNG, fromX, fromY, toX, toY)
-    ---@type Image
-    local piece = {}
-    for y = fromY, toY - 1 do
-        local row = {}
-        for x = fromX, toX - 1 do
-            row[#row + 1] = PNG[y][x]
-        end
-        piece[#piece + 1] = row
-    end
-    return piece
 end

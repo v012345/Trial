@@ -72,5 +72,50 @@ local BlueMan = {
     }
 }
 
-return BlueMan
+local rawImage = ReadPngFile(BlueMan.image)
 
+---@param PNG Image
+---@param fromX integer 包括
+---@param fromY integer 包括
+---@param toX integer 不包括
+---@param toY integer 不包括
+---@return Image
+local function getBlock(PNG, fromX, fromY, toX, toY)
+    ---@type Image
+    local piece = {}
+    for y = fromY, toY - 1 do
+        local row = {}
+        for x = fromX, toX - 1 do
+            row[#row + 1] = PNG[y][x]
+        end
+        piece[#piece + 1] = row
+    end
+    return piece
+end
+
+---@param SpriteConfig SpriteConfig
+local function convertIdxToBlock(rawImage, SpriteConfig, idx)
+    idx = idx - 1
+    local width = SpriteConfig.cell_width
+    local height = SpriteConfig.cell_height
+    local col_number = #rawImage[1] // width
+    local row_idx = idx // col_number
+    local col_idx = idx % col_number
+    local fromX = col_idx * width + 1
+    local fromY = row_idx * height + 1
+    local toX = col_idx * width + width + 1
+    local toY = row_idx * height + height + 1
+    return getBlock(rawImage, fromX, fromY, toX, toY)
+end
+
+for _, direction in pairs(Direction) do
+    for _, action in ipairs(BlueMan.actions) do
+        for _, idx in ipairs(BlueMan[direction][action]) do
+            table.insert(BlueMan.sequence[direction][action],
+                convertIdxToBlock(rawImage, BlueMan, idx))
+        end
+    end
+end
+
+
+return BlueMan
