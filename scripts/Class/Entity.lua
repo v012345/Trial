@@ -12,18 +12,20 @@ function Entity:new(EntityConfig)
 end
 
 function mt:update()
+    local direction = Direction.Null
     if Framework.isKeyOn(Keyboard.W) then
-        self.Sprite:setDiretion(Direction.Up)
+        direction = direction | Input[Keyboard.W]
     end
     if Framework.isKeyOn(Keyboard.S) then
-        self.Sprite:setDiretion(Direction.Down)
+        direction = direction | Input[Keyboard.S]
     end
     if Framework.isKeyOn(Keyboard.A) then
-        self.Sprite:setDiretion(Direction.Left)
+        direction = direction | Input[Keyboard.A]
     end
     if Framework.isKeyOn(Keyboard.D) then
-        self.Sprite:setDiretion(Direction.Right)
+        direction = direction | Input[Keyboard.D]
     end
+    self.Sprite:setDiretion(InputToDirection[direction])
     if Framework.isKeyOn(Keyboard.Shift) then
         self.Sprite:setAction("run")
     else

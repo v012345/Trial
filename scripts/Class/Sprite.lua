@@ -36,7 +36,9 @@ function mt:getNextFrame()
 end
 
 function mt:setDiretion(direction)
-    self.mDirection = direction
+    if direction ~= Direction.Null then
+        self.mDirection = direction
+    end
 end
 
 function mt:getDiretion()

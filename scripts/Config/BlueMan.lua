@@ -22,20 +22,20 @@ local BlueMan = {
         run = { 31, 32, 33, 32 },
     },
     [Direction.RightDown] = {
-        walk = { 25, 26, 27, 26 },
-        run = { 28, 29, 30, 29 },
+        walk = { 16, 17, 18, 17 },
+        run = { 22, 23, 24, 23 },
     },
     [Direction.RightUp] = {
-        walk = { 31, 32, 33 },
-        run = { 34, 35, 36 },
+        walk = { 40, 41, 42, 41 },
+        run = { 46, 47, 48, 47 },
     },
     [Direction.LeftDown] = {
-        walk = { 37, 38, 39 },
-        run = { 40, 41, 42 },
+        walk = { 4, 5, 6, 5 },
+        run = { 10, 11, 12, 11 },
     },
     [Direction.LeftUp] = {
-        walk = { 43, 44, 45 },
-        run = { 46, 47, 48 },
+        walk = { 28, 29, 30, 29 },
+        run = { 34, 35, 36, 35 },
     },
     sequence = {
         [Direction.Up] = {
@@ -110,10 +110,12 @@ local function convertIdxToBlock(rawImage, SpriteConfig, idx)
 end
 
 for _, direction in pairs(Direction) do
-    for _, action in ipairs(BlueMan.actions) do
-        for _, idx in ipairs(BlueMan[direction][action]) do
-            table.insert(BlueMan.sequence[direction][action],
-                convertIdxToBlock(rawImage, BlueMan, idx))
+    if direction ~= Direction.Null then
+        for _, action in ipairs(BlueMan.actions) do
+            for _, idx in ipairs(BlueMan[direction][action]) do
+                table.insert(BlueMan.sequence[direction][action],
+                    convertIdxToBlock(rawImage, BlueMan, idx))
+            end
         end
     end
 end
