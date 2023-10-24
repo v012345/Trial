@@ -1,77 +1,166 @@
-﻿#include "Sequence/Game/Parent.h"
-#include "File.h"
 #include "GameLib/GameLib.h"
-#include "Sequence/Game/Clear.h"
-#include "Sequence/Game/Loading.h"
-#include "Sequence/Game/Menu.h"
-#include "Sequence/Game/Play.h"
 #include "Sequence/Parent.h"
-#include "State.h"
+#include "Sequence/Game/Parent.h"
+#include "Sequence/Game/Clear.h"
+#include "Sequence/Game/Ready.h"
+#include "Sequence/Game/Pause.h"
+#include "Sequence/Game/Play.h"
+#include "Sequence/Game/Failure.h"
+#include "Sequence/Game/Judge.h"
+#include "Game/State.h"
+#include "File.h"
 #include <sstream>
 
-namespace Sequence {
-    namespace Game {
+namespace Sequence{
+namespace Game{
 
-        Parent::Parent(int stageID) : mState(0), mStageID(stageID), mNext(SEQ_NONE), mClear(0), mLoading(0), mMenu(0), mPlay(0) {
-            // 先加载
-            mLoading = new Loading();
-        }
+Parent::Parent( GrandParent::Mode mode ) : 
+mState( 0 ),
+mStageID( 0 ),
+mLife( INITIALI_LIFE_NUMBER ),
+mNextSequence( NEXT_NONE ),
+mClear( 0 ),
+mReady( 0 ),
+mPause( 0 ),
+mPlay( 0 ),
+mFailure( 0 ),
+mJudge( 0 ){
+	if ( mode == GrandParent::MODE_1P ){
+		mStageID = 1;
+	}else{
+		mStageID = 0;
+	}
+	//一开始Ready
+	mReady = new Ready();
+}
 
-        Parent::~Parent() {
-            SAFE_DELETE(mState);
-            SAFE_DELETE(mClear);
-            SAFE_DELETE(mLoading);
-            SAFE_DELETE(mMenu);
-            SAFE_DELETE(mPlay);
-        }
+Parent::~Parent(){
+	SAFE_DELETE( mState );
+	SAFE_DELETE( mClear );
+	SAFE_DELETE( mReady );
+	SAFE_DELETE( mPause );
+	SAFE_DELETE( mPlay );
+	SAFE_DELETE( mFailure );
+	SAFE_DELETE( mJudge );
+}
 
-        void Parent::update(GrandParent* parent) {
-            if (mClear) {
-                mClear->update(this);
-            } else if (mLoading) {
-                mLoading->update(this);
-            } else if (mMenu) {
-                mMenu->update(this);
-            } else if (mPlay) {
-                mPlay->update(this);
-            } else {
-                HALT("bakana!"); // 不可能的
-            }
-            // 迁移判断
-            switch (mNext) {
-                case SEQ_STAGE_SELECT:
-                    parent->moveTo(GrandParent::SEQ_STAGE_SELECT); //
-                    break;
-                case SEQ_TITLE:
-                    parent->moveTo(GrandParent::SEQ_TITLE); //
-                    break;
-                case SEQ_PLAY:
-                    SAFE_DELETE(mLoading);
-                    SAFE_DELETE(mMenu);
-                    mPlay = new Game::Play();
-                    break;
-                case SEQ_CLEAR:
-                    SAFE_DELETE(mPlay);
-                    mClear = new Game::Clear();
-                    break;
-                case SEQ_MENU:
-                    SAFE_DELETE(mPlay);
-                    mMenu = new Game::Menu();
-                    break;
-            }
-            mNext = SEQ_NONE; // 请不要忘记
-        }
+void Parent::update( GrandParent* parent ){
+	if ( mClear ){
+		mClear->update( this );
+	}else if ( mReady ){
+		mReady->update( this );
+	}else if ( mPause ){
+		mPause->update( this );
+	}else if ( mPlay ){
+		mPlay->update( this );
+	}else if ( mFailure ){
+		mFailure->update( this );
+	}else if ( mJudge ){
+		mJudge->update( this );
+	}else{
+		HALT( "bakana!" ); //不可能的
+	}
+	//迁移判断
+	switch ( mNextSequence ){
+		case NEXT_CLEAR:
+			STRONG_ASSERT( !mClear && !mReady && !mPause && mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mPlay );
+			mClear = new Clear();
+			++mStageID; //进入下一场景
+			break;
+		case NEXT_READY:
+			STRONG_ASSERT( !mReady && !mPause && !mPlay && ( mFailure || mClear ||  mJudge ) );
+			SAFE_DELETE( mFailure );
+			SAFE_DELETE( mClear );
+			SAFE_DELETE( mJudge );
+			mReady = new Ready();
+			break;
+		case NEXT_PAUSE:
+			STRONG_ASSERT( !mClear && !mReady && !mPause && mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mPlay );
+			mPause = new Pause();
+			break;
+		case NEXT_PLAY:
+			STRONG_ASSERT( !mClear && ( mReady || mPause ) && !mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mReady );
+			SAFE_DELETE( mPause );
+			mPlay = new Play();
+			break;
+		case NEXT_FAILURE:
+			STRONG_ASSERT( !mClear && !mReady && !mPause && mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mPlay );
+			mFailure = new Failure();
+			--mLife;
+			break;
+		case NEXT_JUDGE:
+			STRONG_ASSERT( !mClear && !mReady && !mPause && mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mPlay );
+			mJudge = new Judge();
+			break;
+		case NEXT_ENDING:
+			STRONG_ASSERT( mClear && !mReady && !mPause && !mPlay && !mFailure && !mJudge );
+			SAFE_DELETE( mClear );
+			parent->moveTo( GrandParent::NEXT_ENDING );
+			break;
+		case NEXT_GAME_OVER:
+			STRONG_ASSERT( !mClear && !mReady && !mPause && !mPlay && mFailure && !mJudge );
+			SAFE_DELETE( mFailure );
+			parent->moveTo( GrandParent::NEXT_GAME_OVER );
+			break;
+		case NEXT_TITLE:
+			STRONG_ASSERT( !mClear && !mReady && ( mPause || mJudge ) && !mPlay && !mFailure );
+			SAFE_DELETE( mPause );
+			SAFE_DELETE( mJudge );
+			parent->moveTo( GrandParent::NEXT_TITLE );
+			break;
+	}
+	mNextSequence = NEXT_NONE;
+}
 
-        void Parent::startLoading() {
-            std::ostringstream oss;
-            oss << CMAKE_CURRENT_SOURCE_DIR "data/stageData/" << mStageID << ".txt";
-            File file(oss.str().c_str()); // const char *
-            mState = new State(file.data(), file.size());
-        }
+void Parent::moveTo( NextSequence next ){
+	STRONG_ASSERT( mNextSequence == NEXT_NONE );
+	mNextSequence = next;
+}
 
-        void Parent::moveTo(SeqID next) { mNext = next; }
+State* Parent::state(){
+	return mState;
+}
 
-        State* Parent::state() { return mState; }
+bool Parent::hasFinalStageCleared() const {
+	return ( mStageID > FINAL_STAGE );
+}
 
-    } // namespace Game
-} // namespace Sequence
+int Parent::lifeNumber() const {
+	return mLife;
+}
+
+//将Parent::Mode转换为Parent::Mode。不要向下游序列显示父级。
+Parent::Mode Parent::mode() const {
+	Mode r = MODE_NONE;
+	switch ( GrandParent::instance()->mode() ){
+		case GrandParent::MODE_1P: r = MODE_1P; break;
+		case GrandParent::MODE_2P: r = MODE_2P; break;
+		default: STRONG_ASSERT( false ); break;
+	}
+	return r;
+}
+
+void Parent::startLoading(){
+	SAFE_DELETE( mState );
+	mState = new State( mStageID );
+}
+
+void Parent::drawState() const {
+	mState->draw();
+}
+
+Parent::PlayerID Parent::winner() const {
+	return mWinner;
+}
+
+void Parent::setWinner( PlayerID id ){
+	mWinner = id;
+}
+
+} //namespace Game
+} //namespace Sequence

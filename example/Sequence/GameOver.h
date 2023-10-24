@@ -1,23 +1,21 @@
-#ifndef INCLUDED_SEQUENCE_GAME_CLEAR_H
-#define INCLUDED_SEQUENCE_GAME_CLEAR_H
+#ifndef INCLUDED_SEQUENCE_GAME_OVER_H
+#define INCLUDED_SEQUENCE_GAME_OVER_H
 
 class Image;
 
 namespace Sequence{
-namespace Game{
 class Parent;
 
-class Clear{
+class GameOver{
 public:
-	Clear();
-	~Clear();
+	GameOver();
+	~GameOver();
 	void update( Parent* );
 private:
 	Image* mImage;
 	int mCount;
 };
 
-} //namespace Game
 } //namespace Sequence
 
 #endif

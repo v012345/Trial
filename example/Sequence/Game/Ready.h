@@ -1,5 +1,5 @@
-#ifndef INCLUDED_SEQUENCE_GAME_CLEAR_H
-#define INCLUDED_SEQUENCE_GAME_CLEAR_H
+#ifndef INCLUDED_SEQUENCE_GAME_READY_H
+#define INCLUDED_SEQUENCE_GAME_READY_H
 
 class Image;
 
@@ -7,14 +7,15 @@ namespace Sequence{
 namespace Game{
 class Parent;
 
-class Clear{
+class Ready{
 public:
-	Clear();
-	~Clear();
+	Ready();
+	~Ready();
 	void update( Parent* );
 private:
 	Image* mImage;
 	int mCount;
+	bool mStarted;
 };
 
 } //namespace Game

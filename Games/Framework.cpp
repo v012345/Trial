@@ -9,6 +9,7 @@
 #include "GameLib/Graphics/Manager.h"
 #include "GameLib/Graphics/Texture.h"
 #include "GameLib/Input/Manager.h"
+#include "GameLib/Math/Random.h"
 #include "GameLib/Math/Vector2.h"
 #include "GameLib/Scene/Font.h"
 #include "GameLib/Scene/StringRenderer.h"
@@ -55,6 +56,8 @@ namespace GameLib {
                     mVideoMemoryWithPadding[i] = MAGIC_NUMBER;
                     mVideoMemoryWithPadding[mWidth * (mHeight + 1) + i] = MAGIC_NUMBER;
                 }
+                // 随机数初始化
+                mRandom = Random::create();
             }
             ~Impl() {
                 if (mArchiveNames) { SAFE_DELETE_ARRAY(mArchiveNames); }
@@ -196,6 +199,7 @@ namespace GameLib {
             unsigned mIdealFrameInterval;
             Scene::StringRenderer mDebugStringRenderer;
             Scene::Font mDebugFont;
+            Random mRandom;
         };
 
         Impl* gImpl = 0;
@@ -549,6 +553,14 @@ namespace GameLib {
     int Framework::frameRate() const { return gImpl->mFrameRate; }
     bool Framework::isKeyTriggered(int c) const { return Input::Manager().keyboard().isTriggered(c); }
 
+    void Framework::drawDebugString(int c, int r, const char* s, unsigned col) { gImpl->mDebugStringRenderer.add(c * 8, r * 16, s, col); }
+    int Framework::getRandom(int m) {
+        if (m <= 0) {
+            return gImpl->mRandom.getInt();
+        } else {
+            return gImpl->mRandom.getInt(0, m);
+        }
+    }
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();
@@ -582,9 +594,6 @@ namespace GameLib {
             return gImpl->mFrameRate;
     }
 
-    void Framework::drawDebugString( int c, int r, const char* s, unsigned col ){
-            gImpl->mDebugStringRenderer.add( c * 8, r * 16, s, col );
-    }
 
     void Framework::enableFullScreen( bool f ){
             if ( gImpl->mFullScreenForbidden ){ //被禁止

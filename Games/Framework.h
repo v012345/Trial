@@ -46,6 +46,10 @@ namespace GameLib {
         void setFrameRate(int);
         /// 获得帧速率
         int frameRate() const;
+        // 绘制字符
+        void Framework::drawDebugString(int c, int r, const char* s, unsigned col = 0xffffffff);
+        // 随机数
+        int Framework::getRandom(int m);
 
         // 以下库用户不需要知道
         void start(void* windowHandle);

@@ -1,5 +1,6 @@
-﻿#ifndef INCLUDED_SEQUENCE_GAME_PLAY_H
+#ifndef INCLUDED_SEQUENCE_GAME_PLAY_H
 #define INCLUDED_SEQUENCE_GAME_PLAY_H
+
 
 namespace Sequence{
 namespace Game{

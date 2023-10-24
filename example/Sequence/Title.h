@@ -1,4 +1,4 @@
-﻿#ifndef INCLUDED_SEQUENCE_TITLE_H
+#ifndef INCLUDED_SEQUENCE_TITLE_H
 #define INCLUDED_SEQUENCE_TITLE_H
 
 class Image;
@@ -13,6 +13,7 @@ public:
 	void update( Parent* );
 private:
 	Image* mImage; //主题画面
+	int mCursorPosistion;
 };
 
 } //namespace Sequence

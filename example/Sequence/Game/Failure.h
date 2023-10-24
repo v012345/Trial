@@ -1,5 +1,5 @@
-#ifndef INCLUDED_SEQUENCE_GAME_CLEAR_H
-#define INCLUDED_SEQUENCE_GAME_CLEAR_H
+#ifndef INCLUDED_SEQUENCE_GAME_FAILURE_H
+#define INCLUDED_SEQUENCE_GAME_FAILURE_H
 
 class Image;
 
@@ -7,10 +7,10 @@ namespace Sequence{
 namespace Game{
 class Parent;
 
-class Clear{
+class Failure{
 public:
-	Clear();
-	~Clear();
+	Failure();
+	~Failure();
 	void update( Parent* );
 private:
 	Image* mImage;
