@@ -17,6 +17,10 @@ function Sprite:new(SpriteConfig)
     return object
 end
 
+function mt:setAction(action)
+    self.mAction = action
+end
+
 function mt:getNextFrame()
     local action = self.SpriteConfig.sequence[self.mDirection][self.mAction]
     if self.mFrame > #action then

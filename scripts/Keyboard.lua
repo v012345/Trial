@@ -9,4 +9,5 @@ Keyboard = {
     Q = 113,
     R = 114,
     Space = 32,
+    Shift = 131,
 }

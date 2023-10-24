@@ -12,6 +12,22 @@ function Entity:new(EntityConfig)
 end
 
 function mt:update()
-    Impl:clear()
+    if Framework.isKeyOn(Keyboard.W) then
+        self.Sprite:setDiretion(Direction.Up)
+    end
+    if Framework.isKeyOn(Keyboard.S) then
+        self.Sprite:setDiretion(Direction.Down)
+    end
+    if Framework.isKeyOn(Keyboard.A) then
+        self.Sprite:setDiretion(Direction.Left)
+    end
+    if Framework.isKeyOn(Keyboard.D) then
+        self.Sprite:setDiretion(Direction.Right)
+    end
+    if Framework.isKeyOn(Keyboard.Shift) then
+        self.Sprite:setAction("run")
+    else
+        self.Sprite:setAction("walk")
+    end
     Framework:draw(self.Sprite:getNextFrame(), 0, 0, false)
 end

@@ -6,24 +6,24 @@ local BlueMan = {
     interval = 8,
     actions = { "walk", "run" },
     [Direction.Up] = {
-        walk = { 1, 2, 3 },
-        run = { 4, 5, 6 },
+        walk = { 37, 38, 39, 38 },
+        run = { 43, 44, 45, 44 },
     },
     [Direction.Down] = {
-        walk = { 7, 8, 9 },
-        run = { 10, 11, 12 },
+        walk = { 1, 2, 3, 2 },
+        run = { 7, 8, 9, 8 },
     },
     [Direction.Left] = {
-        walk = { 13, 14, 15 },
-        run = { 16, 17, 18 },
+        walk = { 13, 14, 15, 14 },
+        run = { 19, 20, 21, 20 },
     },
     [Direction.Right] = {
-        walk = { 19, 20, 21 },
-        run = { 22, 23, 24 },
+        walk = { 25, 26, 27, 26 },
+        run = { 31, 32, 33, 32 },
     },
     [Direction.RightDown] = {
-        walk = { 25, 26, 27 },
-        run = { 28, 29, 30 },
+        walk = { 25, 26, 27, 26 },
+        run = { 28, 29, 30, 29 },
     },
     [Direction.RightUp] = {
         walk = { 31, 32, 33 },

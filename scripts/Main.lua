@@ -14,6 +14,7 @@ xpcall(function()
     function MainLoop()
         xpcall(function()
             Framework:fixFPS()
+            Impl:clear()
             BlueManEntity:update()
             -- Impl:clear()
             -- x:update()
@@ -25,9 +26,6 @@ xpcall(function()
             -- end
             -- if Framework.isKeyOn(Keyboard.D) then
             --     x:move(Direction.Right)
-            -- end
-            -- if Framework.isKeyOn(Keyboard.W) then
-            --     x:move(Direction.Up)
             -- end
             Framework:showFPS()
         end, function(msg)
