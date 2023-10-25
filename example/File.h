@@ -1,4 +1,4 @@
-#ifndef INCLUDED_FILE_H
+﻿#ifndef INCLUDED_FILE_H
 #define INCLUDED_FILE_H
 
 class File{

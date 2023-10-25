@@ -1,10 +1,11 @@
-#include "GameLib/GameLib.h"
+﻿#include "GameLib/GameLib.h"
 #include "Games/Framework.h"
 using namespace GameLib;
 
 #include "Game/DynamicObject.h"
 #include "Game/StaticObject.h"
 #include "Image.h"
+#include "Pad.h"
 
 namespace {
 
@@ -171,28 +172,15 @@ void DynamicObject::getDirection( int* dx, int* dy ) const {
 	Framework f = Framework::instance();
 	*dx = *dy = 0;
 	if ( mType == TYPE_PLAYER ){
-		if ( mPlayerID == 0 ){
-			if ( f.isKeyOn( 'w' ) ){
-				*dy = -1;
-			}else if ( f.isKeyOn( 'z' ) ){
-				*dy = 1;
-			}
-			if ( f.isKeyOn( 'a' ) ){
-				*dx = -1;
-			}else if ( f.isKeyOn( 's' ) ){
-				*dx = 1;
-			}
-		}else if ( mPlayerID == 1 ){
-			if ( f.isKeyOn( 'i' ) ){
-				*dy = -1;
-			}else if ( f.isKeyOn( 'm' ) ){
-				*dy = 1;
-			}
-			if ( f.isKeyOn( 'j' ) ){
-				*dx = -1;
-			}else if ( f.isKeyOn( 'k' ) ){
-				*dx = 1;
-			}
+		if ( Pad::isOn( Pad::L, mPlayerID ) ){
+			*dx = -1;
+		}else if ( Pad::isOn( Pad::R, mPlayerID ) ){
+			*dx = 1;
+		}
+		if ( Pad::isOn( Pad::U, mPlayerID ) ){
+			*dy = -1;
+		}else if ( Pad::isOn( Pad::D, mPlayerID ) ){
+			*dy = 1;
 		}
 	}else if ( mType == TYPE_ENEMY ){
 		*dx = mDirectionX;
@@ -237,15 +225,11 @@ bool DynamicObject::isIntersect( const DynamicObject& o ) const {
 }
 
 bool DynamicObject::hasBombButtonPressed() const {
-	Framework f = Framework::instance();
 	if ( mType == TYPE_PLAYER ){
-		if ( mPlayerID == 0 ){
-			return f.isKeyOn( 'd' );
-		}else if ( mPlayerID == 1 ){
-			return f.isKeyOn( 'l' );
-		}
+		return Pad::isOn( Pad::A, mPlayerID );
+	}else{
+		return false;
 	}
-	return false;
 }
 
 void DynamicObject::getCell( int* x, int* y ) const {

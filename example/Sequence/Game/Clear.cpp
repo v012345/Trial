@@ -1,24 +1,27 @@
-#include "GameLib/GameLib.h"
+﻿#include "GameLib/GameLib.h"
 #include "Games/Framework.h"
 using namespace GameLib;
 
 #include "Image.h"
+#include "Sequence/Ending.h"
 #include "Sequence/Game/Clear.h"
 #include "Sequence/Game/Parent.h"
+#include "Sequence/Game/Ready.h"
 
 namespace Sequence {
     namespace Game {
 
-        Clear::Clear() : mImage(0), mCount(0) { mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "data/image/dummy.dds"); }
+        Clear::Clear() : mImage(0), mCount(0) { mImage = new Image(CMAKE_CURRENT_SOURCE_DIR"data/image/dummy.dds"); }
 
         Clear::~Clear() { SAFE_DELETE(mImage); }
 
-        void Clear::update(Parent* parent) {
+        Base* Clear::update(Parent* parent) {
+            Base* next = this;
             if (mCount == 60) { // 1等待秒
                 if (parent->hasFinalStageCleared()) { //
-                    parent->moveTo(Parent::NEXT_ENDING);
+                    next = new Ending;
                 } else {
-                    parent->moveTo(Parent::NEXT_READY);
+                    next = new Ready;
                 }
             }
             // 绘制
@@ -30,6 +33,8 @@ namespace Sequence {
             Framework::instance().drawDebugString(0, 0, "clear!");
 
             ++mCount;
+
+            return next;
         }
 
     } // namespace Game

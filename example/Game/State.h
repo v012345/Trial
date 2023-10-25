@@ -1,4 +1,4 @@
-#ifndef INCLUDED_GAME_STATE_H
+﻿#ifndef INCLUDED_GAME_STATE_H
 #define INCLUDED_GAME_STATE_H
 
 #include "Array2D.h"
