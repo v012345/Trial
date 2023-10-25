@@ -12,11 +12,11 @@ function _getch() return 0 end
 CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}/"
 
 Screen = {}
----在窗口的指定位置画一个点
----@param w integer 第几行
----@param h integer 第几列
----@param c integer 什么颜色
-function Screen:setColor(w, h, c) end
+---在窗口的指定位置画一个点, lua 里的 (1,100) 对 c 里的 (0,99)
+---@param x integer
+---@param y integer
+---@param color integer
+function Screen:setColor(x, y, color) end
 
 ---窗口的高
 ---@return integer
@@ -26,7 +26,7 @@ function Screen:height() return 0 end
 ---@return integer
 function Screen:width() return 0 end
 
----返回指定点的颜色
+---返回指定点的颜色, lua 里的 (1,100) 对 c 里的 (0,99)
 ---@return integer
 function Screen:colorAt(x, y) return 0 end
 
@@ -51,6 +51,13 @@ function Framework:time() return 0 end
 ---@param c integer
 ---@return boolean
 function Framework:isKeyOn(c) return true end
+
+---在窗口输出 debug 信息
+---@param c integer
+---@param r integer
+---@param text string
+---@param color integer|nil
+function Framework:drawDebugString(c, r, text, color) end
 
 ---是否按了某个键(一次)
 ---@param c integer

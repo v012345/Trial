@@ -486,12 +486,21 @@ namespace GameLib {
         lua_pushboolean(L, isOn);
         return 1;
     }
+    static int lua_FrameworkDrawDebugString(lua_State* L) {
+        int c = lua_tointeger(L, 2) - 1;
+        int r = lua_tointeger(L, 3) - 1;
+        const char* s = lua_tostring(L, 4);
+        unsigned col = luaL_optnumber(L, 5, 0xffffffff);
+        gImpl->mDebugStringRenderer.add(c * 8, r * 16, s, col);
+        return 0;
+    }
     static int luaopen_Framework(lua_State* L) {
         luaL_Reg funcs[] = {
             {"sleep", lua_FrameworkSleep}, //
             {"time", lua_FrameworkTime}, //
             {"isKeyOn", lua_FrameworkIsKeyOn}, //
             {"isKeyTriggered", lua_FrameworkIsKeyTriggered}, //
+            {"drawDebugString", lua_FrameworkDrawDebugString}, //
             {NULL, NULL}};
         luaL_newlib(L, funcs);
         return 1;
