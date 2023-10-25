@@ -345,7 +345,10 @@ namespace GameLib {
                 j += row_pointers[y][x * bytes_per_pixel + 2];
                 if (bytes_per_pixel == 4) { //
                     j += row_pointers[y][x * bytes_per_pixel + 3] << 24;
+                } else {
+                    j += 0xff000000;
                 }
+
                 lua_pushinteger(L, j);
                 lua_settable(L, -3);
             }
