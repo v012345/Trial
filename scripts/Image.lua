@@ -40,18 +40,18 @@ end
 ---@param width integer|nil
 ---@param height integer|nil
 function mt:draw(dstX, dstY, srcX, srcY, width, height)
-    dstX = dstX or 0
-    dstY = dstY or 0
-    srcX = srcX or 0
-    srcY = srcY or 0
+    dstX = dstX or 1
+    dstY = dstY or 1
+    srcX = srcX or 1
+    srcY = srcY or 1
     width = width or self.iWidth
     height = height or self.iHeight
-    for y = 1, height do
-        for x = 1, width do
-            local src = self.tData[y][x]
-            local dst = Screen:colorAt(x, y)
+    for y = 0, height - 1 do
+        for x = 0, width - 1 do
+            local src = self.tData[y + srcY][x + srcX]
+            local dst = Screen:colorAt(x + dstX, y + dstY)
             local color = blend(src, dst)
-            Screen:setColor(x, y, color)
+            Screen:setColor(x + dstX, y + dstY, color)
         end
     end
 end

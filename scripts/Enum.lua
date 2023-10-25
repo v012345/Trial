@@ -1,4 +1,4 @@
-Enum = {
+local Obj = {
     wall = 1,
     box = 2,
     player = 3,
@@ -7,7 +7,7 @@ Enum = {
     empty = 6,
 }
 
-State = {
+local State = {
     title = 1,
     loading = 2,
     play = 3,
@@ -15,7 +15,7 @@ State = {
     clear = 5,
 }
 
-Direction = {
+local Direction = {
     Null = 0x00,
     Up = 0x01,
     Down = 0x02,
@@ -26,7 +26,7 @@ Direction = {
     LeftUp = 0x04 | 0x01,
     LeftDown = 0x04 | 0x02,
 }
-Keyboard = {
+local Keyboard = {
     A = 97,
     B = 98,
     C = 99,
@@ -40,15 +40,15 @@ Keyboard = {
     Shift = 131,
 }
 
-Input = {
+local Input = {
     [Keyboard.A] = 0x1000,
     [Keyboard.W] = 0x0001,
     [Keyboard.D] = 0x0010,
     [Keyboard.S] = 0x0100,
 }
 
-InputToDirection = {
-    ---asdw
+local InputToDirection = {
+    --xASDW
     [0x0000] = Direction.Null,
     [0x0001] = Direction.Up,
     [0x0010] = Direction.Right,
@@ -65,4 +65,20 @@ InputToDirection = {
     [0x1101] = Direction.Left,
     [0x1110] = Direction.Down,
     [0x1111] = Direction.Null,
+}
+
+local Mode = {
+    MODE_1P = 1,
+    MODE_2P = 2,
+    MODE_NONE = 0
+}
+
+Enum = {
+    Obj = Obj,
+    State = State,
+    Direction = Direction,
+    Keyboard = Keyboard,
+    Input = Input,
+    InputToDirection = InputToDirection,
+    Mode = Mode,
 }
