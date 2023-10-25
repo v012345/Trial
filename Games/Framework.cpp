@@ -527,6 +527,7 @@ namespace GameLib {
         luaopen_Impl(L, gImpl);
         luaopen_cfuncs(L);
         luaL_requiref(L, "Framework", luaopen_Framework, 1);
+        luaL_dofile(L, CMAKE_SOURCE_DIR "scripts/Framework.lua");
         lua_pop(L, 1); /* remove lib */
         lua_newtable(L);
         lua_setglobal(L, "Game");

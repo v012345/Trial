@@ -13,6 +13,22 @@ function Framework:getFps()
     return self.mFps
 end
 
+function Framework:update()
+    if self.tCurrentScence then
+        self.tCurrentScence:update()
+    else
+    end
+end
+
+function Framework:changeScence(s)
+    local scence = require("Scence." .. s)
+    if self.tCurrentScence then
+        self.tCurrentScence:destroy()
+    end
+    scence:init()
+    self.tCurrentScence = scence
+end
+
 ---在 (atX,atY) 画 what
 ---@param what Image
 ---@param atX integer
@@ -44,6 +60,42 @@ function Framework:draw(what, atX, atY, isBackground)
             end
         end
     end
+end
+
+function Framework:showMsgAtCenter(msg, size, color, font)
+    font = font or CMAKE_SOURCE_DIR .. "res/MsYahei.ttf"
+    color = color or 0x00ff0000
+    size = size or 18
+    local text = self:utf8ToUnicode(msg)
+end
+
+function Framework:utf8ToUnicode(text)
+    local unicodes = {}
+    local i = 1
+    while i <= #text do
+        local code = string.byte(text, i, i)
+
+        if (code & 0x80) == 0 then
+            unicodes[#unicodes + 1] = code
+            i = i + 1
+        else
+            local to = i
+            code = (code << 1) & 0xff -- code 就是第一个
+            while code > 0x7f do
+                code = (code << 1) & 0xff
+                to = to + 1
+            end
+            local unicode = code >> (to - i + 1)
+            for codeIdx = i + 1, to do
+                unicode = unicode << 6
+                local subCode = string.byte(text, codeIdx, codeIdx) & 0x3f
+                unicode = unicode + subCode
+            end
+            i = to + 1
+            unicodes[#unicodes + 1] = unicode
+        end
+    end
+    return unicodes
 end
 
 ---在 (atX,atY) 写 msg
