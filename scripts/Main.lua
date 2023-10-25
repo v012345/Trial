@@ -55,7 +55,6 @@ xpcall(function()
             Screen:clear()
             Framework:draw(grass, 0, 0, true)
             BlueManEntity:update()
-
             Framework:showFPS()
         end, function(msg)
             print(msg)

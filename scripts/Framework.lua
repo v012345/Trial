@@ -67,6 +67,29 @@ function Framework:showMsgAtCenter(msg, size, color, font)
     color = color or 0x00ff0000
     size = size or 18
     local text = self:utf8ToUnicode(msg)
+    local bmps = {}
+    for _, unicode in ipairs(text) do
+        local bmp = GetFontBmp(unicode, size, size, color, font)
+        bmps[#bmps + 1] = bmp
+    end
+    local width = Screen:width()
+    local height = Screen:height()
+    local textWidth = 0
+    local textHeight = 0
+    for _, bmp in ipairs(bmps) do
+        textWidth = textWidth + #bmp
+        if #bmp[1] > textHeight then
+            textHeight = #bmp[1]
+        end
+    end
+    local atX = math.floor((width - textWidth) / 2)
+    local atY = math.floor((height - textHeight) / 2)
+    local offset = 0
+    for _, bmp in ipairs(bmps) do
+        local baseline = bmp.baseline
+        Framework:draw(bmp, atX + offset, atY + baseline - #bmp, true)
+        offset = offset + #bmp[1]
+    end
 end
 
 function Framework:utf8ToUnicode(text)
