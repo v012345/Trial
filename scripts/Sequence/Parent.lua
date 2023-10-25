@@ -1,16 +1,19 @@
 -- 是一个单例
+
+---@class Parent
+---@field tChild any
 Parent = {}
 function Parent:init()
     self.eMode = Enum.Mode.MODE_NONE
-    self.Child = Title:new();
+    self.tChild = Title:new();
 end
 
 function Parent:update()
-    local nextChild = self.Child:update(self);
-    if nextChild ~= self.Child then
+    local nextChild = self.tChild:update(self);
+    if nextChild ~= self.tChild then
         -- 说明还场景了?
-        self.Child:destroy()
-        self.Child = nextChild;
+        self.tChild:destroy()
+        self.tChild = nextChild;
     end
 end
 

@@ -15,6 +15,8 @@ function Ready:new()
     return obj
 end
 
+---@param parent GameParent
+---@return Ready
 function mt:update(parent)
     local next = self
     if not self.bStarted then

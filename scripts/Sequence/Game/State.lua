@@ -1,12 +1,12 @@
---- 对应 Parent.cpp
-local Parent = {}
+--- 对应 State.cpp
+local State = {}
 
----@class GameParent
+---@class State
 local mt = {}
 
----@return GameParent
-function Parent:new(mode)
-    ---@class GameParent
+---@return State
+function State:new(mode)
+    ---@class State
     local obj = {}
     setmetatable(obj, { __index = mt })
     if mode == Enum.Mode.MODE_1P then
@@ -32,7 +32,7 @@ function mt:state()
 end
 
 function mt:mode()
-    local p = require "Parent"
+    local p = require "State"
     if p:mode() == Enum.Mode.MODE_1P then
         return Enum.Mode.MODE_1P
     end
@@ -50,4 +50,4 @@ end
 function mt:destroy()
 end
 
-return Parent
+return State
