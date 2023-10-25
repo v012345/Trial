@@ -39,7 +39,7 @@ namespace GameLib {
                   mFullScreenForbidden(true), mVSync(false), //
                   mAntiAlias(false), mTitle("A GameLib Framework Application"), //
                   mArchiveNames(0), mArchiveNumber(0), //
-                  mIdealFrameInterval(0), //
+                  mIdealFrameInterval(0), mPreviousFrameTime(0), //
                   mLoadMode(FileIO::Manager::MODE_DIRECT_FIRST), //
                   mPreviousFrameInterval(0), mFrameRate(0), //
                   mEndRequested(false), mStarted(false) {
@@ -133,8 +133,13 @@ namespace GameLib {
             }
             unsigned time() const { return WindowCreator().time(); }
             void preUpdate() {
-                // 帧时间更新
                 unsigned currentTime = time();
+                while ((currentTime - mPreviousFrameTime) < mIdealFrameInterval) {
+                    Threading::sleep(1);
+                    currentTime = time();
+                }
+                mPreviousFrameTime = currentTime;
+                // 帧时间更新
                 mPreviousFrameInterval = currentTime - mTimeHistory[TIME_HISTORY_SIZE - 1];
                 unsigned frameIntervalSum = currentTime - mTimeHistory[0];
                 mFrameRate = TIME_HISTORY_SIZE * 1000 / frameIntervalSum;
@@ -197,6 +202,7 @@ namespace GameLib {
             bool mEndRequested;
             bool mStarted;
             unsigned mIdealFrameInterval;
+            unsigned mPreviousFrameTime;
             Scene::StringRenderer mDebugStringRenderer;
             Scene::Font mDebugFont;
             Random mRandom;
