@@ -224,8 +224,8 @@ namespace GameLib {
     static int lua_colorAt(lua_State* L) {
         Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
         unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
-        unsigned x = lua_tointeger(L, 2);
-        unsigned y = lua_tointeger(L, 3);
+        unsigned x = lua_tointeger(L, 2) - 1;
+        unsigned y = lua_tointeger(L, 3) - 1;
         int pos = y * gImpl->mWidth + x;
         if (pos >= 0 && pos <= gImpl->mWidth * gImpl->mHeight) {
             lua_pushinteger(L, vram[pos]);
@@ -237,8 +237,8 @@ namespace GameLib {
     static int lua_setVarm(lua_State* L) {
         Impl** ppImpl = (Impl**)lua_touserdata(L, 1);
         unsigned* vram = &gImpl->mVideoMemoryWithPadding[gImpl->mWidth];
-        unsigned x = lua_tointeger(L, 2);
-        unsigned y = lua_tointeger(L, 3);
+        unsigned x = lua_tointeger(L, 2) - 1;
+        unsigned y = lua_tointeger(L, 3) - 1;
         unsigned c = lua_tointeger(L, 4);
         int pos = y * gImpl->mWidth + x;
         if (pos >= 0 && pos <= gImpl->mWidth * gImpl->mHeight) { vram[pos] = c; }
