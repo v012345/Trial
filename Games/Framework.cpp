@@ -408,7 +408,7 @@ namespace GameLib {
             FT_Done_FreeType(library);
             return 1;
         }
-
+        int baseline = face->size->metrics.ascender >> 6;
         // 获取字符的位图
         FT_Bitmap bitmap = face->glyph->bitmap;
         lua_newtable(L);
@@ -430,6 +430,9 @@ namespace GameLib {
             }
             lua_settable(L, -3);
         }
+        lua_pushstring(L, "baseline");
+        lua_pushinteger(L, baseline);
+        lua_settable(L, -3);
         // 释放资源
         FT_Done_Face(face);
         FT_Done_FreeType(library);

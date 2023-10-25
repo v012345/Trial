@@ -105,7 +105,7 @@ end
 ---@param width integer|nil
 ---@param height integer|nil
 ---@param color integer|nil
----@param isBG boolean
+---@param isBG boolean|nil
 ---@param font string|nil
 function Framework:string(msg, atX, atY, width, height, color, isBG, font)
     width = width or 18
@@ -145,7 +145,8 @@ function Framework:string(msg, atX, atY, width, height, color, isBG, font)
     end
     local offset = 0
     for _, bmp in ipairs(bmps) do
-        Framework:draw(bmp, atX + offset, atY, isBG)
+        local baseline = bmp.baseline
+        Framework:draw(bmp, atX + offset, atY + baseline - #bmp, isBG)
         offset = offset + #bmp[1]
     end
 end
