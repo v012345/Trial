@@ -1,5 +1,2 @@
 require "Enum"
-require "Image"
-require "Sequence.Title"
-require "Sequence.Director"
-require "Class.init"
+require "Object"

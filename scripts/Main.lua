@@ -2,11 +2,13 @@ xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
     require "init"
-    Framework:init()
+    require "Director"
+    -- Framework:init()
+    ---@type GameReady
+    local director = Director()
     function MainLoop()
         xpcall(function()
-            Framework:fixFPS()
-            Director:update()
+            director:update()
         end, function(msg)
             print(msg)
         end)
