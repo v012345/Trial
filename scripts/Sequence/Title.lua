@@ -9,12 +9,15 @@ function Title:new()
     ---@class Title
     local obj = {}
     setmetatable(obj, { __index = mt })
-    obj.tImage = Image:new(CMAKE_SOURCE_DIR .. "example/data/image/original/dummy.png")
+    obj.tImage = Image:new(CMAKE_SOURCE_DIR .. "res/dummy.png")
     obj.iCursorPosistion = 1
     return obj
 end
 
-function mt:update(parent)
+---comment
+---@param director Director
+---@return GameParent|Title
+function mt:update(director)
     local next = self
     if Framework:isKeyTriggered(Enum.Keyboard.S) then
         self.iCursorPosistion = self.iCursorPosistion - 1
@@ -27,7 +30,14 @@ function mt:update(parent)
             self.iCursorPosistion = 1
         end
     elseif Framework:isKeyTriggered(Enum.Keyboard.Space) then
-        next = (require "Sequence.Game.Parent"):new(parent:mode())
+        next = (require "Sequence.Game.GameParent"):new(director:mode())
+        if self.iCursorPosistion == 1 then
+            director:setMode(Enum.Mode.MODE_1P)
+        elseif self.iCursorPosistion == 2 then
+            director:setMode(Enum.Mode.MODE_2P)
+        else
+            error("no possible")
+        end
     end
     self.tImage:draw()
     Framework:drawDebugString(1, 1, "[title] : boom man, press space for confirm")
