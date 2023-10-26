@@ -3,18 +3,18 @@
 
 #include "Sequence/Game/Child.h"
 
-namespace Sequence{
-namespace Game{
-class Parent;
+namespace Sequence {
+    namespace Game {
+        class Parent;
 
-class Play : public Child{
-public:
-	Play();
-	~Play();
-	Base* update( Parent* );
-};
+        class Play : public Child {
+          public:
+            Play();
+            ~Play();
+            Base* update(Parent*);
+        };
 
-} //namespace Game
-} //namespace Sequence
+    } // namespace Game
+} // namespace Sequence
 
 #endif

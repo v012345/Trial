@@ -5,19 +5,20 @@
 
 class Image;
 
-namespace Sequence{
-class Parent;
+namespace Sequence {
+    class Parent;
 
-class Title : public Child{
-public:
-	Title();
-	~Title();
-	Base* update( Parent* );
-private:
-	Image* mImage; //主题画面
-	int mCursorPosistion;
-};
+    class Title : public Child {
+      public:
+        Title();
+        ~Title();
+        Base* update(Parent*);
 
-} //namespace Sequence
+      private:
+        Image* mImage; // 主题画面
+        int mCursorPosistion;
+    };
+
+} // namespace Sequence
 
 #endif
