@@ -5,22 +5,23 @@
 
 class Image;
 
-namespace Sequence{
-namespace Game{
-class Parent;
+namespace Sequence {
+    namespace Game {
+        class Parent;
 
-class Ready : public Child{
-public:
-	Ready();
-	~Ready();
-	Base* update( Parent* );
-private:
-	Image* mImage;
-	int mCount;
-	bool mStarted;
-};
+        class Ready : public Child {
+          public:
+            Ready();
+            ~Ready();
+            Base* update(Parent*);
 
-} //namespace Game
-} //namespace Sequence
+          private:
+            Image* mImage;
+            int mCount;
+            bool mStarted;
+        };
+
+    } // namespace Game
+} // namespace Sequence
 
 #endif
