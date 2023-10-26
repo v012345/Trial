@@ -1,14 +1,14 @@
 -- 是一个单例
 
----@class Parent
+---@class Director
 ---@field tChild any
-Parent = {}
-function Parent:init()
+Director = {}
+function Director:init()
     self.eMode = Enum.Mode.MODE_NONE
     self.tChild = Title:new();
 end
 
-function Parent:update()
+function Director:update()
     local nextChild = self.tChild:update(self);
     if nextChild ~= self.tChild then
         -- 说明还场景了?
@@ -17,16 +17,16 @@ function Parent:update()
     end
 end
 
-function Parent:getMode()
+function Director:getMode()
     return self.eMode
 end
 
-function Parent:setMode(mode)
+function Director:setMode(mode)
     self.eMode = mode
 end
 
-function Parent:mode()
+function Director:mode()
     return self:getMode()
 end
 
-Parent:init()
+Director:init()

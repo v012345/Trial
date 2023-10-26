@@ -1,5 +1,5 @@
 require "Enum"
 require "Image"
 require "Sequence.Title"
-require "Sequence.Parent"
+require "Sequence.Director"
 require "Class.init"
