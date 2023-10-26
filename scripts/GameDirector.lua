@@ -1,5 +1,5 @@
 --- 对应 GameDirector.cpp
--- require "Image"
+require "State"
 require "GameReady"
 -- require "ScenceBase"
 GameDirector = {}
@@ -23,7 +23,6 @@ setmetatable(GameDirector, {
         function obj:update(parent)
             local next = self
             local nextChild = self.mChild:update(self)
-            print(nextChild)
             if nextChild ~= next then
                 if nextChild:isA(GameBase) then
                     self.tChild = nextChild
@@ -32,6 +31,10 @@ setmetatable(GameDirector, {
                 end
             end
             return next
+        end
+
+        function obj:startLoading()
+            self.mState = State(self.mStageID)
         end
 
         setmetatable(obj, { __index = ScenceBase() })

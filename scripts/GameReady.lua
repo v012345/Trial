@@ -25,6 +25,10 @@ setmetatable(GameReady, {
         obj.mStarted = mStarted or false
         function obj:update(parent)
             local next = self
+            if not self.mStarted then
+                parent:startLoading();
+                self.mStarted = true;
+            end
             self.mImage:draw()
             return next
         end
