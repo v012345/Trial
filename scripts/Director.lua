@@ -26,7 +26,7 @@ setmetatable(Director, {
         function obj:update()
             local nextChild = self.mChild:update(self);
             if nextChild ~= self.mChild then
-                self.tChild = nextChild;
+                self.mChild = nextChild;
             end
         end
 
@@ -42,6 +42,7 @@ setmetatable(Director, {
             return self:getMode()
         end
 
+        Director.mInstance = obj
         setmetatable(obj, { __index = Object() })
         return obj
     end

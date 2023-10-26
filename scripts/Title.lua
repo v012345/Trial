@@ -1,6 +1,6 @@
 --- 对应 Title.cpp
-require "Image"
-require "ScenceBase"
+-- require "Image"
+-- require "ScenceBase"
 require "GameDirector"
 Title = {}
 setmetatable(Title, {
@@ -44,6 +44,7 @@ setmetatable(Title, {
             Framework:drawDebugString(2, 3, "one player");
             Framework:drawDebugString(2, 4, "two players");
             Framework:drawDebugString(1, self.mCursorPosistion + 2, ">");
+            Framework:drawDebugString(20, 5, "Title.lua")
             return next
         end
 

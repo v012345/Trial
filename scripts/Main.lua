@@ -2,9 +2,11 @@ xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
     require "init"
+    require "Image"
+    require "ScenceBase"
     require "Director"
     -- Framework:init()
-    ---@type GameReady
+    ---@type Director
     local director = Director()
     function MainLoop()
         xpcall(function()
