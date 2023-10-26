@@ -22,6 +22,10 @@ function mt:update(parent)
     return next
 end
 
+function mt:getType()
+    return Enum.UIType.View
+end
+
 function mt:destroy()
 end
 

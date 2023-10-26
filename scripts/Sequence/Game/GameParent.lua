@@ -4,6 +4,7 @@ local FINAL_STAGE = 2
 local GameParent = {}
 
 ---@class GameParent
+---@field tChild any
 local mt = {}
 
 ---@return GameParent
@@ -26,7 +27,11 @@ function mt:update(parent)
     local next = self
     local nextChild = self.tChild:update(self)
     if nextChild ~= next then
-
+        if nextChild:getType() == Enum.UIType.View then
+            self.tChild = nextChild
+        else
+            next = nextChild
+        end
     end
     return next
 end

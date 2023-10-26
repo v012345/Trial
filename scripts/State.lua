@@ -17,12 +17,12 @@ function mt:update()
 end
 
 function mt:draw()
-    print("ddd")
-    for i = 10, 100, 1 do
-        for j = 10, 100, 1 do
-            Screen:setColor(i, j, 0x0fff0000)
-        end
+    if Director:getMode() == Enum.Mode.MODE_1P then
+        Framework:string("单人", 20, 20)
+    else
+        Framework:string("双人", 20, 20)
     end
+    Framework:string(tostring(Director:get))
 end
 
 function mt:destroy()

@@ -47,5 +47,9 @@ function mt:update(director)
     return next
 end
 
+function mt:getType()
+    return Enum.UIType.Scence
+end
+
 function mt:destroy()
 end

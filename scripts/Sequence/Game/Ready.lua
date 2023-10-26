@@ -16,7 +16,7 @@ function Ready:new()
 end
 
 ---@param parent GameParent
----@return Ready
+---@return Play|Ready
 function mt:update(parent)
     local next = self
     if not self.bStarted then
@@ -24,6 +24,7 @@ function mt:update(parent)
         self.bStarted = true;
     end
     if self.iCount >= 120 then
+        next = (require "Sequence.Game.Play"):new()
     elseif self.iCount >= 60 then
         Framework:drawDebugString(1, 2, "GO!")
     else
@@ -37,6 +38,10 @@ function mt:update(parent)
 end
 
 function mt:destroy()
+end
+
+function mt:getType()
+    return Enum.UIType.View
 end
 
 return Ready

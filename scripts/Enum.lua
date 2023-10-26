@@ -7,6 +7,13 @@ local Obj = {
     empty = 6,
 }
 
+
+local UIType = {
+    Scence = 1,
+    View = 2
+}
+
+
 local State = {
     title = 1,
     loading = 2,
@@ -81,4 +88,5 @@ Enum = {
     Input = Input,
     InputToDirection = InputToDirection,
     Mode = Mode,
+    UIType = UIType,
 }
