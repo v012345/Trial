@@ -537,7 +537,6 @@ namespace GameLib {
                 } else {
                     bytes_per_pixel = 3; // The image does not have an alpha channel
                 }
-                lua_newtable(L);
                 mWidth = width;
                 mHeight = height;
                 mData = new unsigned[mWidth * mHeight];
