@@ -64,36 +64,11 @@ function Framework:drawDebugString(c, r, text, color) end
 ---@return boolean
 function Framework:isKeyTriggered(c) return true end
 
----游戏使用到的数据, 在 c 中定义的空表
-Game = {}
----@class Image
-Image = {
-    { 0xffff0000, 0xffff0000, 0xffff0000 },
-    { 0xffff0000, 0xffff0000, 0xffff0000 },
-    { 0xffff0000, 0xffff0000, 0xffff0000 },
-}
-
----@class StageData
-StageData = {
-    { 0, 0, 0 },
-    { 0, 0, 0 },
-    { 0, 0, 0 }
-}
-
----@class BitMatrix
-BitMatrix = {
-    { 0, 0, 0 },
-    { 0, 0, 0 },
-    { 0, 0, 0 }
-}
-
 ---comment
 ---@param char integer unicode
 ---@param width integer
 ---@param height integer
 ---@param color integer
 ---@param font string
----@return BitMatrix
 function GetFontBmp(char, width, height, color, font)
-    return BitMatrix
 end
