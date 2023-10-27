@@ -513,6 +513,126 @@ namespace GameLib {
         // 不允许来自其他线程的调用
         ASSERT(WindowCreator::isMainThread() && "you must call from MAIN thread");
     }
+    namespace {
+        class Image {
+          public:
+            Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
+                FILE* fp = fopen(filename, "rb");
+                png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+                png_infop info = png_create_info_struct(png);
+                png_init_io(png, fp);
+                png_read_info(png, info);
+                int width = png_get_image_width(png, info);
+                int height = png_get_image_height(png, info);
+                int bit_depth = png_get_bit_depth(png, info);
+                int color_type = png_get_color_type(png, info);
+                png_bytep* row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
+                for (int y = 0; y < height; y++) { //
+                    row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png, info));
+                }
+                png_read_image(png, row_pointers);
+                int bytes_per_pixel;
+                if (color_type & PNG_COLOR_MASK_ALPHA) {
+                    bytes_per_pixel = 4; // The image has an alpha channel
+                } else {
+                    bytes_per_pixel = 3; // The image does not have an alpha channel
+                }
+                lua_newtable(L);
+                mWidth = width;
+                mHeight = height;
+                mData = new unsigned[mWidth * mHeight];
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        unsigned j = row_pointers[y][x * bytes_per_pixel] << 16;
+                        j += row_pointers[y][x * bytes_per_pixel + 1] << 8;
+                        j += row_pointers[y][x * bytes_per_pixel + 2];
+                        if (bytes_per_pixel == 4) { //
+                            j += row_pointers[y][x * bytes_per_pixel + 3] << 24;
+                        } else {
+                            j += 0xff000000;
+                        }
+                        mData[y * height + x] = j;
+                    }
+                }
+                fclose(fp);
+                for (int y = 0; y < height; y++) { free(row_pointers[y]); }
+                free(row_pointers);
+                png_destroy_read_struct(&png, &info, NULL);
+            }
+            ~Image() {
+                delete[] mData;
+                mData = nullptr;
+            }
+            int width() const { return mWidth; }
+            int height() const { return mHeight; }
+            void draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const {
+                unsigned* vram = Framework::instance().videoMemory();
+                int windowWidth = Framework::instance().width();
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
+                        unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
+                        *dst = blend(src, *dst);
+                    }
+                }
+            }
+            void draw() const { draw(0, 0, 0, 0, mWidth, mHeight); }
+
+          private:
+            int mWidth;
+            int mHeight;
+            unsigned* mData;
+            unsigned blend(unsigned src, unsigned dst) const {
+                unsigned srcA = (src & 0xff000000) >> 24;
+                unsigned srcR = src & 0xff0000;
+                unsigned srcG = src & 0x00ff00;
+                unsigned srcB = src & 0x0000ff;
+                unsigned dstR = dst & 0xff0000;
+                unsigned dstG = dst & 0x00ff00;
+                unsigned dstB = dst & 0x0000ff;
+                unsigned r = (srcR - dstR) * srcA / 255 + dstR;
+                unsigned g = (srcG - dstG) * srcA / 255 + dstG;
+                unsigned b = (srcB - dstB) * srcA / 255 + dstB;
+                return (r & 0xff0000) | (g & 0x00ff00) | b;
+            }
+        };
+    } // namespace
+    static int lua_image_draw(lua_State* L) {
+        Image** image = (Image**)lua_touserdata(L, 1);
+        (*image)->draw();
+        return 0;
+    }
+    static int lua_create_image_instance(lua_State* L) {
+        const char* filename = lua_tostring(L, 2);
+        Image** image = (Image**)lua_newuserdata(L, sizeof(Image**));
+        *image = new Image(filename);
+        lua_newtable(L);
+        lua_pushstring(L, "__index");
+        luaL_getmetatable(L, "class_image_metatable");
+        lua_settable(L, -3);
+        lua_setmetatable(L, -2);
+        return 1;
+    }
+
+    static int luaopen_Image(lua_State* L) {
+        luaL_Reg class_image_metatable[] = {
+            {"draw", lua_image_draw}, //
+            {NULL, NULL},
+        };
+
+        luaL_newmetatable(L, "class_image_metatable");
+        luaL_setfuncs(L, class_image_metatable, 0);
+        lua_pop(L, 1);
+
+        lua_newtable(L);
+        lua_newtable(L);
+        lua_pushstring(L, "__call");
+        lua_pushcfunction(L, lua_create_image_instance);
+        lua_settable(L, -3);
+        lua_setmetatable(L, -2);
+        lua_setglobal(L, "Image");
+        return 1;
+    }
 
     void Framework::create() {
         ASSERT(!gImpl);
@@ -544,6 +664,7 @@ namespace GameLib {
         luaL_requiref(L, "Framework", luaopen_Framework, 1);
         luaL_dofile(L, CMAKE_SOURCE_DIR "scripts/Framework.lua");
         lua_pop(L, 1); /* remove lib */
+        luaopen_Image(L);
 #ifdef LUA_MAIN_SCRIPT
         luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
