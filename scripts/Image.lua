@@ -4,6 +4,7 @@ Image = {}
 
 setmetatable(Image, {
     __call = function(self, filename)
+        ---@class Image
         local obj = {}
         function obj:isA(what)
             return Image == what

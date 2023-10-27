@@ -7,6 +7,7 @@ GameReady = {}
 setmetatable(GameReady, {
     __call = function(self, mImage, mCount, mStarted)
         ---@class GameReady:GameBase
+        ---@field mImage Image
         local obj = {}
         function obj:isA(what)
             if GameReady == what then

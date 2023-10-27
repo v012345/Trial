@@ -6,13 +6,13 @@ setmetatable(State, {
     __call = function(self, stageID)
         ---@class State:Object
         local obj = {}
+        obj.mImage = Image(CMAKE_SOURCE_DIR .. "res/dummy.png")
         function obj:isA(what)
             return State == what
         end
 
         function obj:update()
-            -- return self:update(p)
-            -- error("plz implementions update")
+            self.mImage:draw()
         end
 
         function obj:hasCleared() end
