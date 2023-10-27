@@ -30,7 +30,7 @@ setmetatable(GameDirector, {
             local nextChild = self.mChild:update(self)
             if nextChild ~= next then
                 if nextChild:isA(GameBase) then
-                    self.tChild = nextChild
+                    self.mChild = nextChild
                 else
                     next = nextChild
                 end
@@ -83,7 +83,10 @@ setmetatable(GameDirector, {
             return r;
         end
 
-        setmetatable(obj, { __index = ScenceBase() })
+        setmetatable(obj, {
+            __index = ScenceBase(),
+            __tostring = function() return "GameDirector" end
+        })
         return obj
     end
 })

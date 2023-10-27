@@ -43,7 +43,10 @@ setmetatable(Director, {
         end
 
         Director.mInstance = obj
-        setmetatable(obj, { __index = Object() })
+        setmetatable(obj, {
+            __index = Object(),
+            __tostring = function() return "Director" end
+        })
         return obj
     end
 })

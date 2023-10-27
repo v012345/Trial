@@ -41,10 +41,14 @@ local Keyboard = {
     E = 101,
     S = 115,
     W = 119,
+    P = 112,
     Q = 113,
     R = 114,
     Space = 32,
     Shift = 131,
+    One = 49,
+    Two = 50,
+    Three = 51,
 }
 
 local Input = {

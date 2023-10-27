@@ -16,7 +16,6 @@ setmetatable(Title, {
 
         ---comment
         ---@param director Director
-        ---@return GameParent|Title
         function obj:update(director)
             local next = self
             if Framework:isKeyTriggered(Enum.Keyboard.S) then
@@ -48,7 +47,10 @@ setmetatable(Title, {
             return next
         end
 
-        setmetatable(obj, { __index = ScenceBase() })
+        setmetatable(obj, {
+            __index = ScenceBase(),
+            __tostring = function() return "Title" end
+        })
         return obj
     end
 })
