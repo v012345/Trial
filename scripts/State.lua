@@ -5,6 +5,7 @@ State = {
 setmetatable(State, {
     __call = function(self, stageID)
         ---@class State:Object
+        ---@field mImage Image
         local obj = {}
         obj.mImage = Image(CMAKE_SOURCE_DIR .. "res/dummy.png")
         function obj:isA(what)

@@ -5,14 +5,15 @@ xpcall(function()
     require "Image"
     require "ScenceBase"
     require "Director"
-    -- Framework:init()
+    Framework:init()
     local t1 = Framework:time()
     ---@type Director
     local director = Director()
     function MainLoop()
         xpcall(function()
+            Framework:fixFPS()
             director:update()
-            Framework:drawDebugString(70, 1, tostring(math.ceil(1000 / (Framework:time() - t1))))
+            Framework:drawDebugString(70, 1, "FPS:" .. tostring(math.ceil(1000 / (Framework:time() - t1))))
             t1 = Framework:time()
         end, function(msg)
             print(msg)
