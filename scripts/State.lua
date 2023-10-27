@@ -1,17 +1,27 @@
 require "Object"
-State = {}
+State = {
+    STAGE_ID_2PLAYERS = 0
+}
 setmetatable(State, {
-    __call = function(self)
+    __call = function(self, stageID)
         ---@class State:Object
         local obj = {}
         function obj:isA(what)
             return State == what
         end
 
-        function obj:update(p)
+        function obj:update()
             -- return self:update(p)
             error("plz implementions update")
         end
+
+        function obj:hasCleared() end
+
+        function obj:isAlive(playerID) end
+
+        function obj:draw() end
+
+        function obj:setFire() end
 
         setmetatable(obj, { __index = Object() })
         return obj

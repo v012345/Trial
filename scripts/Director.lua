@@ -47,4 +47,8 @@ setmetatable(Director, {
         return obj
     end
 })
+function Director:instance()
+    return self.mInstance
+end
+
 Director()
