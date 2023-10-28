@@ -601,6 +601,13 @@ namespace GameLib {
         (*image)->draw();
         return 0;
     }
+    static int lua_image_gc(lua_State* L) {
+        Image** image = (Image**)lua_touserdata(L, 1);
+        delete *image;
+        *image = nullptr;
+        image = nullptr;
+        return 0;
+    }
     static int lua_create_image_instance(lua_State* L) {
         const char* filename = lua_tostring(L, 2);
         Image** image = (Image**)lua_newuserdata(L, sizeof(Image**));
@@ -608,6 +615,9 @@ namespace GameLib {
         lua_newtable(L);
         lua_pushstring(L, "__index");
         luaL_getmetatable(L, "class_image_metatable");
+        lua_settable(L, -3);
+        lua_pushstring(L, "__gc");
+        lua_pushcfunction(L, lua_image_gc);
         lua_settable(L, -3);
         lua_setmetatable(L, -2);
         return 1;
