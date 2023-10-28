@@ -550,7 +550,7 @@ namespace GameLib {
                         } else {
                             j += 0xff000000;
                         }
-                        mData[y * height + x] = j;
+                        mData[y * width + x] = j;
                     }
                 }
                 fclose(fp);
