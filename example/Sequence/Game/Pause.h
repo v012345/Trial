@@ -12,10 +12,10 @@ class Pause : public Child{
 public:
 	Pause();
 	~Pause();
-	Base* update( Parent* );
+	void update( Parent* );
 private:
 	Image* mImage;
-	int mCursorPosistion; 
+	int mCursorPosition; 
 };
 
 } //namespace Game

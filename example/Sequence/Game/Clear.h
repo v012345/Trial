@@ -12,7 +12,7 @@ class Clear : public Child{
 public:
 	Clear();
 	~Clear();
-	Base* update( Parent* );
+	void update( Parent* );
 private:
 	Image* mImage;
 	int mCount;

@@ -4,8 +4,6 @@ using namespace GameLib;
 
 #include "Sequence/Game/Failure.h"
 #include "Sequence/Game/Parent.h"
-#include "Sequence/Game/Ready.h"
-#include "Sequence/GameOver.h"
 #include "Image.h"
 
 namespace Sequence{
@@ -19,13 +17,12 @@ Failure::~Failure(){
 	SAFE_DELETE( mImage );
 }
 
-Base* Failure::update( Parent* parent ){
-	Base* next = this;
+void Failure::update( Parent* parent ){
 	if ( mCount == 60 ){ //1等待秒
 		if ( parent->lifeNumber() == 0 ){
-			next = new GameOver;
+			parent->moveTo( Parent::NEXT_GAME_OVER ); 
 		}else{
-			next = new Ready;
+			parent->moveTo( Parent::NEXT_READY );
 		}
 	}
 	//绘制
@@ -37,8 +34,6 @@ Base* Failure::update( Parent* parent ){
 	Framework::instance().drawDebugString( 0, 0, "Ah!" );
 
 	++mCount;
-
-	return next;
 }
 
 } //namespace Game

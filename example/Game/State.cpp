@@ -1,11 +1,10 @@
-﻿#include "GameLib/Gamelib.h"
-#include "Games/Framework.h"
+﻿#include "Games/Framework.h"
 
 #include "Game/DynamicObject.h"
 #include "Game/State.h"
 #include "Game/StaticObject.h"
-
 #include "Image.h"
+#include "SoundManager.h"
 
 using namespace GameLib;
 
@@ -74,7 +73,7 @@ State::State(int stageID) : mImage(0), mDynamicObjects(0), mDynamicObjectNumber(
             } else if (y + x < 4) {
                 // 前三个网格是地面
             } else if ((stageID == 0) && (y + x > (WIDTH + HEIGHT - 6))) {
-                // 如果有两个人，请在右下角留三个网格
+                ; // 如果有两个人，请在右下角留三个网格
             } else { // 其余的是砖或地板。随机决定
                 if (f.getRandom(100) < stageData.mBrickRate) {
                     o.setFlag(StaticObject::FLAG_BRICK);
@@ -172,9 +171,11 @@ void State::update() {
                     if (o.mCount == EXPLOSION_TIME) { // 到了爆炸时刻
                         o.setFlag(StaticObject::FLAG_EXPLODING);
                         o.mCount = 0;
+                        SoundManager::instance()->playSe(SoundManager::SE_EXPLOSION);
                     } else if (o.checkFlag(StaticObject::FLAG_FIRE_X | StaticObject::FLAG_FIRE_Y)) { // 爆炸
                         o.setFlag(StaticObject::FLAG_EXPLODING);
                         o.mCount = 0;
+                        SoundManager::instance()->playSe(SoundManager::SE_EXPLOSION);
                     }
                 }
             } else if (o.checkFlag(StaticObject::FLAG_BRICK)) { // 对于砖，需要判断烧尽
@@ -281,6 +282,7 @@ void State::update() {
                         o.mLastBombX[1] = x;
                         o.mLastBombY[1] = y;
                     }
+                    SoundManager::instance()->playSe(SoundManager::SE_SET_BOMB);
                 }
             }
         }

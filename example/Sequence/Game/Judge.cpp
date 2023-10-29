@@ -6,13 +6,11 @@ using namespace GameLib;
 #include "Pad.h"
 #include "Sequence/Game/Judge.h"
 #include "Sequence/Game/Parent.h"
-#include "Sequence/Game/Ready.h"
-#include "Sequence/Title.h"
 
 namespace Sequence{
 namespace Game{
 
-Judge::Judge() : mImage( 0 ), mCursorPosistion( 0 ){
+Judge::Judge() : mImage( 0 ), mCursorPosition( 0 ){
 	mImage = new Image( CMAKE_CURRENT_SOURCE_DIR"data/image/dummy.dds" );
 }
 
@@ -20,25 +18,24 @@ Judge::~Judge(){
 	SAFE_DELETE( mImage );
 }
 
-Base* Judge::update( Parent* parent ){
-	Base* next = this;
+void Judge::update( Parent* parent ){
 	if ( Pad::isTriggered( Pad::U ) ){
-		--mCursorPosistion;
-		if ( mCursorPosistion < 0 ){ //
- 			mCursorPosistion = 1;
+		--mCursorPosition;
+		if ( mCursorPosition < 0 ){ //
+ 			mCursorPosition = 1;
 		}
 	}else if ( Pad::isTriggered( Pad::D ) ){
-		++mCursorPosistion;
-		if ( mCursorPosistion > 1 ){ //1越过0就循环成0
-			mCursorPosistion = 0;
+		++mCursorPosition;
+		if ( mCursorPosition > 1 ){ //1越过0就循环成0
+			mCursorPosition = 0;
 		}
 	}else if ( Pad::isTriggered( Pad::A ) ){
-		if ( mCursorPosistion == 0 ){
+		if ( mCursorPosition == 0 ){
 			//
-			next = new Ready;
-		}else if ( mCursorPosistion == 1 ){
+			parent->moveTo( Parent::NEXT_READY );
+		}else if ( mCursorPosition == 1 ){
 			//到主题
-			next = new Title;
+			parent->moveTo( Parent::NEXT_TITLE );
 		}
 	}
 	//绘制
@@ -60,12 +57,11 @@ Base* Judge::update( Parent* parent ){
 		f.drawDebugString( 0, 1, "nobody win" );
 	}
 	//菜单
-	f.drawDebugString( 1, 3, "game continue" );
-	f.drawDebugString( 1, 4, "return title" );
+	f.drawDebugString( 1, 3, "mada" );//
+	f.drawDebugString( 1, 4, "yamete" );//
 	//写光标
-	f.drawDebugString( 0, mCursorPosistion + 3, ">" );
 
-	return next;
+	f.drawDebugString( 0, mCursorPosition + 3, ">" );
 }
 
 

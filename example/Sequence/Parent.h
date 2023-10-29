@@ -1,34 +1,45 @@
 ﻿#ifndef INCLUDED_SEQUENCE_PARENT_H
 #define INCLUDED_SEQUENCE_PARENT_H
 
-namespace Sequence{
-class Child;
+namespace Sequence {
+    class Child;
 
-class Parent{
-public:
-	enum Mode{
-		MODE_1P,
-		MODE_2P,
-		MODE_NONE,
-	};
-	void update();
-	Mode mode() const;
-	void setMode( Mode );
+    class Parent {
+      public:
+        enum NextSequence {
+            NEXT_TITLE,
+            NEXT_GAME,
+            NEXT_GAME_OVER,
+            NEXT_ENDING,
 
-	static void create();
-	static void destroy();
-	static Parent* instance();
-private:
-	Parent();
-	~Parent();
+            NEXT_NONE,
+        };
+        enum Mode {
+            MODE_1P,
+            MODE_2P,
+            MODE_NONE,
+        };
+        void update();
+        void moveTo(NextSequence);
+        Mode mode() const;
+        void setMode(Mode);
 
-	Mode mMode;
+        static void create();
+        static void destroy();
+        static Parent* instance();
 
-	Child* mChild;
+      private:
+        Parent();
+        ~Parent();
 
-	static Parent* mInstance;
-};
+        NextSequence mNextSequence;
+        Mode mMode;
 
-} //namespace Sequence
+        Child* mChild;
+
+        static Parent* mInstance;
+    };
+
+} // namespace Sequence
 
 #endif

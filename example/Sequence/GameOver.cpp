@@ -4,7 +4,6 @@ using namespace GameLib;
 
 #include "Sequence/GameOver.h"
 #include "Sequence/Parent.h"
-#include "Sequence/Title.h"
 #include "Image.h"
 
 namespace Sequence{
@@ -17,19 +16,16 @@ GameOver::~GameOver(){
 	SAFE_DELETE( mImage );
 }
 
-Base* GameOver::update( Parent* ){
-	Base* next = this;
+void GameOver::update( Parent* parent ){
 	if ( mCount == 60 ){ //1等待秒
-		next = new Title;
+		parent->moveTo( Parent::NEXT_TITLE );
 	}
 	//绘制
 	mImage->draw();
 	//输出文字
-	Framework::instance().drawDebugString( 0, 0, "game over" );
+	Framework::instance().drawDebugString( 0, 0, "game over" );//
 
 	++mCount;
-
-	return next;
 }
 
 } //namespace Sequence

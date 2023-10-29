@@ -12,11 +12,11 @@ namespace Sequence {
       public:
         Title();
         ~Title();
-        Base* update(Parent*);
+        void update(Parent*);
 
       private:
         Image* mImage; // 主题画面
-        int mCursorPosistion;
+        int mCursorPosition;
     };
 
 } // namespace Sequence

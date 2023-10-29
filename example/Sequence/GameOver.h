@@ -12,7 +12,7 @@ class GameOver : public Child{
 public:
 	GameOver();
 	~GameOver();
-	Base* update( Parent* );
+	void update( Parent* );
 private:
 	Image* mImage;
 	int mCount;
