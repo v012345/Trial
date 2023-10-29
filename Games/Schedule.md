@@ -1,1 +1,1 @@
-准备使用 lua 实现 BakudanBitoWithImprovedSequence3
+准备使用 lua 来看看显卡的渲染能力

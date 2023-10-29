@@ -16,8 +16,6 @@ namespace GameLib {
         int width() const;
         /// 获取画面高度
         int height() const;
-        // 获取VRAM
-        unsigned* videoMemory();
         // 向Framework发出结束命令
         void requestEnd();
         // 检查Framework是否发出结束命令
