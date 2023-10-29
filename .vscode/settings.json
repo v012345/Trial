@@ -83,7 +83,10 @@
         "ranges": "cpp",
         "span": "cpp",
         "string_view": "cpp",
-        "lauxlib.h": "c"
+        "lauxlib.h": "c",
+        "future": "cpp",
+        "xhash": "cpp",
+        "*.in": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"
