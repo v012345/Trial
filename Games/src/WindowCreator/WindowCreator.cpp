@@ -31,13 +31,24 @@ namespace GameLib {
         class Impl {
           public:
             Impl()
-                : mWidth(640), mHeight(480), mFullScreen(false), mMinimized(false), mActive(false), mTitle("A GameLib Application"), mCommandLine(""), mEndRequested(false), mEnded(false),
-                  mStarted(false), mFullScreenForbidden(false), mDragAndDropEnabled(false), mMouseWheel(0), mTimeBias(0) {
+                : mWidth(640),
+                  mHeight(480),
+                  mFullScreen(false),
+                  mMinimized(false),
+                  mActive(false),
+                  mTitle("A GameLib Application"),
+                  mCommandLine(""),
+                  mEndRequested(false),
+                  mEnded(false),
+                  mStarted(false),
+                  mFullScreenForbidden(false),
+                  mDragAndDropEnabled(false),
+                  mMouseWheel(0),
+                  mTimeBias(0) {
                 // 计算getTime的偏差值（）
                 unsigned time = timeGetTime();
                 mTimeBias = 0xffffffff - time;
                 mTimeBias -= 60000; // 60秒。
-
                 // 获取线程ID
                 mThreadId = GetCurrentThreadId();
             }

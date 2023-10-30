@@ -83,3 +83,5 @@ AllowShortCaseLabelsOnASingleLine: true
 BreakBeforeBraces: Custom
 
 NamespaceIndentation: All
+#保持参数在同一行
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
