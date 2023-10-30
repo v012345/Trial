@@ -91,8 +91,9 @@ add_library(SceneManager STATIC
 target_include_directories(SceneManager PRIVATE src)
 
 add_library(GameLib STATIC
-    "Framework.cpp"
+    "GameLib/Framework.cpp"
 )
+target_include_directories(GameLib PRIVATE include)
 
 target_link_libraries(GameLib
     Base
