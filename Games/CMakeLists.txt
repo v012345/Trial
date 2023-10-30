@@ -93,11 +93,6 @@ target_include_directories(SceneManager PRIVATE src)
 add_library(GameLib STATIC
     "Framework.cpp"
 )
-target_compile_definitions(GameLib PRIVATE
-    LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/Main.lua"
-    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
-    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
-)
 
 target_link_libraries(GameLib
     Base

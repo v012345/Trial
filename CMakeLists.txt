@@ -40,6 +40,8 @@ target_include_directories(Game PRIVATE
 )
 target_compile_definitions(Game PRIVATE
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
+    LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/Main.lua"
+    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
 )
 
 target_link_libraries(Game
