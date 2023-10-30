@@ -114,8 +114,4 @@ target_link_libraries(GameLib
     dsound
     dinput8
     dxguid
-    liblua
-    lfs
-    png_shared
-    freetype
 )

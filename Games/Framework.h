@@ -62,7 +62,6 @@ namespace GameLib {
         void postUpdate();
         static void create();
         static void destroy();
-        lua_State* L = nullptr;
     };
 
 } // namespace GameLib
