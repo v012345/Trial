@@ -1,6 +1,5 @@
 #ifndef INCLUDED_GAMELIB_FRAMEWORK_H
 #define INCLUDED_GAMELIB_FRAMEWORK_H
-#include "../lua/src/lua.hpp"
 
 namespace GameLib {
 
