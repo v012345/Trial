@@ -86,7 +86,19 @@
         "lauxlib.h": "c",
         "future": "cpp",
         "xhash": "cpp",
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "bitset": "cpp",
+        "condition_variable": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "deque": "cpp",
+        "filesystem": "cpp",
+        "forward_list": "cpp",
+        "functional": "cpp",
+        "iomanip": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"

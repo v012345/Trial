@@ -12,12 +12,21 @@ xpcall(function()
     -- local t1 = Framework:time()
     -- ---@type Director
     -- local director = Director()
+    local s = {}
+    for i = 1, 100, 1 do
+        s[#s + 1] = Framework:time()
+    end
+
     function MainLoop()
         xpcall(function()
             -- Framework:fixFPS()
             -- director:update()
-            -- Framework:drawDebugString(70, 1, "FPS:" .. tostring(math.ceil(1000 / (Framework:time() - t1))))
-            -- t1 = Framework:time()
+            -- Framework:drawDebugString(70, 1,
+            print("FPS:" .. tostring(math.ceil(100000 / (Framework:time() - s[1]))))
+            for i = 1, 99, 1 do
+                s[i] = s[i + 1]
+            end
+            s[100] = Framework:time()
         end, function(msg)
             print(msg)
         end)
