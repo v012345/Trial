@@ -1,256 +1,224 @@
-﻿#include <algorithm>
-#include <fstream>
-#include <iostream>
+﻿#include <iostream> //必须包含这个头文件
 using namespace std;
+/*
 
-// 函数声明
-void readFile(char** buffer, int* size, const char* filename);
+这个示例中只会用到m这个变量。
+我们希望能够通过这个例子来窥探编译器后面的一些工作原理。
+编程过程中我们都能体会到自由定义变量的便利，
+这里我们尝试来探究这种机制是怎么实现的。
 
-// 二维数组类
-// 不知道读者是否熟悉模板的用法？如果不熟悉可能需要学习一下相关基础
-// 类定义中出现了T，具体使用时根据需要会被替换成int或者bool等具体类型
-template <class T> class Array2D {
-  public:
-    Array2D() : mArray(0) {}
-    ~Array2D() {
-        delete[] mArray;
-        mArray = 0; // 为安全起见，把指针值设为0
-    }
-    void setSize(int size0, int size1) {
-        mSize0 = size0;
-        mSize1 = size1;
-        mArray = new T[size0 * size1];
-    }
-    T& operator()(int index0, int index1) { return mArray[index1 * mSize0 + index0]; }
-    const T& operator()(int index0, int index1) const { return mArray[index1 * mSize0 + index0]; }
+[内存的使用方法]
 
-  private:
-    T* mArray;
-    int mSize0;
-    int mSize1;
+0     : 用于存放函数的参数和返回值
+1-17  : 这块区域供函数内任意使用。在函数结束后将销毁
+18    : 8 //宽度
+19    : 5 //海拔高度
+20-59 : 8x5的状态数组
+60-99 : 用字符串存储的舞台数据
+*/
+
+char m[100]; // 内存。只用到100个字节
+
+enum Object {
+    OBJ_SPACE,
+    OBJ_WALL,
+    OBJ_GOAL,
+    OBJ_BLOCK,
+    OBJ_BLOCK_ON_GOAL,
+    OBJ_MAN,
+    OBJ_MAN_ON_GOAL,
+
+    OBJ_UNKNOWN,
 };
 
-// 状态类
-class State {
-  public:
-    State(const char* stageData, int size);
-    void update(char input);
-    void draw() const;
-    bool hasCleared() const;
+// 函数原型
+void initializeGlobalVariables();
+void initialize();
+void draw();
+void update();
+void checkClear();
 
-  private:
-    enum Object {
-        OBJ_SPACE,
-        OBJ_WALL,
-        OBJ_BLOCK,
-        OBJ_MAN,
-        OBJ_UNKNOWN,
+int main() {
+    // 全局变量初始化
+    initializeGlobalVariables();
 
-        OBJ_GOAL_FLAG = (1 << 7), // 终点标记位
-    };
-    void setSize(const char* stageData, int size);
-
-    int mWidth;
-    int mHeight;
-    Array2D<unsigned char> mObjects; // 由于位运算的需要，这里使用unsigned char类型。
-};
-
-int main(int argc, char** argv) {
-    const char* filename = CMAKE_CURRENT_SOURCE_DIR "stageData.txt";
-    if (argc >= 2) { filename = argv[1]; }
-    char* stageData;
-    int fileSize;
-    readFile(&stageData, &fileSize, filename);
-    if (!stageData) {
-        cout << "stage file could not be read." << endl;
-        return 1;
-    }
-    State* state = new State(stageData, fileSize);
-
+    initialize(); // 舞台初始化
     // 主循环
     while (true) {
-        // 首先绘制
-        state->draw();
-        // 通关检测
-        if (state->hasCleared()) {
+        // 首先是绘制
+        draw();
+        // 通关检测，结果放入m[0]中
+        checkClear();
+        if (m[0] == 1) {
             break; // 通关检测
         }
         // 提示如何操作
         cout << "a:left s:right w:up z:down. command?" << endl; // 操作说明
-        char input;
-        cin >> input;
+        // 输入值存放到m[ 0 ]中
+        cin >> m[0];
         // 刷新
-        state->update(input);
+        update();
     }
     // 打印通关祝贺的信息
-    cout << "Congratulation's! you won." << endl;
-    // 析构
-    delete[] stageData;
-    stageData = 0;
+    cout << "Congratulation! you win." << endl;
 
-    // 无限循环（ctrl-C中断）
+    // 为了避免运行完一闪而过，这里添加一个无限循环。命令行中按下Ctrl-C即可终止
     while (true) { ; }
     return 0;
 }
 
 //---------------------下面是函数定义--------------
 
-void readFile(char** buffer, int* size, const char* filename) {
-    ifstream in(filename);
-    if (!in) {
-        *buffer = 0;
-        *size = 0;
-    } else {
-        in.seekg(0, ifstream::end);
-        *size = static_cast<int>(in.tellg());
-        in.seekg(0, ifstream::beg);
-        *buffer = new char[*size];
-        in.read(*buffer, *size);
-    }
-}
+// 该函数对m[60]开始的字符串进行解析，构建出状态数组存放到m[20]开始的位置
+void initialize() {
+    m[0] = 0; // 0号位置表示应该读取的下标值
+    m[1] = 0; // 1号位置表示当前的x坐标
+    m[2] = 0; // 2号位置表示当前的y坐标
 
-State::State(const char* stageData, int size) {
-    // 确保容量
-    setSize(stageData, size);
-    // 确保空间
-    mObjects.setSize(mWidth, mHeight);
-    // 预设初始值
-    for (int y = 0; y < mHeight; ++y) {
-        for (int x = 0; x < mWidth; ++x) {
-            mObjects(x, y) = OBJ_WALL; // 多余部分都设置为墙壁
-        }
-    }
-    int x = 0;
-    int y = 0;
-    for (int i = 0; i < size; ++i) {
-        unsigned char t;
-        switch (stageData[i]) {
-            case '#': t = OBJ_WALL; break;
-            case ' ': t = OBJ_SPACE; break;
-            case 'o': t = OBJ_BLOCK; break;
-            case 'O': t = OBJ_BLOCK | OBJ_GOAL_FLAG; break;
-            case '.': t = OBJ_SPACE | OBJ_GOAL_FLAG; break;
-            case 'p': t = OBJ_MAN; break;
-            case 'P': t = OBJ_MAN | OBJ_GOAL_FLAG; break;
+    while (m[60 + m[0]] != '\0') { // NULL之前的所有字符
+        // 存入3号位置
+        switch (m[60 + m[0]]) {
+            case '#': m[3] = OBJ_WALL; break;
+            case ' ': m[3] = OBJ_SPACE; break;
+            case 'o': m[3] = OBJ_BLOCK; break;
+            case 'O': m[3] = OBJ_BLOCK_ON_GOAL; break;
+            case '.': m[3] = OBJ_GOAL; break;
+            case 'p': m[3] = OBJ_MAN; break;
+            case 'P': m[3] = OBJ_MAN_ON_GOAL; break;
             case '\n':
-                x = 0;
-                ++y;
-                t = OBJ_UNKNOWN;
-                break; // 换行处理
-            default: t = OBJ_UNKNOWN; break;
+                m[1] = 0;
+                ++m[2];
+                m[3] = OBJ_UNKNOWN;
+                break; // 换行处理(++y)
+            default: m[3] = OBJ_UNKNOWN; break;
         }
-        if (t != OBJ_UNKNOWN) { // 这个if处理的意义在如果遇到未定义的元素值就跳过它
-            mObjects(x, y) = t; // 写入
-            ++x;
-        }
-    }
-}
-
-void State::setSize(const char* stageData, int size) {
-    mWidth = mHeight = 0; // 初始化
-    // 当前位置
-    int x = 0;
-    int y = 0;
-    for (int i = 0; i < size; ++i) {
-        switch (stageData[i]) {
-            case '#':
-            case ' ':
-            case 'o':
-            case 'O':
-            case '.':
-            case 'p':
-            case 'P': ++x; break;
-            case '\n':
-                ++y;
-                // 更新最大值
-                mWidth = max(mWidth, x);
-                mHeight = max(mHeight, y);
-                x = 0;
-                break;
+        ++m[0];
+        if (m[3] != OBJ_UNKNOWN) { // if判断用于忽略那些无法识别的字符
+            m[20 + m[2] * m[18] + m[1]] = m[3]; // 存起来 m[18]表示宽度
+            ++m[1]; //++x
         }
     }
 }
 
-void State::draw() const {
-    for (int y = 0; y < mHeight; ++y) {
-        for (int x = 0; x < mWidth; ++x) {
-            switch (mObjects(x, y)) {
-                case (OBJ_SPACE | OBJ_GOAL_FLAG): cout << '.'; break;
-                case (OBJ_WALL | OBJ_GOAL_FLAG): cout << '#'; break;
-                case (OBJ_BLOCK | OBJ_GOAL_FLAG): cout << 'O'; break;
-                case (OBJ_MAN | OBJ_GOAL_FLAG): cout << 'P'; break;
+void draw() {
+    for (m[0] = 0; m[0] < m[19]; ++m[0]) {
+        for (m[1] = 0; m[1] < m[18]; ++m[1]) {
+            m[2] = m[20 + m[0] * m[18] + m[1]];
+            switch (m[2]) {
                 case OBJ_SPACE: cout << ' '; break;
                 case OBJ_WALL: cout << '#'; break;
+                case OBJ_GOAL: cout << '.'; break;
                 case OBJ_BLOCK: cout << 'o'; break;
+                case OBJ_BLOCK_ON_GOAL: cout << 'O'; break;
                 case OBJ_MAN: cout << 'p'; break;
+                case OBJ_MAN_ON_GOAL: cout << 'P'; break;
             }
         }
         cout << endl;
     }
 }
 
-void State::update(char input) {
+void update() {
     // 移动量变换
-    int dx = 0;
-    int dy = 0;
-    switch (input) {
-        case 'a': dx = -1; break; // 向左
-        case 's': dx = 1; break; // 右
-        case 'w': dy = -1; break; // 上。Y朝下为正
-        case 'z': dy = 1; break; // 下。
+    m[1] = 0; // dx
+    m[2] = 0; // dy
+    switch (m[0]) { // 把input存入m[100]
+        case 'a': m[1] = -1; break; // 向左
+        case 's': m[1] = 1; break; // 右
+        case 'w': m[2] = -1; break; // 上。Y朝下为正
+        case 'z': m[2] = 1; break; // 下。
     }
-    // 使用较短的变量名。这里试着使用了C++中的“引用”。注意要加上const关键字
-    const int& w = mWidth;
-    const int& h = mHeight;
-    Array2D<unsigned char>& o = mObjects;
     // 查找小人的坐标
-    int x, y;
-    x = y = -1; // 危险值
-    bool found = false;
-    for (y = 0; y < h; ++y) {
-        for (x = 0; x < w; ++x) {
-            if ((o(x, y) & ~OBJ_GOAL_FLAG) == OBJ_MAN) { // 为了提取出终点标志以外的部分于是使用 & ~OBJ_GOAL_FLAG
-                found = true;
-                break;
-            }
-        }
-        if (found) { break; }
+    for (m[0] = 0; m[0] < m[18] * m[19]; ++m[0]) {
+        if (m[20 + m[0]] == OBJ_MAN || m[20 + m[0]] == OBJ_MAN_ON_GOAL) { break; }
     }
+    m[3] = m[0] % m[18]; // x是对宽度的余数
+    m[4] = m[0] / m[18]; // y是对宽度的商
+
     // 移动
     // 移动后的坐标
-    int tx = x + dx;
-    int ty = y + dy;
-    // 检测坐标的极端值。确保值位于合理范围内
-    if (tx < 0 || ty < 0 || tx >= w || ty >= h) { return; }
-    // A.该方向上是空白或者终点。则小人移动
-    if ((o(tx, ty) & ~OBJ_GOAL_FLAG) == OBJ_SPACE) {
-        o(tx, ty) = (o(tx, ty) & OBJ_GOAL_FLAG) | OBJ_MAN; // 为了保存终点标志位所以需要这步麻烦的操作。下面的代码也一样
-        o(x, y) = (o(x, y) & OBJ_GOAL_FLAG) | OBJ_SPACE;
+    m[5] = m[3] + m[1]; // tx
+    m[6] = m[4] + m[2]; // ty
+    // 判断坐标的极端值。不允许超出合理值范围
+    if (m[5] < 0 || m[6] < 0 || m[5] >= m[18] || m[6] >= m[19]) { return; }
+    // A.该方向上是空白或者终点。小人则移动
+    m[7] = 20 + m[4] * m[18] + m[3]; // 小人的位置
+    m[8] = 20 + m[6] * m[18] + m[5]; // 欲前往目标的位置
+    if (m[m[8]] == OBJ_SPACE || m[m[8]] == OBJ_GOAL) { // 如果要前往的位置还有空间
+        m[m[8]] = (m[m[8]] == OBJ_GOAL) ? OBJ_MAN_ON_GOAL : OBJ_MAN; // 如果该位置是终点，则将该位置值变为“终点上站着人”
+        m[m[7]] = (m[m[7]] == OBJ_MAN_ON_GOAL) ? OBJ_GOAL : OBJ_SPACE; // 如果该位置已经是“终点上站着人”，则变为“终点”
         // B.如果该方向上是箱子。并且该方向的下下个格子是空白或者终点，则允许移动
-    } else if (o(tx, ty) == OBJ_BLOCK) {
+    } else if (m[m[8]] == OBJ_BLOCK || m[m[8]] == OBJ_BLOCK_ON_GOAL) {
         // 检测同方向上的下下个格子是否位于合理值范围
-        int tx2 = tx + dx;
-        int ty2 = ty + dy;
-        if (tx2 < 0 || ty2 < 0 || tx2 >= w || ty2 >= h) { // 按键无效
+        m[9] = m[5] + m[1];
+        m[10] = m[6] + m[2];
+        if (m[9] < 0 || m[10] < 0 || m[9] >= m[18] || m[10] >= m[19]) { // 按键输入无效
             return;
         }
-        if ((o(tx2, ty2) & ~OBJ_GOAL_FLAG) == OBJ_SPACE) {
+
+        m[11] = 20 + (m[6] + m[2]) * m[18] + (m[5] + m[1]); // 下下个格子
+        if (m[m[11]] == OBJ_SPACE || m[m[11]] == OBJ_GOAL) {
             // 按顺序替换
-            o(tx2, ty2) = (o(tx2, ty2) & OBJ_GOAL_FLAG) | OBJ_BLOCK;
-            o(tx, ty) = (o(tx, ty) & OBJ_GOAL_FLAG) | OBJ_MAN;
-            o(x, y) = (o(x, y) & OBJ_GOAL_FLAG) | OBJ_SPACE;
+            m[m[11]] = (m[m[11]] == OBJ_GOAL) ? OBJ_BLOCK_ON_GOAL : OBJ_BLOCK;
+            m[m[8]] = (m[m[8]] == OBJ_BLOCK_ON_GOAL) ? OBJ_MAN_ON_GOAL : OBJ_MAN;
+            m[m[7]] = (m[m[7]] == OBJ_MAN_ON_GOAL) ? OBJ_GOAL : OBJ_SPACE;
         }
     }
 }
 
-// 只要还存在一个goalFlag值为false就不能判定为通关
-bool State::hasCleared() const {
-    for (int y = 0; y < mHeight; ++y) {
-        for (int x = 0; x < mWidth; ++x) {
-            if (mObjects(x, y) == OBJ_BLOCK) { // 没有终点标志的区块
-                return false;
-            }
+// 如果没有区块了则视为通关
+void checkClear() {
+    for (m[1] = 20; m[1] < 20 + m[18] * m[19]; ++m[1]) {
+        if (m[m[1]] == OBJ_BLOCK) {
+            m[0] = 0; // 返回值放入m[ 0 ]
+            return;
         }
     }
-    return true;
+    m[0] = 1; // 返回值放入m[ 0 ]
+    return;
+}
+
+// #墙 _空白区 .终点 o砖块 p人
+// ########\n\
+//# .. p #\n\
+//# oo   #\n\
+//#      #\n\
+//########";
+void initializeGlobalVariables() {
+    // 宽度为18
+    m[18] = 8;
+    // 高度为19
+    m[19] = 5;
+    // 第2行
+    m[68] = '#';
+    m[69] = ' ';
+    m[70] = '.';
+    m[71] = '.';
+    m[72] = ' ';
+    m[73] = 'p';
+    m[74] = ' ';
+    m[75] = '#';
+    // 第3行
+    m[76] = '#';
+    m[77] = ' ';
+    m[78] = 'o';
+    m[79] = 'o';
+    m[80] = ' ';
+    m[81] = ' ';
+    m[82] = ' ';
+    m[83] = '#';
+    // 第4行
+    m[84] = '#';
+    m[85] = ' ';
+    m[86] = ' ';
+    m[87] = ' ';
+    m[88] = ' ';
+    m[89] = ' ';
+    m[90] = ' ';
+    m[91] = '#';
+    // 第1行和第5行全部#
+    for (m[0] = 0; m[0] < m[18]; ++m[0]) {
+        m[60 + m[0]] = '#';
+        m[92 + m[0]] = '#';
+    }
 }
