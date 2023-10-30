@@ -12,11 +12,11 @@ add_executable(Example
 # "../include"
 # "../src"
 # )
+target_compile_definitions(Example PRIVATE
+    CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
 
-# target_compile_definitions(Example PRIVATE
-# CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
-# CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
-# )
+    # CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
+)
 
 # target_link_libraries(Example
 
