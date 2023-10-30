@@ -1,26 +1,19 @@
 
 file(GLOB_RECURSE SRCS *.cpp)
-add_executable(Book WIN32
+add_executable(Example WIN32
     ${SRCS}
-    "../Games/src/WindowCreator/WindowCreator.cpp"
+    # "../src/WindowCreator/WindowCreator.cpp"
 )
-target_include_directories(Book PRIVATE
-    "../Games/src"
-    "../Games/include"
-    ".."
-    "."
+target_include_directories(Example PRIVATE
+    "../include"
+    "../src"
 )
 
-target_compile_definitions(Book PRIVATE
+target_compile_definitions(Example PRIVATE
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
     CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
 )
 
-target_link_libraries(Book
-    GameLib
+target_link_libraries(Example
+    # GameLib
 )
-
-# add_custom_command(TARGET Book POST_BUILD
-# COMMAND ${CMAKE_COMMAND} -E copy
-# "${CMAKE_SOURCE_DIR}/log/stageData.txt"
-# ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
