@@ -44,15 +44,15 @@ class State {
         OBJ_WALL,
         OBJ_BLOCK,
         OBJ_MAN,
-
         OBJ_UNKNOWN,
+
+        OBJ_GOAL_FLAG = (1 << 7), // 终点标记位
     };
     void setSize(const char* stageData, int size);
 
     int mWidth;
     int mHeight;
-    Array2D<Object> mObjects;
-    Array2D<bool> mGoalFlags;
+    Array2D<unsigned char> mObjects; // 由于位运算的需要，这里使用unsigned char类型。
 };
 
 int main(int argc, char** argv) {
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
     // 主循环
     while (true) {
-        //
+        // 首先绘制
         state->draw();
         // 通关检测
         if (state->hasCleared()) {
@@ -114,36 +114,24 @@ State::State(const char* stageData, int size) {
     setSize(stageData, size);
     // 确保空间
     mObjects.setSize(mWidth, mHeight);
-    mGoalFlags.setSize(mWidth, mHeight);
     // 预设初始值
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
             mObjects(x, y) = OBJ_WALL; // 多余部分都设置为墙壁
-            mGoalFlags(x, y) = false; // 非终点
         }
     }
     int x = 0;
     int y = 0;
     for (int i = 0; i < size; ++i) {
-        Object t;
-        bool goalFlag = false;
+        unsigned char t;
         switch (stageData[i]) {
             case '#': t = OBJ_WALL; break;
             case ' ': t = OBJ_SPACE; break;
             case 'o': t = OBJ_BLOCK; break;
-            case 'O':
-                t = OBJ_BLOCK;
-                goalFlag = true;
-                break;
-            case '.':
-                t = OBJ_SPACE;
-                goalFlag = true;
-                break;
+            case 'O': t = OBJ_BLOCK | OBJ_GOAL_FLAG; break;
+            case '.': t = OBJ_SPACE | OBJ_GOAL_FLAG; break;
             case 'p': t = OBJ_MAN; break;
-            case 'P':
-                t = OBJ_MAN;
-                goalFlag = true;
-                break;
+            case 'P': t = OBJ_MAN | OBJ_GOAL_FLAG; break;
             case '\n':
                 x = 0;
                 ++y;
@@ -153,7 +141,6 @@ State::State(const char* stageData, int size) {
         }
         if (t != OBJ_UNKNOWN) { // 这个if处理的意义在如果遇到未定义的元素值就跳过它
             mObjects(x, y) = t; // 写入
-            mGoalFlags(x, y) = goalFlag; // 终点信息
             ++x;
         }
     }
@@ -187,22 +174,15 @@ void State::setSize(const char* stageData, int size) {
 void State::draw() const {
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
-            Object o = mObjects(x, y);
-            bool goalFlag = mGoalFlags(x, y);
-            if (goalFlag) {
-                switch (o) {
-                    case OBJ_SPACE: cout << '.'; break;
-                    case OBJ_WALL: cout << '#'; break;
-                    case OBJ_BLOCK: cout << 'O'; break;
-                    case OBJ_MAN: cout << 'P'; break;
-                }
-            } else {
-                switch (o) {
-                    case OBJ_SPACE: cout << ' '; break;
-                    case OBJ_WALL: cout << '#'; break;
-                    case OBJ_BLOCK: cout << 'o'; break;
-                    case OBJ_MAN: cout << 'p'; break;
-                }
+            switch (mObjects(x, y)) {
+                case (OBJ_SPACE | OBJ_GOAL_FLAG): cout << '.'; break;
+                case (OBJ_WALL | OBJ_GOAL_FLAG): cout << '#'; break;
+                case (OBJ_BLOCK | OBJ_GOAL_FLAG): cout << 'O'; break;
+                case (OBJ_MAN | OBJ_GOAL_FLAG): cout << 'P'; break;
+                case OBJ_SPACE: cout << ' '; break;
+                case OBJ_WALL: cout << '#'; break;
+                case OBJ_BLOCK: cout << 'o'; break;
+                case OBJ_MAN: cout << 'p'; break;
             }
         }
         cout << endl;
@@ -219,33 +199,33 @@ void State::update(char input) {
         case 'w': dy = -1; break; // 上。Y朝下为正
         case 'z': dy = 1; break; // 下。
     }
-    // 使用较短的变量名
-    int w = mWidth;
-    int h = mHeight;
-    Array2D<Object>& o = mObjects;
+    // 使用较短的变量名。这里试着使用了C++中的“引用”。注意要加上const关键字
+    const int& w = mWidth;
+    const int& h = mHeight;
+    Array2D<unsigned char>& o = mObjects;
     // 查找小人的坐标
     int x, y;
     x = y = -1; // 危险值
     bool found = false;
-    for (y = 0; y < mHeight; ++y) {
-        for (x = 0; x < mWidth; ++x) {
-            if (o(x, y) == OBJ_MAN) {
+    for (y = 0; y < h; ++y) {
+        for (x = 0; x < w; ++x) {
+            if ((o(x, y) & ~OBJ_GOAL_FLAG) == OBJ_MAN) { // 为了提取出终点标志以外的部分于是使用 & ~OBJ_GOAL_FLAG
                 found = true;
                 break;
             }
         }
         if (found) { break; }
     }
-    // 鱼洞
+    // 移动
     // 移动后的坐标
     int tx = x + dx;
     int ty = y + dy;
-    // 判断坐标的极端值。不允许超出合理值范围
+    // 检测坐标的极端值。确保值位于合理范围内
     if (tx < 0 || ty < 0 || tx >= w || ty >= h) { return; }
     // A.该方向上是空白或者终点。则小人移动
-    if (o(tx, ty) == OBJ_SPACE) {
-        o(tx, ty) = OBJ_MAN;
-        o(x, y) = OBJ_SPACE;
+    if ((o(tx, ty) & ~OBJ_GOAL_FLAG) == OBJ_SPACE) {
+        o(tx, ty) = (o(tx, ty) & OBJ_GOAL_FLAG) | OBJ_MAN; // 为了保存终点标志位所以需要这步麻烦的操作。下面的代码也一样
+        o(x, y) = (o(x, y) & OBJ_GOAL_FLAG) | OBJ_SPACE;
         // B.如果该方向上是箱子。并且该方向的下下个格子是空白或者终点，则允许移动
     } else if (o(tx, ty) == OBJ_BLOCK) {
         // 检测同方向上的下下个格子是否位于合理值范围
@@ -254,11 +234,11 @@ void State::update(char input) {
         if (tx2 < 0 || ty2 < 0 || tx2 >= w || ty2 >= h) { // 按键无效
             return;
         }
-        if (o(tx2, ty2) == OBJ_SPACE) {
+        if ((o(tx2, ty2) & ~OBJ_GOAL_FLAG) == OBJ_SPACE) {
             // 按顺序替换
-            o(tx2, ty2) = OBJ_BLOCK;
-            o(tx, ty) = OBJ_MAN;
-            o(x, y) = OBJ_SPACE;
+            o(tx2, ty2) = (o(tx2, ty2) & OBJ_GOAL_FLAG) | OBJ_BLOCK;
+            o(tx, ty) = (o(tx, ty) & OBJ_GOAL_FLAG) | OBJ_MAN;
+            o(x, y) = (o(x, y) & OBJ_GOAL_FLAG) | OBJ_SPACE;
         }
     }
 }
@@ -267,8 +247,8 @@ void State::update(char input) {
 bool State::hasCleared() const {
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
-            if (mObjects(x, y) == OBJ_BLOCK) {
-                if (mGoalFlags(x, y) == false) { return false; }
+            if (mObjects(x, y) == OBJ_BLOCK) { // 没有终点标志的区块
+                return false;
             }
         }
     }
