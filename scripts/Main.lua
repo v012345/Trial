@@ -1,9 +1,9 @@
 xpcall(function()
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
-    print(Image)
-    local x = Image(CMAKE_SOURCE_DIR .. "res/dummy.png")
-    x:draw()
+    -- print(Image)
+    -- local x = Image(CMAKE_SOURCE_DIR .. "res/dummy.png")
+    -- x:draw()
     -- require "init"
     -- require "Image"
     -- require "ScenceBase"

@@ -55,11 +55,19 @@
 //     luaopen_framework(this->L);
 // }
 namespace GameLib {
-    namespace {} // namespace
+    namespace {
+        lua_State* L = nullptr;
+    } // namespace
 
     void Framework::update() {
+        if (!L) {
+            L = luaL_newstate();
+            luaL_openlibs(L);
+            luaL_dofile(L, CMAKE_SOURCE_DIR "scripts/Main.lua");
+        }
+
         // lua_State* L = getLuaState();
-        // lua_getglobal(L, "MainLoop");
-        // lua_pcall(L, 0, 0, 0);
+        lua_getglobal(L, "MainLoop");
+        lua_pcall(L, 0, 0, 0);
     }
 } // namespace GameLib
