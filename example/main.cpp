@@ -1,57 +1,65 @@
 ﻿#include "GameLib/Framework.h"
-#include <fstream>
-using namespace std;
+using namespace GameLib;
 
-void readFile(char** buffer, int* size, const char* filename);
-unsigned getUnsigned(const char*);
+#include "File.h"
+#include "State.h"
 
-bool gFirst = true;
-int gImageWidth = 0;
-int gImageHeight = 0;
-unsigned* gImageData = 0;
+// 函数原型
+void mainLoop();
 
+// 全局变量
+State* gState = 0;
+
+// 用户封装函数。内容被抛出给mainLoop（）
 namespace GameLib {
-    void Framework::update() {
-        if (gFirst) {
-            gFirst = false;
-            char* buffer = 0;
-            int size = 0;
-            readFile(&buffer, &size, CMAKE_CURRENT_SOURCE_DIR "bar.dds");
-            gImageHeight = getUnsigned(&(buffer[12]));
-            gImageWidth = getUnsigned(&(buffer[16]));
-            gImageData = new unsigned[gImageWidth * gImageHeight];
-            for (int i = 0; i < gImageWidth * gImageHeight; ++i) { gImageData[i] = getUnsigned(&(buffer[128 + i * 4])); }
-        }
-        unsigned* vram = videoMemory();
-        unsigned windowWidth = width();
-        for (int y = 0; y < gImageHeight; ++y) {
-            for (int x = 0; x < gImageWidth; ++x) { vram[y * windowWidth + x] = gImageData[y * gImageWidth + x]; }
-        }
-    }
+    void Framework::update() { mainLoop(); }
 } // namespace GameLib
 
-// 读取文件
-void readFile(char** buffer, int* size, const char* filename) {
-    ifstream in(filename, ifstream::binary);
-    if (!in) {
-        *buffer = 0;
-        *size = 0;
-    } else {
-        in.seekg(0, ifstream::end);
-        *size = static_cast<int>(in.tellg());
-        in.seekg(0, ifstream::beg);
-        *buffer = new char[*size];
-        in.read(*buffer, *size);
+void mainLoop() {
+    // ×按钮被按下了吗？
+    if (Framework::instance().isEndRequested()) {
+        if (gState) {
+            delete gState;
+            gState = 0;
+        }
+        return;
     }
-}
+    // 初始化第一帧。绘制第一个状态并完成。
+    if (!gState) {
+        File file(CMAKE_CURRENT_SOURCE_DIR "stageData.txt");
+        if (!(file.data())) { // 没有数据！
+            cout << "stage file could not be read." << endl;
+            return;
+        }
+        gState = new State(file.data(), file.size());
+        // 第一绘制
+        gState->draw();
+        return; // 结束
+    }
+    bool cleared = false;
+    // 主循环
+    // 清除检测
+    if (gState->hasCleared()) { cleared = true; }
+    // 获取输入
+    cout << "a:left s:right w:up z:down. command?" << endl; // 操作说明
+    char input;
+    cin >> input;
+    // 结束判断
+    if (input == 'q') {
+        delete gState;
+        gState = 0;
+        Framework::instance().requestEnd();
+        return;
+    }
+    // 更新
+    gState->update(input);
+    // 绘制
+    gState->draw();
 
-// 转换为unsigned
-unsigned getUnsigned(const char* p) {
-    const unsigned char* up;
-    up = reinterpret_cast<const unsigned char*>(p);
-    unsigned r = up[0];
-    r |= up[1] << 8;
-    r |= up[2] << 16;
-    r |= up[3] << 24;
-    return r;
+    if (cleared) {
+        // 庆祝消息
+        cout << "Congratulation! you win." << endl;
+        delete gState;
+        gState = 0;
+    }
 }
