@@ -1,4 +1,13 @@
-#include "main.hpp"
+#include "libs/libpng/png.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include "lua/src/lua.hpp"
+// 防止自动格式换位置
+#include "extensions/luafilesystem/src/lfs.h"
+#include <conio.h>
+#include <stdlib.h>
+#include <string>
+#include <windows.h>
 static int Lua_SetConsoleCursorPosition(lua_State* L);
 static int Lua__getch(lua_State* L);
 static void read_png_file(const char* filename);
