@@ -19,10 +19,18 @@ $ git submodule update
 ## 编译
 使用 x86 架构编译, 因为原书项目有一个内存大小检查, 使用 amd64 会编译不通过
 
+## 目录结构
+1. Engine 就是原书的底层
+1. Example 原书的各个例子
+1. Game 我用 lua 和 c/c++ 扩展实现的相似功能
+1. extensions lua 功能的扩展
+1. libs c/c++ 功能扩展
+1. lua lua 源码
+
 ## 运行
 可执行文件中
 + Game 是运行 lua 脚本的逻辑
-+ Book 是运行原书项目的
++ Example 是运行原书项目的
 + Main 是一个测试新功能的东西
 
 ## 其他
