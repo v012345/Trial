@@ -61,10 +61,18 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
-            if (src & 0x80000000) { // 如果Alpha通道值为128或更大
-                unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
-                *dst = src;
-            }
+            unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
+            unsigned srcA = (src & 0xff000000) >> 24;
+            unsigned srcR = src & 0xff0000;
+            unsigned srcG = src & 0x00ff00;
+            unsigned srcB = src & 0x0000ff;
+            unsigned dstR = *dst & 0xff0000;
+            unsigned dstG = *dst & 0x00ff00;
+            unsigned dstB = *dst & 0x0000ff;
+            unsigned r = (srcR - dstR) * srcA / 255 + dstR;
+            unsigned g = (srcG - dstG) * srcA / 255 + dstG;
+            unsigned b = (srcB - dstB) * srcA / 255 + dstB;
+            *dst = (r & 0xff0000) | (g & 0x00ff00) | b;
         }
     }
 }
