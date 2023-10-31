@@ -50,6 +50,8 @@ class State {
         OBJ_UNKNOWN,
     };
     void setSize(const char* stageData, int size);
+    // 网格绘制函数
+    static void drawCell(int x, int y, unsigned color);
 
     int mWidth;
     int mHeight;
@@ -80,7 +82,7 @@ void mainLoop() {
         // 析构
         delete[] stageData;
         stageData = 0;
-        // 第一绘制
+        // 第一次绘制
         gState->draw();
         return; // 直接结束本次处理
     }
@@ -131,7 +133,7 @@ State::State(const char* stageData, int size) {
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
             mObjects(x, y) = OBJ_WALL; // 先全部设置为墙壁
-            mGoalFlags(x, y) = false; // 非终点
+            mGoalFlags(x, y) = false; // 不是终点
         }
     }
     int x = 0;
@@ -160,7 +162,7 @@ State::State(const char* stageData, int size) {
                 x = 0;
                 ++y;
                 t = OBJ_UNKNOWN;
-                break; // 换行处理
+                break; // 换行
             default: t = OBJ_UNKNOWN; break;
         }
         if (t != OBJ_UNKNOWN) { // 这个if处理的意义在如果遇到未定义的元素值就跳过它
@@ -197,8 +199,6 @@ void State::setSize(const char* stageData, int size) {
 }
 
 void State::draw() const {
-    unsigned* vram = Framework::instance().videoMemory();
-    unsigned windowWidth = Framework::instance().width();
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
             Object o = mObjects(x, y);
@@ -243,9 +243,17 @@ void State::draw() const {
                         break;
                 }
             }
-            vram[y * windowWidth + x] = color;
+            drawCell(x, y, color);
         }
         cout << endl;
+    }
+}
+
+void State::drawCell(int x, int y, unsigned color) {
+    unsigned* vram = Framework::instance().videoMemory();
+    unsigned windowWidth = Framework::instance().width();
+    for (int i = 0; i < 16; ++i) {
+        for (int j = 0; j < 16; ++j) { vram[(y * 16 + i) * windowWidth + (x * 16 + j)] = color; }
     }
 }
 
