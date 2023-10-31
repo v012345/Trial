@@ -1,6 +1,7 @@
 add_executable(MyWork WIN32
     "Main.cpp"
     "Image.cpp"
+    "Framework.cpp"
     "${CMAKE_SOURCE_DIR}/Engine/src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(MyWork PRIVATE

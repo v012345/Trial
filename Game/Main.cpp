@@ -1,3 +1,4 @@
+#include "Framework.h"
 #include "GameLib/Framework.h"
 #include "Image.h"
 #include "libpng/png.h"
@@ -12,7 +13,10 @@ namespace GameLib {
             L = luaL_newstate();
             luaL_openlibs(L);
             Image::luaopen_Image(L);
+            ::Framework::luaopen_Framework(L);
             luaL_dofile(L, CMAKE_CURRENT_SOURCE_DIR "scripts/Main.lua");
         }
+        lua_getglobal(L, "MainLoop");
+        lua_pcall(L, 0, 0, 0);
     }
 } // namespace GameLib

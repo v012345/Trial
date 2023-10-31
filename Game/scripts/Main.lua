@@ -7,6 +7,9 @@ xpcall(function()
     print(x:height())
     print(x:width())
     x:draw()
+    print(Framework:time())
+    Framework:sleep(1000);
+    print(Framework:time())
     -- require "init"
     -- require "Image"
     -- require "ScenceBase"
@@ -22,6 +25,9 @@ xpcall(function()
 
     function MainLoop()
         xpcall(function()
+            if Framework:isKeyOn(97) then
+                print("A")
+            end
             -- Framework:fixFPS()
             -- director:update()
             -- Framework:drawDebugString(70, 1,
