@@ -21,14 +21,25 @@ int Image::width() const { return mWidth; }
 
 int Image::height() const { return mHeight; }
 
+// 与Alpha混合
 void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const {
     unsigned* vram = Framework::instance().videoMemory();
-    unsigned windowWidth = Framework::instance().width();
-
+    int windowWidth = Framework::instance().width();
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
+            unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
             unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
-            *dst = mData[(y + srcY) * mWidth + (x + srcX)];
+            unsigned srcA = (src & 0xff000000) >> 24;
+            unsigned srcR = src & 0xff0000;
+            unsigned srcG = src & 0x00ff00;
+            unsigned srcB = src & 0x0000ff;
+            unsigned dstR = *dst & 0xff0000;
+            unsigned dstG = *dst & 0x00ff00;
+            unsigned dstB = *dst & 0x0000ff;
+            unsigned r = (srcR - dstR) * srcA / 255 + dstR;
+            unsigned g = (srcG - dstG) * srcA / 255 + dstG;
+            unsigned b = (srcB - dstB) * srcA / 255 + dstB;
+            *dst = (r & 0xff0000) | (g & 0x00ff00) | b;
         }
     }
 }

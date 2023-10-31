@@ -1,56 +1,119 @@
 ﻿#include "State.h"
 #include "Image.h"
 
-State::State(const char* stageData, int size) : mImage(0) {
+// 对象类
+class State::Object {
+  public:
+    enum Type {
+        OBJ_SPACE,
+        OBJ_WALL,
+        OBJ_BLOCK,
+        OBJ_MAN,
+
+        OBJ_UNKNOWN,
+    };
+    // 网格绘制函数
+    enum ImageID {
+        IMAGE_ID_PLAYER,
+        IMAGE_ID_WALL,
+        IMAGE_ID_BLOCK,
+        IMAGE_ID_GOAL,
+        IMAGE_ID_SPACE,
+    };
+    Object() : mType(OBJ_WALL), mGoalFlag(false), mMoveX(0), mMoveY(0) {}
+    // 用舞台数据初始化自己
+    void set(char c) {
+        switch (c) {
+            case '#': mType = OBJ_WALL; break;
+            case ' ': mType = OBJ_SPACE; break;
+            case 'o': mType = OBJ_BLOCK; break;
+            case 'O':
+                mType = OBJ_BLOCK;
+                mGoalFlag = true;
+                break;
+            case '.':
+                mType = OBJ_SPACE;
+                mGoalFlag = true;
+                break;
+            case 'p': mType = OBJ_MAN; break;
+            case 'P':
+                mType = Object::OBJ_MAN;
+                mGoalFlag = true;
+                break;
+        }
+    }
+    // 绘制背景
+    void drawBackground(int x, int y, const Image* image) const {
+        ImageID id = IMAGE_ID_SPACE;
+        // 如果是墙，那就是墙
+        if (mType == OBJ_WALL) {
+            drawCell(x, y, IMAGE_ID_WALL, image);
+        } else {
+            if (mGoalFlag) {
+                drawCell(x, y, IMAGE_ID_GOAL, image);
+            } else {
+                drawCell(x, y, IMAGE_ID_SPACE, image);
+            }
+        }
+    }
+    void drawForeground(int x, int y, const Image* image, int moveCount) const {
+        // 只有人和行李移动。
+        ImageID id = IMAGE_ID_SPACE; //
+        if (mType == OBJ_BLOCK) {
+            id = IMAGE_ID_BLOCK;
+        } else if (mType == OBJ_MAN) {
+            id = IMAGE_ID_PLAYER;
+        }
+        if (id != IMAGE_ID_SPACE) { // 背景以外
+            // 计算移动
+            int dx = mMoveX * (32 - moveCount);
+            int dy = mMoveY * (32 - moveCount);
+            image->draw(x * 32 - dx, y * 32 - dy, id * 32, 0, 32, 32);
+        }
+    }
+    static void drawCell(int x, int y, int id, const Image* image) { image->draw(x * 32, y * 32, id * 32, 0, 32, 32); }
+    // 设置移动。第三个参数是替换的类型
+    void move(int dx, int dy, Type replaced) {
+        mMoveX = dx;
+        mMoveY = dy;
+        mType = replaced;
+    }
+    Type mType;
+    bool mGoalFlag;
+    int mMoveX;
+    int mMoveY;
+};
+
+State::State(const char* stageData, int size) : mImage(0), mMoveCount(0) {
     // 尺寸测量
     setSize(stageData, size);
     // 数组分配
     mObjects.setSize(mWidth, mHeight);
-    mGoalFlags.setSize(mWidth, mHeight);
-    // 填写初始值
-    for (int y = 0; y < mHeight; ++y) {
-        for (int x = 0; x < mWidth; ++x) {
-            mObjects(x, y) = OBJ_WALL; // 多余的部分是墙
-            mGoalFlags(x, y) = false; // 不是目标
-        }
-    }
+    // 初始化舞台
     int x = 0;
     int y = 0;
     for (int i = 0; i < size; ++i) {
         Object t;
         bool goalFlag = false;
         switch (stageData[i]) {
-            case '#': t = OBJ_WALL; break;
-            case ' ': t = OBJ_SPACE; break;
-            case 'o': t = OBJ_BLOCK; break;
+            case '#':
+            case ' ':
+            case 'o':
             case 'O':
-                t = OBJ_BLOCK;
-                goalFlag = true;
-                break;
             case '.':
-                t = OBJ_SPACE;
-                goalFlag = true;
-                break;
-            case 'p': t = OBJ_MAN; break;
+            case 'p':
             case 'P':
-                t = OBJ_MAN;
-                goalFlag = true;
+                mObjects(x, y).set(stageData[i]);
+                ++x;
                 break;
             case '\n':
                 x = 0;
                 ++y;
-                t = OBJ_UNKNOWN;
                 break; // 换行处理
-            default: t = OBJ_UNKNOWN; break;
-        }
-        if (t != OBJ_UNKNOWN) { // 这个if判断会忽略无法识别的字符
-            mObjects(x, y) = t; // 写入
-            mGoalFlags(x, y) = goalFlag; // 目标信息
-            ++x;
         }
     }
     // 图片载入
-    mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "nimotsuKunImage.dds");
+    mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "nimotsuKunImage2.dds");
 }
 
 State::~State() {
@@ -59,6 +122,7 @@ State::~State() {
 }
 
 void State::setSize(const char* stageData, int size) {
+    const char* d = stageData; // 读取指针
     mWidth = mHeight = 0; // 初始化
     // 当前位置
     int x = 0;
@@ -84,54 +148,43 @@ void State::setSize(const char* stageData, int size) {
 }
 
 void State::draw() const {
+    // 分两步绘制。首先，绘制背景。
     for (int y = 0; y < mHeight; ++y) {
-        for (int x = 0; x < mWidth; ++x) {
-            Object o = mObjects(x, y);
-            bool goalFlag = mGoalFlags(x, y);
-            ImageID id = IMAGE_ID_SPACE;
-            if (goalFlag) {
-                switch (o) {
-                    case OBJ_SPACE: id = IMAGE_ID_GOAL; break;
-                    case OBJ_WALL: id = IMAGE_ID_WALL; break;
-                    case OBJ_BLOCK: id = IMAGE_ID_BLOCK_ON_GOAL; break;
-                    case OBJ_MAN: id = IMAGE_ID_PLAYER; break;
-                }
-            } else {
-                switch (o) {
-                    case OBJ_SPACE: id = IMAGE_ID_SPACE; break;
-                    case OBJ_WALL: id = IMAGE_ID_WALL; break;
-                    case OBJ_BLOCK: id = IMAGE_ID_BLOCK; break;
-                    case OBJ_MAN: id = IMAGE_ID_PLAYER; break;
-                }
-            }
-            drawCell(x, y, id);
-        }
+        for (int x = 0; x < mWidth; ++x) { mObjects(x, y).drawBackground(x, y, mImage); }
+    }
+    // 接下来绘制前景
+    for (int y = 0; y < mHeight; ++y) {
+        for (int x = 0; x < mWidth; ++x) { mObjects(x, y).drawForeground(x, y, mImage, mMoveCount); }
     }
 }
 
-void State::drawCell(int x, int y, ImageID id) const { mImage->draw(x * 32, y * 32, id * 32, 0, 32, 32); }
-
-void State::update(char input) {
-    // 移动差分变换
-    int dx = 0;
-    int dy = 0;
-    switch (input) {
-        case 'a': dx = -1; break; // 向左
-        case 's': dx = 1; break; // 右
-        case 'w': dy = -1; break; // 上。Y朝下为正
-        case 'z': dy = 1; break; // 下。
+void State::update(int dx, int dy) {
+    // 如果移动计数达到32
+    if (mMoveCount == 32) {
+        mMoveCount = 0; //
+        // 初始化移动
+        for (int y = 0; y < mHeight; ++y) {
+            for (int x = 0; x < mWidth; ++x) {
+                mObjects(x, y).mMoveX = 0;
+                mObjects(x, y).mMoveY = 0;
+            }
+        }
+    }
+    // 移动时请勿更新。
+    if (mMoveCount > 0) {
+        ++mMoveCount;
+        return;
     }
     // 使用简短的变量名。
     int w = mWidth;
     int h = mHeight;
     Array2D<Object>& o = mObjects;
     // 查找人坐标
-    int x = -1;
-    int y = -1;
+    int x, y;
     bool found = false;
     for (y = 0; y < mHeight; ++y) {
         for (x = 0; x < mWidth; ++x) {
-            if (o(x, y) == OBJ_MAN) {
+            if (o(x, y).mType == Object::OBJ_MAN) {
                 found = true;
                 break;
             }
@@ -145,22 +198,24 @@ void State::update(char input) {
     // 检查最大和最小坐标。
     if (tx < 0 || ty < 0 || tx >= w || ty >= h) { return; }
     // A.该方向上是空白或者终点。则小人移动
-    if (o(tx, ty) == OBJ_SPACE) {
-        o(tx, ty) = OBJ_MAN;
-        o(x, y) = OBJ_SPACE;
+    if (o(tx, ty).mType == Object::OBJ_SPACE) {
+        o(tx, ty).move(dx, dy, Object::OBJ_MAN);
+        o(x, y).move(dx, dy, Object::OBJ_SPACE);
+        mMoveCount = 1; // 开始行动
         // B.该方向是箱子。如果该方向上的下一个格子为空白或目标，则移动。
-    } else if (o(tx, ty) == OBJ_BLOCK) {
+    } else if (o(tx, ty).mType == Object::OBJ_BLOCK) {
         // 2检查方格是否在范围内
         int tx2 = tx + dx;
         int ty2 = ty + dy;
         if (tx2 < 0 || ty2 < 0 || tx2 >= w || ty2 >= h) { // 不能按
             return;
         }
-        if (o(tx2, ty2) == OBJ_SPACE) {
+        if (o(tx2, ty2).mType == Object::OBJ_SPACE) {
             // 按顺序交换
-            o(tx2, ty2) = OBJ_BLOCK;
-            o(tx, ty) = OBJ_MAN;
-            o(x, y) = OBJ_SPACE;
+            o(tx2, ty2).move(dx, dy, Object::OBJ_BLOCK);
+            o(tx, ty).move(dx, dy, Object::OBJ_MAN);
+            o(x, y).move(dx, dy, Object::OBJ_SPACE);
+            mMoveCount = 1; // 开始行动
         }
     }
 }
@@ -170,8 +225,8 @@ void State::update(char input) {
 bool State::hasCleared() const {
     for (int y = 0; y < mHeight; ++y) {
         for (int x = 0; x < mWidth; ++x) {
-            if (mObjects(x, y) == OBJ_BLOCK) {
-                if (mGoalFlags(x, y) == false) { return false; }
+            if (mObjects(x, y).mType == Object::OBJ_BLOCK) {
+                if (mObjects(x, y).mGoalFlag == false) { return false; }
             }
         }
     }

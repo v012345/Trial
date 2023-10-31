@@ -224,6 +224,10 @@ namespace GameLib {
     int Framework::width() const { return gImpl->mWidth; }
 
     int Framework::height() const { return gImpl->mHeight; }
+    unsigned Framework::time() const { return gImpl->time(); }
+    void Framework::sleep(int ms) const { Threading::sleep(ms); }
+    bool Framework::isKeyOn(int c) const { return Input::Manager().keyboard().isOn(c); }
+
     /*
     const char* Framework::getTitle() const {
             return gImpl->mTitle.c_str();
@@ -245,9 +249,7 @@ namespace GameLib {
             return gImpl->getTime();
     }
 
-    void Framework::sleep( int ms ) const {
-            WindowCreator::getInstance().sleep( ms );
-    }
+
 
     int Framework::getPreviousFrameInterval() const {
             return gImpl->mPreviousFrameInterval;

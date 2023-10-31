@@ -18,9 +18,9 @@ File::~File() {
     mData = 0;
 }
 
-int File::size() const { return mSize; }
+int File::getSize() const { return mSize; }
 
-const char* File::data() const { return mData; }
+const char* File::getData() const { return mData; }
 
 // 取出unsigned
 unsigned File::getUnsigned(int p) const {
