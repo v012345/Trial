@@ -72,3 +72,18 @@ function Framework:isKeyTriggered(c) return true end
 ---@param font string
 function GetFontBmp(char, width, height, color, font)
 end
+
+---comment
+---@param path string
+---@return Image
+function Image(path)
+    ---@class Image
+    local obj = {}
+    function obj:height() return 0 end
+
+    function obj:width() return 0 end
+
+    function obj:draw() end
+
+    return obj
+end
