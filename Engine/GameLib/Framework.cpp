@@ -28,8 +28,8 @@ namespace GameLib {
         class Impl {
           public:
             Impl()
-                : mWidth(320),
-                  mHeight(240),
+                : mWidth(640),
+                  mHeight(480),
                   mFullScreen(false),
                   mFullScreenForbidden(true),
                   mVSync(false),
@@ -357,8 +357,10 @@ namespace GameLib {
         Framework f;
         //	Framework::Configuration fwConfig;
         //	f.configure( &fwConfig );
-        config->setWidth(f.width() * 2);
-        config->setHeight(f.height() * 2);
+        // f.width() 是物理大小  config->setWidth() 设置显示大小
+        // 比如 f 为 320*240, 那么 显示 *2 为 640 * 480 , 4个像素当一个用
+        config->setWidth(f.width());
+        config->setHeight(f.height());
         config->setTitle("2D Graphics1 samples");
         config->enableFullScreen(false);
         config->forbidFullScreen(true);
