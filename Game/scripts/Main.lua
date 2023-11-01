@@ -68,13 +68,16 @@ xpcall(function()
             elseif Framework:isKeyOn(Enum.Keyboard.W) then
                 dy = dy - 1
             end
+            gPlayer.mX = gPlayer.mX + dx;
+            gPlayer.mY = gPlayer.mY + dy;
             if gPlayer:isIntersect(gWall) then
                 gPlayer.pImage = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/blue.png")
+                gPlayer.mX = gPlayer.mX - dx;
+                gPlayer.mY = gPlayer.mY - dy;
             else
                 gPlayer.pImage = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/red.png")
             end
-            gPlayer.mX = gPlayer.mX + dx;
-            gPlayer.mY = gPlayer.mY + dy;
+
 
 
             bg:draw()
