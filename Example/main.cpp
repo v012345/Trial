@@ -7,17 +7,17 @@ class Square {
         mY = y;
         mHalfSize = halfSize;
     }
-    bool isIntersect(const Square& a) const {
-        int la = mX - mHalfSize; // left A
-        int ra = mX + mHalfSize; // right A
-        int lb = a.mX - a.mHalfSize; // left B
-        int rb = a.mX + a.mHalfSize; // right B
-        if ((la < rb) && (ra > lb)) {
-            int ta = mY - mHalfSize; // top A
-            int ba = mY + mHalfSize; // bottom A
-            int tb = a.mY - a.mHalfSize; // top B
-            int bb = a.mY + a.mHalfSize; // bottom B
-            if ((ta < bb) && (ba > tb)) { return true; }
+    bool isIntersect(const Square& b) const {
+        int al = mX - mHalfSize; // left A
+        int ar = mX + mHalfSize; // right A
+        int bl = b.mX - b.mHalfSize; // left B
+        int br = b.mX + b.mHalfSize; // right B
+        if ((al < br) && (ar > bl)) {
+            int at = mY - mHalfSize; // top A
+            int ab = mY + mHalfSize; // bottom A
+            int bt = b.mY - b.mHalfSize; // top B
+            int bb = b.mY + b.mHalfSize; // bottom B
+            if ((at < bb) && (ab > bt)) { return true; }
         }
         return false;
     }
@@ -26,7 +26,7 @@ class Square {
     int mHalfSize;
 };
 bool gFirstFrame = true;
-Square gPlayer; // 玩家的意图
+Square gPlayer; //
 Square gWall; // 墙
 
 namespace GameLib {
@@ -41,27 +41,28 @@ namespace GameLib {
         int dx = 0;
         int dy = 0;
         if (isKeyOn('a')) {
-            dx -= 1;
+            dx = -1;
         } else if (isKeyOn('s')) {
-            dx += 1;
+            dx = 1;
         }
         if (isKeyOn('w')) {
-            dy -= 1;
+            dy = -1;
         } else if (isKeyOn('z')) {
-            dy += 1;
+            dy = 1;
         }
+        unsigned* vram = videoMemory();
         // 移动
         gPlayer.mX += dx;
         gPlayer.mY += dy;
         // 碰撞处理
-        unsigned color;
+        unsigned color = 0xffff0000;
         if (gPlayer.isIntersect(gWall)) {
-            color = 0xffffffff; // 碰撞了，给它上色
-        } else {
-            color = 0xffff0000;
+            color = 0xffffffff;
+            // 使其不动
+            gPlayer.mX -= dx;
+            gPlayer.mY -= dy;
         }
         // 绘制
-        unsigned* vram = videoMemory();
         // 清除
         for (int i = 0; i < width() * height(); ++i) { vram[i] = 0; }
         //
