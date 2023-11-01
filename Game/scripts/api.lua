@@ -65,6 +65,8 @@ function Framework:drawDebugString(c, r, text, color) end
 ---@return boolean
 function Framework:isKeyTriggered(c) return true end
 
+function Framework:setFrameRate(fps) end
+
 ---comment
 ---@param char integer unicode
 ---@param width integer
@@ -72,6 +74,17 @@ function Framework:isKeyTriggered(c) return true end
 ---@param color integer
 ---@param font string
 function GetFontBmp(char, width, height, color, font)
+end
+
+StringRenderer = {}
+
+---comment
+---@param x integer|nil
+---@param y integer|nil
+---@param s string|nil
+---@param c integer|nil
+function StringRenderer:draw(x, y, s, c)
+
 end
 
 ---comment

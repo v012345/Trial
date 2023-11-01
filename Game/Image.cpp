@@ -77,6 +77,29 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
     }
 }
 
+// 指定颜色绘制
+void Image::drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const {
+    unsigned* vram = GameLib::Framework::instance().videoMemory();
+    int windowWidth = GameLib::Framework::instance().width();
+    unsigned srcR = color & 0xff0000;
+    unsigned srcG = color & 0x00ff00;
+    unsigned srcB = color & 0x0000ff;
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            unsigned src = mData[(y + srcY) * mWidth + (x + srcX)];
+            unsigned* dst = &vram[(y + dstY) * windowWidth + (x + dstX)];
+            unsigned srcA = (src & 0xff000000) >> 24;
+            unsigned dstR = *dst & 0xff0000;
+            unsigned dstG = *dst & 0x00ff00;
+            unsigned dstB = *dst & 0x0000ff;
+            unsigned r = (srcR - dstR) * srcA / 255 + dstR;
+            unsigned g = (srcG - dstG) * srcA / 255 + dstG;
+            unsigned b = (srcB - dstB) * srcA / 255 + dstB;
+            *dst = (r & 0xff0000) | (g & 0x00ff00) | b;
+        }
+    }
+}
+
 int Image::luaopen_Image(lua_State* L) {
     lua_newtable(L);
     lua_newtable(L);

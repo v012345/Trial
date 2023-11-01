@@ -7,6 +7,7 @@ class Image {
     int width() const;
     int height() const;
     void draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const;
+    void drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const;
 
     static int luaopen_Image(lua_State* L);
     static int lua_Image(lua_State* L);
