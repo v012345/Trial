@@ -6,7 +6,7 @@
 #include <vector>
 
 static lua_State* L = nullptr;
-
+extern int luaopen_Config(lua_State*);
 namespace GameLib {
     void Framework::update() {
         if (!L) {
@@ -14,6 +14,7 @@ namespace GameLib {
             luaL_openlibs(L);
             Image::luaopen_Image(L);
             ::Framework::luaopen_Framework(L);
+            luaopen_Config(L);
             luaL_dofile(L, CMAKE_CURRENT_SOURCE_DIR "scripts/Main.lua");
         }
         lua_getglobal(L, "MainLoop");

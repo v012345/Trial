@@ -10,6 +10,7 @@ function _getch() return 0 end
 
 ---源码目录
 CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}/"
+CMAKE_CURRENT_SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}/"
 
 Screen = {}
 ---在窗口的指定位置画一个点, lua 里的 (1,100) 对 c 里的 (0,99)
@@ -83,7 +84,13 @@ function Image(path)
 
     function obj:width() return 0 end
 
-    function obj:draw() end
+    ---@param dstX integer|nil
+    ---@param dstY integer|nil
+    ---@param srcX integer|nil
+    ---@param srcY integer|nil
+    ---@param width integer|nil
+    ---@param height integer|nil
+    function obj:draw(dstX, dstY, srcX, srcY, width, height) end
 
     return obj
 end
