@@ -24,7 +24,6 @@ namespace GameLib {
         ++gCounter;
 
         gRootSequence->update();
-
         // 结束判断（是否按下q或用鼠标按下X按钮）
         if (isKeyOn('q')) { requestEnd(); }
         if (isEndRequested()) { SAFE_DELETE(gRootSequence); }

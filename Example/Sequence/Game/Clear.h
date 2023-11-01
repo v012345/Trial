@@ -3,22 +3,21 @@
 
 class Image;
 
-namespace Sequence {
-    namespace Game {
-        class Parent;
+namespace Sequence{
+namespace Game{
+class Parent;
 
-        class Clear {
-          public:
-            Clear();
-            ~Clear();
-            void update(Parent*);
+class Clear{
+public:
+	Clear();
+	~Clear();
+	void update( Parent* );
+private:
+	Image* mImage;
+	int mCount;
+};
 
-          private:
-            Image* mImage;
-            int mCount;
-        };
-
-    } // namespace Game
-} // namespace Sequence
+} //namespace Game
+} //namespace Sequence
 
 #endif

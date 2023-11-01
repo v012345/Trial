@@ -5,10 +5,11 @@ using namespace GameLib;
 #include "Image.h"
 #include "Sequence/Parent.h"
 #include "Sequence/Title.h"
+#include "StringRenderer.h"
 
 namespace Sequence {
 
-    Title::Title() : mImage(0) { mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "data/image/title.dds"); }
+    Title::Title() : mImage(0) { mImage = new Image(CMAKE_CURRENT_SOURCE_DIR "data/image/dummy.dds"); }
 
     Title::~Title() { SAFE_DELETE(mImage); }
 
@@ -17,6 +18,9 @@ namespace Sequence {
         if (Framework::instance().isKeyTriggered(' ')) { parent->moveTo(Parent::SEQ_STAGE_SELECT); }
         // 绘制
         mImage->draw();
+        // 输出文字
+        StringRenderer::instance()->draw(0, 0, "TITLE: Nimotsu Kun.");
+        StringRenderer::instance()->draw(0, 1, "PRESS SPACE KEY");
     }
 
 } // namespace Sequence

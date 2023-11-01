@@ -3,19 +3,18 @@
 
 class Image;
 
-namespace Sequence {
-    class Parent;
+namespace Sequence{
+class Parent;
 
-    class Title {
-      public:
-        Title();
-        ~Title();
-        void update(Parent*);
+class Title{
+public:
+	Title();
+	~Title();
+	void update( Parent* );
+private:
+	Image* mImage; //主题画面
+};
 
-      private:
-        Image* mImage; // 主题画面
-    };
-
-} // namespace Sequence
+} //namespace Sequence
 
 #endif

@@ -3,19 +3,19 @@
 
 class Image;
 
-namespace Sequence {
-    class Parent;
+namespace Sequence{
+class Parent;
 
-    class StageSelect {
-      public:
-        StageSelect();
-        ~StageSelect();
-        void update(Parent*);
+class StageSelect{
+public:
+	StageSelect();
+	~StageSelect();
+	void update( Parent* );
+private:
+	Image* mImage; //
+	int mCursorPosition; //选择光标位置
+};
 
-      private:
-        Image* mImage; //
-    };
-
-} // namespace Sequence
+} //namespace Sequence
 
 #endif

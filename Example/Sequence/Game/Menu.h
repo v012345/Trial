@@ -3,21 +3,21 @@
 
 class Image;
 
-namespace Sequence {
-    namespace Game {
-        class Parent;
+namespace Sequence{
+namespace Game{
+class Parent;
 
-        class Menu {
-          public:
-            Menu();
-            ~Menu();
-            void update(Parent*);
+class Menu{
+public:
+	Menu();
+	~Menu();
+	void update( Parent* );
+private:
+	Image* mImage;
+	int mMenuCursor; //光标位置
+};
 
-          private:
-            Image* mImage;
-        };
-
-    } // namespace Game
-} // namespace Sequence
+} //namespace Game
+} //namespace Sequence
 
 #endif

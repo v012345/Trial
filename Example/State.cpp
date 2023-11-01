@@ -48,7 +48,6 @@ class State::Object {
     }
     // 绘制背景
     void drawBackground(int x, int y, const Image* image) const {
-        ImageID id = IMAGE_ID_SPACE;
         // 如果是墙，那就是墙
         if (mType == OBJ_WALL) {
             drawCell(x, y, IMAGE_ID_WALL, image);
@@ -115,7 +114,6 @@ void State::reset() {
     int y = 0;
     for (int i = 0; i < mStageDataSize; ++i) {
         Object t;
-        bool goalFlag = false;
         switch (mStageData[i]) {
             case '#':
             case ' ':
@@ -194,6 +192,7 @@ void State::update(int dx, int dy) {
     Array2D<Object>& o = mObjects;
     // 查找人坐标
     int x, y;
+    x = y = -1;
     bool found = false;
     for (y = 0; y < mHeight; ++y) {
         for (x = 0; x < mWidth; ++x) {
