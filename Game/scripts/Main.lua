@@ -3,7 +3,6 @@ xpcall(function()
     require "Enum"
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
-    Framework:setFrameRate(60)
     ---@return Square
     Square = {}
     setmetatable(Square, {
@@ -69,11 +68,19 @@ xpcall(function()
             elseif Framework:isKeyOn(Enum.Keyboard.W) then
                 dy = dy - 1
             end
+            if gPlayer:isIntersect(gWall) then
+                gPlayer.pImage = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/blue.png")
+            else
+                gPlayer.pImage = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/red.png")
+            end
             gPlayer.mX = gPlayer.mX + dx;
             gPlayer.mY = gPlayer.mY + dy;
+
+
             bg:draw()
             gPlayer:update()
             gWall:update()
+            print(Framework:frameRate())
         end, function(msg)
             print(msg)
         end)
