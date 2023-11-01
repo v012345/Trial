@@ -41,27 +41,44 @@ namespace GameLib {
         int dx = 0;
         int dy = 0;
         if (isKeyOn('a')) {
-            dx = -1;
+            dx = -7;
         } else if (isKeyOn('s')) {
-            dx = 1;
+            dx = 7;
         }
         if (isKeyOn('w')) {
-            dy = -1;
+            dy = -7;
         } else if (isKeyOn('z')) {
-            dy = 1;
+            dy = 7;
         }
         unsigned* vram = videoMemory();
-        // 移动
-        gPlayer.mX += dx;
-        gPlayer.mY += dy;
-        // 碰撞处理
+        // 碰撞处理（最多4次）
         unsigned color = 0xffff0000;
-        if (gPlayer.isIntersect(gWall)) {
-            color = 0xffffffff;
-            // 使其不动
-            gPlayer.mX -= dx;
-            gPlayer.mY -= dy;
+        int numerator = 1; // 分子
+        int denominator = 1; // 分母
+        int testDx = dx; // dx，dy
+        int testDy = dy;
+        int lastDx = 0; // 最大的dx，dy
+        int lastDy = 0;
+        for (int i = 0; i < 4; ++i) {
+            Square tSquare; // 临时的
+            tSquare.set(gPlayer.mX + testDx, gPlayer.mY + testDy, gPlayer.mHalfSize);
+            numerator *= 2;
+            denominator *= 2;
+            if (tSquare.isIntersect(gWall)) {
+                color = 0xffffffff;
+                numerator -= 1;
+            } else {
+                numerator += 1;
+                lastDx = testDx; // 更新
+                lastDy = testDy;
+            }
+            testDx = dx * numerator / denominator;
+            testDy = dy * numerator / denominator;
         }
+        // 移动
+        gPlayer.mX += lastDx;
+        gPlayer.mY += lastDy;
+
         // 绘制
         // 清除
         for (int i = 0; i < width() * height(); ++i) { vram[i] = 0; }
