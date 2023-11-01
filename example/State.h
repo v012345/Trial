@@ -13,16 +13,20 @@ class State {
     void update(int moveX, int moveY);
     void draw() const;
     bool hasCleared() const;
+    void reset(); // 返回初始状态
+    static const int MAX_MOVE_COUNT = 15;
 
   private:
     class Object;
-    void setSize(const char* stageData, int size);
+    void setSize();
 
     int mWidth;
     int mHeight;
     Array2D<Object> mObjects;
     Image* mImage; // 图片
     int mMoveCount;
+    char* mStageData;
+    int mStageDataSize;
 };
 
 #endif

@@ -1,4 +1,5 @@
 ﻿#include "File.h"
+#include "GameLib/GameLib.h"
 #include <fstream>
 using namespace std;
 
@@ -10,17 +11,16 @@ File::File(const char* filename) : mSize(0), mData(0) {
         in.seekg(0, ifstream::beg);
         mData = new char[mSize];
         in.read(mData, mSize);
+    } else {
+        HALT("can't open file."); // 受到致命伤害所以停止
     }
 }
 
-File::~File() {
-    delete[] mData;
-    mData = 0;
-}
+File::~File() { SAFE_DELETE_ARRAY(mData); }
 
-int File::getSize() const { return mSize; }
+int File::size() const { return mSize; }
 
-const char* File::getData() const { return mData; }
+const char* File::data() const { return mData; }
 
 // 取出unsigned
 unsigned File::getUnsigned(int p) const {

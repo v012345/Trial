@@ -39,7 +39,9 @@ namespace GameLib {
                   mArchiveNumber(0),
                   mLoadMode(FileIO::Manager::MODE_DIRECT_FIRST),
                   mPreviousFrameInterval(0),
+                  mPreviousFrameTime(0),
                   mFrameRate(0),
+                  mIdealFrameInterval(0),
                   mEndRequested(false),
                   mStarted(false) {
                 // cout初始化
@@ -130,8 +132,13 @@ namespace GameLib {
             }
             unsigned time() const { return WindowCreator().time(); }
             void preUpdate() {
-                // 帧时间更新
                 unsigned currentTime = time();
+                while ((currentTime - mPreviousFrameTime) < mIdealFrameInterval) {
+                    Threading::sleep(1);
+                    currentTime = time();
+                }
+                mPreviousFrameTime = currentTime;
+                // 帧时间更新
                 mPreviousFrameInterval = currentTime - mTimeHistory[TIME_HISTORY_SIZE - 1];
                 unsigned frameIntervalSum = currentTime - mTimeHistory[0];
                 mFrameRate = TIME_HISTORY_SIZE * 1000 / frameIntervalSum;
@@ -190,7 +197,9 @@ namespace GameLib {
             static const int TIME_HISTORY_SIZE = 60;
             unsigned mTimeHistory[TIME_HISTORY_SIZE];
             int mPreviousFrameInterval;
+            unsigned mPreviousFrameTime;
             int mFrameRate;
+            unsigned mIdealFrameInterval;
             bool mEndRequested;
             bool mStarted;
             Scene::StringRenderer mDebugStringRenderer;
@@ -227,6 +236,9 @@ namespace GameLib {
     unsigned Framework::time() const { return gImpl->time(); }
     void Framework::sleep(int ms) const { Threading::sleep(ms); }
     bool Framework::isKeyOn(int c) const { return Input::Manager().keyboard().isOn(c); }
+    bool Framework::isKeyTriggered(int c) const { return Input::Manager().keyboard().isTriggered(c); }
+    int Framework::frameRate() const { return gImpl->mFrameRate; }
+    void Framework::setFrameRate(int fr) { gImpl->mIdealFrameInterval = 1000 / fr; }
 
     /*
     const char* Framework::getTitle() const {

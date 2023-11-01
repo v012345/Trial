@@ -5,8 +5,8 @@ class File {
   public:
     File(const char* filename);
     ~File();
-    int getSize() const;
-    const char* getData() const;
+    int size() const;
+    const char* data() const;
     unsigned getUnsigned(int position) const;
 
   private:

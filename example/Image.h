@@ -8,6 +8,7 @@ class Image {
     int width() const;
     int height() const;
     void draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const;
+    void draw() const;
 
   private:
     int mWidth;

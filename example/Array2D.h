@@ -8,15 +8,9 @@
 template <class T> class Array2D {
   public:
     Array2D() : mArray(0) {}
-    ~Array2D() {
-        delete[] mArray;
-        mArray = 0; // 将指针赋值为0是一种习惯。
-    }
+    ~Array2D() { SAFE_DELETE_ARRAY(mArray); }
     void setSize(int size0, int size1) {
-        if (mArray) {
-            delete[] mArray;
-            mArray = 0;
-        }
+        if (mArray) { SAFE_DELETE_ARRAY(mArray); }
         mSize0 = size0;
         mSize1 = size1;
         mArray = new T[size0 * size1];
