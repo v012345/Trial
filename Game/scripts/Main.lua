@@ -77,13 +77,9 @@ xpcall(function()
             else
                 gPlayer.pImage = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/red.png")
             end
-
-
-
             bg:draw()
             gPlayer:update()
             gWall:update()
-            print(Framework:frameRate())
         end, function(msg)
             print(msg)
         end)
