@@ -22,11 +22,12 @@ xpcall(function()
     -- for i = 1, 100, 1 do
     --     s[#s + 1] = Framework:time()
     -- end
+    Framework:setFrameRate(60)
 
     function MainLoop()
         xpcall(function()
             if Framework:isKeyOn(97) then
-                print("A")
+                print(Framework:frameRate())
             end
             -- Framework:fixFPS()
             -- director:update()
