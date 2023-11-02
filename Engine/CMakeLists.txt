@@ -92,6 +92,7 @@ target_include_directories(SceneManager PRIVATE src)
 
 add_library(GameLib STATIC
     "GameLib/Framework.cpp"
+    "GameLib/Math.cpp"
 )
 target_include_directories(GameLib PRIVATE include)
 
