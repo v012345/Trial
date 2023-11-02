@@ -1,39 +1,38 @@
 ﻿#include "GameLib/Framework.h"
-#include "GameLib/Gamelib.h"
-using namespace GameLib;
+#include "GameLib/Input/Manager.h"
+#include "GameLib/Input/Mouse.h"
+#include <sstream>
+using namespace std;
 
-#include "State.h"
-#include "File.h"
-#include "Image.h"
-#include "Sequence/Parent.h"
+namespace GameLib {
+    void Framework::update() {
+        using namespace Input;
+        Mouse mouse;
+        mouse = Input::Manager::instance().mouse();
+        ostringstream oss;
+        int w = mouse.wheel();
+        int x = mouse.x();
+        int y = mouse.y();
+        bool b0 = mouse.isOn(Mouse::BUTTON_LEFT);
+        bool b1 = mouse.isOn(Mouse::BUTTON_RIGHT);
+        bool b2 = mouse.isOn(Mouse::BUTTON_MIDDLE);
 
-//全局变量
-Sequence::Parent* gRootSequence = 0; //根序列
-int gCounter = 0; //一个计数器，用于计算主循环的次数
+        oss.str("");
+        oss << x << " " << y << " " << b0 << ":" << b1 << ":" << b2 << ":" << w;
+        drawDebugString(0, 1, oss.str().c_str());
 
-//用户封装函数。内容被抛出给mainLoop（）
-namespace GameLib{
-	void Framework::update(){
-		if ( !gRootSequence ){
-			gRootSequence = new Sequence::Parent();
-		}
-		//帧频调整
-		setFrameRate( 60 ); //只需要调用一次
-
-		if ( gCounter % 60 == 0 ){ //60每帧显示一次帧率
-			cout << " FrameRate:" << frameRate() << endl;
-		}
-		++gCounter;
-
-		gRootSequence->update();
-		//结束判断（是否按下q或用鼠标按下X按钮）
-		if ( isKeyOn( 'q' ) ){
-			requestEnd();
-		}
-		if ( isEndRequested() ){
-			SAFE_DELETE( gRootSequence );
-		}
-	}
-}
-
-
+        // 逐渐消除
+        unsigned* vram = videoMemory();
+        for (int i = 0; i < height(); ++i) {
+            for (int j = 0; j < width(); ++j) {
+                unsigned c = vram[i * width() + j];
+                if (c > 0) {
+                    c -= 0x01010101;
+                    vram[i * width() + j] = c;
+                }
+            }
+        }
+        // 将鼠标光标移到
+        if (x >= 0 && x < width() && y >= 0 && y < height()) { vram[y * width() + x] = 0xffffffff; }
+    }
+} // namespace GameLib
