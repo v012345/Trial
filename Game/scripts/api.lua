@@ -47,6 +47,7 @@ function Framework:sleep(ms) end
 ---返回时间毫秒
 ---@return integer
 function Framework:time() return 0 end
+function Framework:frameRate() return 0 end
 
 ---是否按了某个键
 ---@param c integer
