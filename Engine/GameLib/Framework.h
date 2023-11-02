@@ -32,6 +32,8 @@ namespace GameLib {
         void setFrameRate(int);
         /// 输入（瞬间）
         bool isKeyTriggered(int c) const;
+        // 绘制字符
+        void drawDebugString(int column, int row, const char* string, unsigned color = 0xffffffff);
 
         // 以下库用户不需要知道
         void start(void* windowHandle);

@@ -89,7 +89,7 @@ namespace GameLib {
                 // 输入初始化
                 Input::Manager::create(windowHandle);
                 // 初始化绘制
-                Graphics::Manager::create(windowHandle, mWidth * 2, mHeight * 2, mFullScreen, mVSync, mAntiAlias);
+                Graphics::Manager::create(windowHandle, mWidth , mHeight , mFullScreen, mVSync, mAntiAlias);
                 // 绘制文字
                 // ASCII表（ASCII（126-32 + 1 = 95个字符+ 63个字符，158个字符
                 Array<Scene::Font::BitmapChar> chars(158);
@@ -239,6 +239,7 @@ namespace GameLib {
     bool Framework::isKeyTriggered(int c) const { return Input::Manager().keyboard().isTriggered(c); }
     int Framework::frameRate() const { return gImpl->mFrameRate; }
     void Framework::setFrameRate(int fr) { gImpl->mIdealFrameInterval = 1000 / fr; }
+    void Framework::drawDebugString(int c, int r, const char* s, unsigned col) { gImpl->mDebugStringRenderer.add(c * 8, r * 16, s, col); }
 
     /*
     const char* Framework::getTitle() const {
@@ -269,10 +270,6 @@ namespace GameLib {
 
     int Framework::getFrameRate() const {
             return gImpl->mFrameRate;
-    }
-
-    void Framework::drawDebugString( int c, int r, const char* s, unsigned col ){
-            gImpl->mDebugStringRenderer.add( c * 8, r * 16, s, col );
     }
 
     void Framework::enableFullScreen( bool f ){
