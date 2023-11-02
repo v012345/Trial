@@ -1,10 +1,20 @@
+require "Object"
 ScenceBase = {}
 setmetatable(ScenceBase, {
     __call = function(self)
         ---@class ScenceBase:Object
         local obj = {}
         function obj:isA(what)
-            return ScenceBase == what
+            if ScenceBase == what then
+                return true
+            else
+                local super = getmetatable(self)
+                if super then
+                    return super.__index:isA(what)
+                else
+                    return false
+                end
+            end
         end
 
         function obj:update(p)
