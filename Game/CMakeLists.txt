@@ -3,7 +3,7 @@ add_executable(MyWork WIN32
     "Image.cpp"
     "Framework.cpp"
     "Config.cpp"
-    "StringRenderer.cpp"
+    # "StringRenderer.cpp"
     "${CMAKE_SOURCE_DIR}/Engine/src/WindowCreator/WindowCreator.cpp"
 )
 target_include_directories(MyWork PRIVATE

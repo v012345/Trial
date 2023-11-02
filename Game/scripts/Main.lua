@@ -9,8 +9,8 @@ xpcall(function()
     local p = {
         "res/blue.png",
         "res/red.png",
-        "res/green.png",
         "res/bg.png",
+        "res/green.png",
     }
     local images = {}
     for index, value in ipairs(p) do

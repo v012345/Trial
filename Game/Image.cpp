@@ -1,9 +1,18 @@
 #include "Image.h"
 #include "GameLib/Framework.h"
 #include "libpng/png.h"
+#include "lua.hpp"
 #include <stdlib.h>
+#include <vector>
 
-Image::Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
+static int powerOfTwo(int a) {
+    ASSERT(a < 0x40000000); // 如果a大于0x40000000，则会导致无限循环。
+    int r = 1;
+    while (r < a) { r *= 2; }
+    return r;
+}
+
+Image::Image(const char* filename) : mWidth(0), mHeight(0), mTextureWidth(0), mTextureHeight(0), mTexture(0) {
     FILE* fp = fopen(filename, "rb");
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     png_infop info = png_create_info_struct(png);
@@ -26,7 +35,7 @@ Image::Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
     }
     mWidth = width;
     mHeight = height;
-    mData = new unsigned[mWidth * mHeight];
+    unsigned* buffer = new unsigned[mWidth * mHeight];
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             unsigned j = row_pointers[y][x * bytes_per_pixel] << 16;
@@ -37,25 +46,58 @@ Image::Image(const char* filename) : mWidth(0), mHeight(0), mData(0) {
             } else {
                 j += 0xff000000;
             }
-            mData[y * width + x] = j;
+            buffer[y * width + x] = j;
         }
     }
     fclose(fp);
     for (int y = 0; y < height; y++) { free(row_pointers[y]); }
     free(row_pointers);
     png_destroy_read_struct(&png, &info, NULL);
+
+    // createTexture。
+    // 为此，必须找到一个为2的n次幂的分辨率。
+    mTextureWidth = powerOfTwo(mWidth);
+    mTextureHeight = powerOfTwo(mHeight);
+    GameLib::Framework::instance().createTexture(&mTexture, mTextureWidth, mTextureHeight, buffer, mWidth, mHeight);
+    SAFE_DELETE_ARRAY(buffer); // 不再需要了
 }
 
-Image::~Image() {
-    delete[] mData;
-    mData = 0;
-}
+Image::~Image() { GameLib::Framework::instance().destroyTexture(&mTexture); }
 
 int Image::width() const { return mWidth; }
 
 int Image::height() const { return mHeight; }
 
 void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const {
+    // 计算x，y范围
+    double x0 = static_cast<double>(dstX);
+    double y0 = static_cast<double>(dstY);
+    double x1 = x0 + static_cast<double>(width);
+    double y1 = y0 + static_cast<double>(height);
+    // 移动后的顶点
+    std::vector<double> p0 = {x0, y0};
+    std::vector<double> p1 = {x1, y0};
+    std::vector<double> p2 = {x0, y1};
+    std::vector<double> p3 = {x1, y1};
+    // 纹理坐标生成
+    double rcpTw = 1.0 / static_cast<double>(mTextureWidth);
+    double rcpTh = 1.0 / static_cast<double>(mTextureHeight);
+    double u0 = static_cast<double>(srcX) * rcpTw;
+    double u1 = static_cast<double>(srcX + width) * rcpTw;
+    double v0 = static_cast<double>(srcY) * rcpTh;
+    double v1 = static_cast<double>(srcY + height) * rcpTh;
+    std::vector<double> t0 = {u0, v0};
+    std::vector<double> t1 = {u1, v0};
+    std::vector<double> t2 = {u0, v1};
+    std::vector<double> t3 = {u1, v1};
+    GameLib::Framework f = GameLib::Framework::instance();
+    // 纹理集
+    f.setTexture(mTexture);
+    // 线性合成
+    f.setBlendMode(GameLib::Framework::BLEND_LINEAR);
+    // 绘制
+    f.drawTriangle2D(&p0[0], &p1[0], &p2[0], &t0[0], &t1[0], &t2[0]);
+    f.drawTriangle2D(&p3[0], &p1[0], &p2[0], &t3[0], &t1[0], &t2[0]);
     // unsigned* vram = GameLib::Framework::instance().videoMemory();
     // unsigned windowWidth = GameLib::Framework::instance().width();
     // for (int y = 0; y < height; ++y) {

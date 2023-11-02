@@ -1,11 +1,16 @@
 #pragma once
-#include "lua.hpp"
+struct lua_State;
+struct luaL_Reg;
+namespace GameLib {
+    class Texture;
+}
 class Image {
   public:
     Image(const char* filename);
     ~Image();
     int width() const;
     int height() const;
+    void draw() const;
     void draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const;
     void drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const;
 
@@ -20,6 +25,8 @@ class Image {
   private:
     int mWidth;
     int mHeight;
-    unsigned* mData;
+    int mTextureWidth;
+    int mTextureHeight;
+    GameLib::Texture* mTexture;
     static luaL_Reg lua_reg[4];
 };
