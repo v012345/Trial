@@ -11,7 +11,8 @@ class Framework {
     static int lua_frameRate(lua_State* L);
     static int lua_setFrameRate(lua_State* L);
     static int lua_isKeyTriggered(lua_State* L);
+    static int lua_drawDebugString(lua_State* L);
 
   private:
-    static luaL_Reg lua_reg[7];
+    static luaL_Reg lua_reg[8];
 };

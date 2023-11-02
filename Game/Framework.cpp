@@ -15,8 +15,19 @@ luaL_Reg Framework::lua_reg[] = {
     {"frameRate", lua_frameRate}, //
     {"setFrameRate", lua_setFrameRate}, //
     {"isKeyTriggered", lua_isKeyTriggered}, //
+    {"drawDebugString", lua_drawDebugString}, //
     {NULL, NULL},
 };
+
+int Framework::lua_drawDebugString(lua_State* L) {
+    int c = luaL_checkinteger(L, 2);
+    int r = luaL_checkinteger(L, 3);
+    const char* s = luaL_checkstring(L, 4);
+    unsigned col = luaL_optinteger(L, 5, 0xffffffff);
+    GameLib::Framework f = GameLib::Framework::instance();
+    f.drawDebugString(c, r, s, col);
+    return 0;
+}
 
 int Framework::lua_frameRate(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
