@@ -37,6 +37,10 @@ setmetatable(ParseXML, {
             end
         end
 
+        function obj:getData()
+            return self.mData
+        end
+
         setmetatable(obj, { __index = Object() })
         return obj
     end

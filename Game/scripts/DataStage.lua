@@ -1,6 +1,7 @@
 local lfs = require "lfs"
 require "Enum"
 DataStage = {
+    ---@type table<StageData>
     stage = {}
 }
 function DataStage:init()
@@ -61,12 +62,14 @@ function DataStage:parserStage(path)
         line_number = line_number + 1
         line = file:read("l")
     end
-    return {
+    ---@class StageData
+    local r = {
         background = background,
         player = worker,
         goals = goals,
         boxes = boxes,
     }
+    return r
 end
 
 DataStage:init()
