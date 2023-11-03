@@ -55,31 +55,59 @@ end
 function ParseXML:_parserNode()
     self:_getNextChar() -- 跳过 <
     ---@class XMLNode
-    ---@field tag_name string
-    ---@field attributes table<string,string>
-    ---@field children table<XMLNode>
-    ---@field content string
+    ---@field _tag_name string
+    ---@field _attributes table<string,string>
+    ---@field _children XMLNode[]
+    ---@field _content string
     local node = {
-        tag_name = "",
-        attributes = {},
-        children = {},
-        content = ""
+        _tag_name = "",
+        _attributes = {},
+        _children = {},
+        _content = "",
+        ---@param this XMLNode
+        ---@return XMLNode[]
+        getChildren = function(this)
+            return this._children
+        end,
+        ---@param this XMLNode
+        ---@param key string
+        ---@return string|nil
+        getAttributeValue = function(this, key)
+            return this._attributes[key]
+        end,
+        ---@param this XMLNode
+        ---@return table<string,string>
+        get_attributes = function(this)
+            return this._attributes
+        end,
+        ---@param this XMLNode
+        ---@param key string
+        ---@param value string
+        ---@return XMLNode|nil
+        getChildByAttri = function(this, key, value)
+            for _, child in ipairs(this._children) do
+                if child._attributes[key] == value then
+                    return child
+                end
+            end
+            return nil
+        end
     }
-    node.tag_name = self:_readName()
+    node._tag_name = self:_readName()
 
     while true do
         if self._mCurrentChar == "<" then
             if self:_checkNextChar("/") then
                 self:_getNextChar() -- 跳过 <
                 self:_getNextChar() -- 跳过 /
-                if node.tag_name ~= self:_readName() then
+                if node._tag_name ~= self:_readName() then
                     error("don't close tag")
                 end
                 self:_skipSpace()
                 self:_getNextChar() -- 跳过 >
                 return node
             else
-                node.children[#node.children + 1] = self:_parserNode()
+                node._children[#node._children + 1] = self:_parserNode()
             end
         elseif self._mCurrentChar == "/" then
             self:_getNextChar()
@@ -97,7 +125,7 @@ function ParseXML:_parserNode()
         else
             local key, value = self:_readAttri()
             if key then
-                node.attributes[key] = value
+                node._attributes[key] = value
             else
                 error("miss key")
             end
