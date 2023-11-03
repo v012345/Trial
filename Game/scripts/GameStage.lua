@@ -186,19 +186,54 @@ function GameStage:isClear()
 end
 
 function GameStage:moveLeft()
-    self._worker.x = self._worker.x - 1
+    local targetX = self._worker.x - 1
+    local targetY = self._worker.y
+    if self:isWall(targetX, targetY) then
+        return
+    end
+    self._worker.x = targetX
 end
 
 function GameStage:moveDown()
-    self._worker.y = self._worker.y + 1
+    local targetX = self._worker.x
+    local targetY = self._worker.y + 1
+    if self:isWall(targetX, targetY) then
+        return
+    end
+    self._worker.y = targetY
 end
 
 function GameStage:moveRight()
-    self._worker.x = self._worker.x + 1
+    local targetX = self._worker.x + 1
+    local targetY = self._worker.y
+    if self:isWall(targetX, targetY) then
+        return
+    end
+    self._worker.x = targetX
 end
 
 function GameStage:moveUp()
-    self._worker.y = self._worker.y - 1
+    local targetX = self._worker.x
+    local targetY = self._worker.y - 1
+    if self:isWall(targetX, targetY) then
+        return
+    end
+    self._worker.y = targetY
+end
+
+function GameStage:isWall(x, y)
+    if y > #self._background or y < 1 then
+        return true
+    end
+    local row = self._background[y]
+    if x > #row or x < 1 then
+        return true
+    end
+    local obj = row[x]
+    if obj == Enum.Obj.wall then
+        return true
+    end
+    return false
 end
 
 function GameStage:update()
