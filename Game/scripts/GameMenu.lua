@@ -22,37 +22,31 @@ setmetatable(GameMenu, {
         obj.mCallback = callback
 
         function obj:update()
-            -- local next = self
-            -- if Framework:isKeyTriggered(Enum.Keyboard.W) then
-            --     self.mCursorPosistion = self.mCursorPosistion - 1
-            --     if self.mCursorPosistion < 1 then
-            --         self.mCursorPosistion = 2
-            --     end
-            -- elseif Framework:isKeyTriggered(Enum.Keyboard.S) then
-            --     self.mCursorPosistion = self.mCursorPosistion + 1
-            --     if self.mCursorPosistion > 2 then
-            --         self.mCursorPosistion = 1
-            --     end
-            -- elseif Framework:isKeyTriggered(Enum.Keyboard.Space) then
-            --     if self.mCursorPosistion == 1 then
-            --         next = GamePlay()
-            --     elseif self.mCursorPosistion == 2 then
-            --         next = Title()
-            --     end
-            -- end
-            if Framework:isKeyTriggered(Enum.Keyboard.Space) then
-                if type(self.mCallback) == "function" then
-                    self.mCallback()
+            if Framework:isKeyTriggered(Enum.Keyboard.W) then
+                self.mCursorPosistion = self.mCursorPosistion - 1
+                if self.mCursorPosistion < 1 then
+                    self.mCursorPosistion = 2
                 end
-                return
+            elseif Framework:isKeyTriggered(Enum.Keyboard.S) then
+                self.mCursorPosistion = self.mCursorPosistion + 1
+                if self.mCursorPosistion > 2 then
+                    self.mCursorPosistion = 1
+                end
+            elseif Framework:isKeyTriggered(Enum.Keyboard.Space) then
+                if self.mCursorPosistion == 2 then
+                    Director:changeScence(ScenceTitle())
+                else
+                    if type(self.mCallback) == "function" then
+                        self.mCallback()
+                    end
+                end
             end
-            self.mImage:draw(0, 0, 0, 0, 300, 50)
 
+            self.mImage:draw()
             Framework:drawDebugString(1, 1, "[pause]");
             Framework:drawDebugString(2, 3, "game continue");
             Framework:drawDebugString(2, 4, "return title");
-            -- Framework:drawDebugString(1, self.mCursorPosistion + 2, ">");
-            -- return next
+            Framework:drawDebugString(1, self.mCursorPosistion + 2, ">");
         end
 
         setmetatable(obj, {

@@ -1,5 +1,6 @@
 require "Tools.ParseXML"
 require "DataStage"
+require "GameClear"
 ---@class GameStage
 GameStage = {}
 setmetatable(GameStage, {
@@ -20,6 +21,8 @@ setmetatable(GameStage, {
 })
 
 function GameStage:init(stageId)
+    self._mStageId = stageId
+    self._mViewClear = GameClear()
     self:loadStage(stageId)
     self._mSprites = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.png")
     local configObj = ParseXML(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.xml")
@@ -100,87 +103,6 @@ function GameStage:init(stageId)
     }
 end
 
-function GameStage:getSpriteConfigByName()
-
-end
-
-function GameStage:loadWorker(mSprite, length, stageId)
-    local worker = {
-        isMoving = false,
-        x = 1,
-        y = 1,
-        counter = 1,
-        down = {
-            self._mSpriteConfig:getChildByAttri("name", "Character4.png") or error(),
-            self:getSprite("Character4.png"),
-            self:getSprite("Character5.png"),
-            self:getSprite("Character6.png"),
-        },
-        up = {
-            self:getSprite("Character7.png"),
-            self:getSprite("Character8.png"),
-            self:getSprite("Character9.png"),
-        },
-        left = {
-            self:getSprite("Character1.png"),
-            self:getSprite("Character10.png"),
-        },
-        right = {
-            self:getSprite("Character2.png"),
-            self:getSprite("Character3.png"),
-        },
-        toward = "down",
-        mSprite = mSprite
-    }
-
-    function worker:moveUp() -- 7 8 9
-        if not self.isMoving then
-            self.isMoving = true
-        else
-            self.toward = "up"
-        end
-    end
-
-    function worker:moveDown() -- 4 5 6
-        if not self.isMoving then
-            self.isMoving = true
-        else
-            self.toward = "down"
-        end
-    end
-
-    function worker:moveLeft() -- 1 10
-        if not self.isMoving then
-            self.isMoving = true
-        else
-            self.toward = "left"
-        end
-    end
-
-    function worker:moveRight() -- 2 3
-        if not self.isMoving then
-            self.isMoving = true
-        else
-            self.toward = "right"
-        end
-    end
-
-    function worker:draw()
-        self.counter = self.counter + 1
-        if self.isMoving then
-        else
-            local congig = self[self.toward][1]
-            self.mSprite:draw((self.x - 1 + 0.5) * length - congig.w, (self.y - 1 + 1) * length - congig.h,
-                congig.x,
-                congig.y,
-                congig.w,
-                congig.h)
-        end
-    end
-
-    return worker
-end
-
 function GameStage:isClear()
     for _, box in ipairs(self._boxes) do
         if not self:isGoal(box.x, box.y) then
@@ -259,6 +181,12 @@ end
 function GameStage:update()
     if self:isClear() then
         self:draw()
+        if Framework:isKeyTriggered(Enum.Keyboard.Space) then
+            if self._mStageId < DataStage:getStageCount() then
+                self._mStageId = self._mStageId + 1
+                self:init(self._mStageId)
+            end
+        end
         return
     end
     if Framework:isKeyTriggered(Enum.Keyboard.A) then
@@ -277,6 +205,9 @@ function GameStage:draw()
     self:drawBackground()
     self:drawBoxes()
     self:drawWorker()
+    if self:isClear() then
+        self._mViewClear:update()
+    end
 end
 
 function GameStage:drawWorker()
