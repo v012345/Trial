@@ -182,7 +182,12 @@ function GameStage:loadWorker(mSprite, length, stageId)
 end
 
 function GameStage:isClear()
-    return false
+    for _, box in ipairs(self._boxes) do
+        if not self:isGoal(box.x, box.y) then
+            return false
+        end
+    end
+    return true
 end
 
 function GameStage:getBoxAt(x, y)
@@ -211,8 +216,6 @@ function GameStage:canMoveFromTo(x, y, dx, dy)
 end
 
 function GameStage:move(dx, dy)
-    print(self._worker.x, self._worker.y, dx, dy)
-    print(self:canMoveFromTo(self._worker.x, self._worker.y, dx, dy))
     if self:canMoveFromTo(self._worker.x, self._worker.y, dx, dy) then
         local targetX = self._worker.x + dx
         local targetY = self._worker.y + dy
@@ -254,6 +257,10 @@ function GameStage:isWall(x, y)
 end
 
 function GameStage:update()
+    if self:isClear() then
+        self:draw()
+        return
+    end
     if Framework:isKeyTriggered(Enum.Keyboard.A) then
         self:move(-1, 0)
     elseif Framework:isKeyTriggered(Enum.Keyboard.S) then
