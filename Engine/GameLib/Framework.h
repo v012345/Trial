@@ -42,6 +42,10 @@ namespace GameLib {
         void drawTriangle2D(
             const double* p0, const double* p1, const double* p2, const double* t0 = 0, const double* t1 = 0, const double* t2 = 0, unsigned c0 = 0xffffffff, unsigned c1 = 0xffffffff,
             unsigned c2 = 0xffffffff);
+        /// 画三角形。p含3个元素，t是含2元素的数组
+        void drawTriangle3D(
+            const double* p0, const double* p1, const double* p2, const double* t0 = 0, const double* t1 = 0, const double* t2 = 0, unsigned c0 = 0xffffffff, unsigned c1 = 0xffffffff,
+            unsigned c2 = 0xffffffff);
         // 创建纹理
         void createTexture(Texture** textureOut, int textureWidth, int textureHeight, const unsigned* imageData, int imageWidth, int imageHeight);
         // 丢弃纹理

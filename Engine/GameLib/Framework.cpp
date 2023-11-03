@@ -249,6 +249,42 @@ namespace GameLib {
                 }
                 mPrimitiveRenderer.addTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
             }
+            void drawTriangle3D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+                // 转换为浮点数
+                Vector3 p[3];
+                Vector2 t[3];
+
+                for (int i = 0; i < 3; ++i) {
+                    p[0][i] = static_cast<float>(p0[i]);
+                    p[1][i] = static_cast<float>(p1[i]);
+                    p[2][i] = static_cast<float>(p2[i]);
+                }
+
+                if (t0) {
+                    t[0].x = static_cast<float>(t0[0]);
+                    t[0].y = static_cast<float>(t0[1]);
+                }
+                if (t1) {
+                    t[1].x = static_cast<float>(t1[0]);
+                    t[1].y = static_cast<float>(t1[1]);
+                }
+                if (t2) {
+                    t[2].x = static_cast<float>(t2[0]);
+                    t[2].y = static_cast<float>(t2[1]);
+                }
+                // 转换为clip坐标系
+                //[0, w ] -> [ -1, 1 ]
+                //[0，h]-> [1，-1]
+                float sx = 2.f / static_cast<float>(mWidth);
+                float sy = -2.f / static_cast<float>(mHeight);
+                for (int i = 0; i < 3; ++i) {
+                    p[i].x *= sx;
+                    p[i].y *= sy;
+                    p[i].x -= 1.f;
+                    p[i].y += 1.f;
+                }
+                mPrimitiveRenderer.addTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
+            }
             Graphics::Texture createTexture(int dw, int dh, const unsigned* src, int sw, int sh) {
                 // 2乘幂检查
                 bool dwOk = false;
@@ -484,6 +520,9 @@ namespace GameLib {
 
     void Framework::drawTriangle2D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
         gImpl->drawTriangle2D(p0, p1, p2, t0, t1, t2, c0, c1, c2);
+    }
+    void Framework::drawTriangle3D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+        gImpl->drawTriangle3D(p0, p1, p2, t0, t1, t2, c0, c1, c2);
     }
 
     class Texture { // 纹理dummy类
