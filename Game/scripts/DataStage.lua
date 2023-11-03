@@ -65,7 +65,7 @@ function DataStage:parserStage(path)
     ---@class StageData
     local r = {
         background = background,
-        player = worker,
+        worker = worker,
         goals = goals,
         boxes = boxes,
     }

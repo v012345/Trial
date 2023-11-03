@@ -53,19 +53,19 @@ end
 function Parser:parser_a_node()
     self:get_next_char() -- 跳过 <
     local node = {
-        name = nil,
+        tag_name = nil,
         attributes = {},
         children = {},
         content = ""
     }
-    node.name = self:parser_a_name()
+    node.tag_name = self:parser_a_name()
 
     while true do
         if self.current_char == "<" then
             if self:check_next_char("/") then
                 self:get_next_char() -- 跳过 <
                 self:get_next_char() -- 跳过 /
-                if node.name ~= self:parser_a_name() then
+                if node.tag_name ~= self:parser_a_name() then
                     error("don't close tag")
                 end
                 self:skip_space()

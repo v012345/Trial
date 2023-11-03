@@ -1,6 +1,3 @@
---- 对应 ScenceGame.cpp
--- require "State"
--- require "GameReady"
 require "GameStage"
 require "GameMenu"
 ScenceGame = {
@@ -8,12 +5,12 @@ ScenceGame = {
     INITIALI_LIFE_NUMBER = 2
 }
 setmetatable(ScenceGame, {
-    __call = function(self, mode)
+    __call = function(self, stageId)
         ---@class ScenceGame:ScenceBase
         ---@field mState GameStage
         ---@field mView GameMenu
         local obj = {}
-        obj.mState = GameStage(mode)
+        obj.mState = GameStage(stageId)
         obj.mStageID = 0
         obj.mLife = 0
         obj.mWinner = 0
