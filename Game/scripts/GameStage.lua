@@ -185,40 +185,57 @@ function GameStage:isClear()
     return false
 end
 
-function GameStage:moveLeft()
-    local targetX = self._worker.x - 1
-    local targetY = self._worker.y
-    if self:isWall(targetX, targetY) then
-        return
+function GameStage:getBoxAt(x, y)
+    for _, box in ipairs(self._boxes) do
+        if box.x == x and box.y == y then
+            return box
+        end
     end
-    self._worker.x = targetX
+    error("not a box")
 end
 
-function GameStage:moveDown()
-    local targetX = self._worker.x
-    local targetY = self._worker.y + 1
+function GameStage:canMoveFromTo(x, y, dx, dy)
+    local targetX = x + dx
+    local targetY = y + dy
+    local subTargetX = targetX + dx
+    local subTargetY = targetY + dy
     if self:isWall(targetX, targetY) then
-        return
+        return false
     end
-    self._worker.y = targetY
+    if self:isBox(targetX, targetY) then
+        if self:isWall(subTargetX, subTargetY) or self:isBox(subTargetX, subTargetY) then
+            return false
+        end
+    end
+    return true
 end
 
-function GameStage:moveRight()
-    local targetX = self._worker.x + 1
-    local targetY = self._worker.y
-    if self:isWall(targetX, targetY) then
-        return
+function GameStage:move(dx, dy)
+    print(self._worker.x, self._worker.y, dx, dy)
+    print(self:canMoveFromTo(self._worker.x, self._worker.y, dx, dy))
+    if self:canMoveFromTo(self._worker.x, self._worker.y, dx, dy) then
+        local targetX = self._worker.x + dx
+        local targetY = self._worker.y + dy
+        if self:isBox(targetX, targetY) then
+            local subTargetX = targetX + dx
+            local subTargetY = targetY + dy
+            local box = self:getBoxAt(targetX, targetY)
+            box.x = subTargetX
+            box.y = subTargetY
+        end
+
+        self._worker.x = targetX
+        self._worker.y = targetY
     end
-    self._worker.x = targetX
 end
 
-function GameStage:moveUp()
-    local targetX = self._worker.x
-    local targetY = self._worker.y - 1
-    if self:isWall(targetX, targetY) then
-        return
+function GameStage:isBox(x, y)
+    for _, box in ipairs(self._boxes) do
+        if box.x == x and box.y == y then
+            return true
+        end
     end
-    self._worker.y = targetY
+    return false
 end
 
 function GameStage:isWall(x, y)
@@ -238,13 +255,13 @@ end
 
 function GameStage:update()
     if Framework:isKeyTriggered(Enum.Keyboard.A) then
-        self:moveLeft()
+        self:move(-1, 0)
     elseif Framework:isKeyTriggered(Enum.Keyboard.S) then
-        self:moveDown()
+        self:move(0, 1)
     elseif Framework:isKeyTriggered(Enum.Keyboard.D) then
-        self:moveRight()
+        self:move(1, 0)
     elseif Framework:isKeyTriggered(Enum.Keyboard.W) then
-        self:moveUp()
+        self:move(0, -1)
     end
     self:draw()
 end
