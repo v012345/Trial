@@ -1,4 +1,20 @@
+-- debug.sethook(function(a, b)
+--     print(b, debug.getinfo(2).source)
+-- end, "l")
 xpcall(function()
+    function IsA(A, B)
+        if A == B then
+            return true
+        else
+            local super = getmetatable(A)
+            if super and type(super.__index) == "table" then
+                return IsA(super, B)
+            else
+                return false
+            end
+        end
+    end
+
     require "Object"
     require "Enum"
     os.execute("chcp 65001 > NUL")

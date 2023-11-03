@@ -110,4 +110,7 @@ function Image(path)
     return obj
 end
 
+---comment
+---@param path string
+---@return ParseXML
 function ParseXML(path) return {} end

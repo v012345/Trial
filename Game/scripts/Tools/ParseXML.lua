@@ -77,7 +77,7 @@ function ParseXML:_parserNode()
         end,
         ---@param this XMLNode
         ---@return table<string,string>
-        get_attributes = function(this)
+        getAttributes = function(this)
             return this._attributes
         end,
         ---@param this XMLNode

@@ -1,9 +1,7 @@
 require "Tools.ParseXML"
 require "DataStage"
 ---@class GameStage
-GameStage = {
-    mSpriteConfig = (ParseXML(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.xml")):getData()
-}
+GameStage = {}
 setmetatable(GameStage, {
     __call = function(self, stageId)
         ---@class GameStage
@@ -14,30 +12,106 @@ setmetatable(GameStage, {
             __index = self,
             __tostring = function() return "GameStageObject" end
         })
-        obj:loadStage(stageId)
-        obj.mGroundSprite = obj:getSprite("Ground_Dirt.png")
-        obj.mWallSprite = obj:getSprite("Wall_Brown.png")
-        obj.mGoalSprite = obj:getSprite("EndPoint_Yellow.png")
-        obj.mBoxSprite = obj:getSprite("CrateDark_Beige.png")
-        obj.mBoxOneGoalSprite = obj:getSprite("CrateDark_Yellow.png")
-        obj.mSprite = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.png")
-        obj.count = 0
-        obj._moveLength = obj.mGroundSprite.w
-        obj.mWorker = obj:loadWorker(obj.mSprite, obj.mGroundSprite.w, stageId)
+        obj:init(stageId)
         return obj
     end,
     __index = Object(),
     __tostring = function() return "GameStageClass" end
 })
 
+function GameStage:init(stageId)
+    self:loadStage(stageId)
+    self._mSprites = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.png")
+    local configObj = ParseXML(CMAKE_CURRENT_SOURCE_DIR .. "res/sprites.xml")
+    self._mSpriteConfig = configObj:getData()
+    local mWallSprite = self._mSpriteConfig:getChildByAttri("name", "Wall_Brown.png") or error()
+    -- 单位长度
+    self._unit = mWallSprite:getAttributeValue("width")
+    -- 墙
+    self._mWallSprite = {
+        w = tonumber(mWallSprite:getAttributeValue("width")),
+        h = tonumber(mWallSprite:getAttributeValue("height")),
+        x = tonumber(mWallSprite:getAttributeValue("x")),
+        y = tonumber(mWallSprite:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+    -- 地面
+    local mGroundSprit = self._mSpriteConfig:getChildByAttri("name", "Ground_Dirt.png") or error()
+    self._mGroundSprite = {
+        w = tonumber(mGroundSprit:getAttributeValue("width")),
+        h = tonumber(mGroundSprit:getAttributeValue("height")),
+        x = tonumber(mGroundSprit:getAttributeValue("x")),
+        y = tonumber(mGroundSprit:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+    -- 目标点
+    local mGoalSprit = self._mSpriteConfig:getChildByAttri("name", "EndPoint_Yellow.png") or error()
+    self._mGoalSprit = {
+        w = tonumber(mGoalSprit:getAttributeValue("width")),
+        h = tonumber(mGoalSprit:getAttributeValue("height")),
+        x = tonumber(mGoalSprit:getAttributeValue("x")),
+        y = tonumber(mGoalSprit:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+    -- 正常箱子
+    local mNormalBoxSprit = self._mSpriteConfig:getChildByAttri("name", "CrateDark_Beige.png") or error()
+    self._mNormalBoxSprit = {
+        w = tonumber(mNormalBoxSprit:getAttributeValue("width")),
+        h = tonumber(mNormalBoxSprit:getAttributeValue("height")),
+        x = tonumber(mNormalBoxSprit:getAttributeValue("x")),
+        y = tonumber(mNormalBoxSprit:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+    -- 目标点上箱子
+    local mYellowBoxSprit = self._mSpriteConfig:getChildByAttri("name", "CrateDark_Yellow.png") or error()
+    self._mYellowBoxSprit = {
+        w = tonumber(mYellowBoxSprit:getAttributeValue("width")),
+        h = tonumber(mYellowBoxSprit:getAttributeValue("height")),
+        x = tonumber(mYellowBoxSprit:getAttributeValue("x")),
+        y = tonumber(mYellowBoxSprit:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+    -- 工人
+    local mWorkerSprit = self._mSpriteConfig:getChildByAttri("name", "Character5.png") or error()
+    self._mWorkerSprit = {
+        w = tonumber(mWorkerSprit:getAttributeValue("width")),
+        h = tonumber(mWorkerSprit:getAttributeValue("height")),
+        x = tonumber(mWorkerSprit:getAttributeValue("x")),
+        y = tonumber(mWorkerSprit:getAttributeValue("y")),
+        sprites = self._mSprites,
+        drawAt = function(this, x, y)
+            this.sprites:draw(x, y, this.x, this.y, this.w, this.h)
+        end
+    }
+end
+
+function GameStage:getSpriteConfigByName()
+
+end
+
 function GameStage:loadWorker(mSprite, length, stageId)
-    local stage = DataStage.stage[stageId]
     local worker = {
         isMoving = false,
-        x = stage.worker.x,
-        y = stage.worker.y,
+        x = 1,
+        y = 1,
         counter = 1,
         down = {
+            self._mSpriteConfig:getChildByAttri("name", "Character4.png") or error(),
             self:getSprite("Character4.png"),
             self:getSprite("Character5.png"),
             self:getSprite("Character6.png"),
@@ -111,44 +185,51 @@ function GameStage:isClear()
     return false
 end
 
+function GameStage:moveLeft()
+    self._worker.x = self._worker.x - 1
+end
+
+function GameStage:moveDown()
+    self._worker.y = self._worker.y + 1
+end
+
+function GameStage:moveRight()
+    self._worker.x = self._worker.x + 1
+end
+
+function GameStage:moveUp()
+    self._worker.y = self._worker.y - 1
+end
+
 function GameStage:update()
-    if Framework:isKeyTriggered(Enum.Keyboard.Space) then
-        self.count = self.count + 1
-    elseif Framework:isKeyTriggered(Enum.Keyboard.A) then
-        self.mWorker:moveLeft()
+    if Framework:isKeyTriggered(Enum.Keyboard.A) then
+        self:moveLeft()
     elseif Framework:isKeyTriggered(Enum.Keyboard.S) then
-        self.mWorker:moveDown()
+        self:moveDown()
     elseif Framework:isKeyTriggered(Enum.Keyboard.D) then
-        self.mWorker:moveRight()
+        self:moveRight()
     elseif Framework:isKeyTriggered(Enum.Keyboard.W) then
-        self.mWorker:moveUp()
+        self:moveUp()
     end
     self:draw()
 end
 
 function GameStage:draw()
-    -- self:drawSprite(self.count)
     self:drawBackground()
     self:drawBoxes()
-    self.mWorker:draw()
+    self:drawWorker()
 end
 
-function GameStage:drawSprite(count)
-    local id = count % #self.mSpriteConfig.children + 1
-    local s = self.mSpriteConfig.children[id]
-    local x = s.attributes.x
-    local y = s.attributes.y
-    local w = s.attributes.width
-    local h = s.attributes.height
-    local c = s.attributes.name
-    self.mSprite:draw(0, 0, x, y, w, h)
-    Framework:drawDebugString(20, 20, c)
+function GameStage:drawWorker()
+    local x = (self._worker.x - 0.5) * self._unit - 0.5 * self._mWorkerSprit.w
+    local y = self._worker.y * self._unit - self._mWorkerSprit.h
+    self._mWorkerSprit:drawAt(x, y)
 end
 
 ---comment
 ---@param stageId integer
 function GameStage:loadStage(stageId)
-    local stage = DataStage.stage[stageId]
+    local stage = DataStage:getStageById(stageId)
     self._background = stage.background
     self._goals = {}
     for _, goal in ipairs(stage.goals) do
@@ -166,68 +247,42 @@ function GameStage:loadStage(stageId)
         end
         self._boxes[#self._boxes + 1] = _box
     end
-end
-
-function GameStage:getSprite(which)
-    for _, sprite in ipairs(self.mSpriteConfig.children) do
-        if sprite.attributes.name == which then
-            return {
-                x = sprite.attributes.x,
-                y = sprite.attributes.y,
-                w = sprite.attributes.width,
-                h = sprite.attributes.height
-            }
-        end
+    self._worker = {}
+    for k, v in pairs(stage.worker) do
+        self._worker[k] = v
     end
-    error(which)
 end
 
 function GameStage:drawBoxes()
     for _, box in ipairs(self._boxes) do
-        self.mSprite:draw((box.x - 1) * self.mBoxSprite.w, (box.y - 1) * self.mBoxSprite.h,
-            self.mBoxSprite.x,
-            self.mBoxSprite.y,
-            self.mBoxSprite.w,
-            self.mBoxSprite.h)
+        if self:isGoal(box.x, box.y) then
+            self._mYellowBoxSprit:drawAt((box.x - 1) * self._unit, (box.y - 1) * self._unit)
+        else
+            self._mNormalBoxSprit:drawAt((box.x - 1) * self._unit, (box.y - 1) * self._unit)
+        end
     end
+end
+
+function GameStage:isGoal(x, y)
+    for _, goal in ipairs(self._goals) do
+        if goal.x == x and goal.y == y then
+            return true
+        end
+    end
+    return false
 end
 
 function GameStage:drawBackground()
     for y, row in ipairs(self._background) do
         for x, o in ipairs(row) do
             if o == Enum.Obj.ground then
-                self.mSprite:draw((x - 1) * self.mGroundSprite.w, (y - 1) * self.mGroundSprite.h,
-                    self.mGroundSprite.x,
-                    self.mGroundSprite.y,
-                    self.mGroundSprite.w,
-                    self.mGroundSprite.h)
+                self._mGroundSprite:drawAt((x - 1) * self._unit, (y - 1) * self._unit)
             elseif o == Enum.Obj.wall then
-                self.mSprite:draw((x - 1) * self.mWallSprite.w, (y - 1) * self.mWallSprite.h,
-                    self.mWallSprite.x,
-                    self.mWallSprite.y,
-                    self.mWallSprite.w,
-                    self.mWallSprite.h)
+                self._mWallSprite:drawAt((x - 1) * self._unit, (y - 1) * self._unit)
             end
         end
     end
     for _, goal in ipairs(self._goals) do
-        self.mSprite:draw((goal.x - 1 + 0.25) * self.mWallSprite.w, (goal.y - 1 + 0.25) * self.mWallSprite.h,
-            self.mGoalSprite.x,
-            self.mGoalSprite.y,
-            self.mGoalSprite.w,
-            self.mGoalSprite.h)
-    end
-end
-
-function GameStage:isA(what)
-    if GameStage == what then
-        return true
-    else
-        local super = getmetatable(self)
-        if super then
-            return super:isA(what)
-        else
-            return false
-        end
+        self._mGoalSprit:drawAt((goal.x - 0.75) * self._unit, (goal.y - 0.75) * self._unit)
     end
 end

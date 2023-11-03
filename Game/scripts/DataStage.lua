@@ -1,9 +1,21 @@
 local lfs = require "lfs"
 require "Enum"
 DataStage = {
-    ---@type table<StageData>
-    stage = {}
+    ---@type StageData[]
+    _stage = {}
 }
+
+---@param id integer
+---@return StageData
+function DataStage:getStageById(id)
+    return self._stage[id]
+end
+
+---@return integer
+function DataStage:getStageCount()
+    return #self._stage
+end
+
 function DataStage:init()
     local folder = CMAKE_CURRENT_SOURCE_DIR .. "data/"
     local stageData = {}
@@ -22,7 +34,7 @@ function DataStage:init()
         end
     end
     for _, path in ipairs(stageData) do
-        self.stage[#self.stage + 1] = self:parserStage(path)
+        self._stage[#self._stage + 1] = self:parserStage(path)
     end
 end
 
