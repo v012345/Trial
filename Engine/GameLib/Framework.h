@@ -60,6 +60,7 @@ namespace GameLib {
         };
         void setBlendMode(BlendMode);
         void enableDepthTest(bool);
+        void enableDepthWrite(bool);
         // 以下库用户不需要知道
         void start(void* windowHandle);
         void preUpdate();

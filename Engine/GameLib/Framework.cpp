@@ -546,6 +546,7 @@ namespace GameLib {
 
     void Framework::setBlendMode(BlendMode a) { gImpl->setBlendMode(a); }
     void Framework::enableDepthTest(bool f) { gImpl->mPrimitiveRenderer.enableDepthTest(f); }
+    void Framework::enableDepthWrite(bool f) { gImpl->mPrimitiveRenderer.enableDepthWrite(f); }
 
     // WindowProcedure的用户封装函数
     void WindowCreator::configure(Configuration* config) {

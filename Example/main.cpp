@@ -2,30 +2,60 @@
 #include "GameLib/Input/Keyboard.h"
 #include "GameLib/Input/Manager.h"
 
-bool gDepthTest = true;
+bool gDepthWrite = true;
+GameLib::Framework::BlendMode gBlendMode = GameLib::Framework::BLEND_LINEAR;
+bool gSwapOrder = false;
 
 namespace GameLib {
     void Framework::update() {
         setFrameRate(60);
-        enableDepthTest(gDepthTest);
+
+        enableDepthTest(true); // Z测试已开启
+        enableDepthWrite(gDepthWrite); // 在这里写入Z缓冲区
+        setBlendMode(gBlendMode);
 
         double point0[3] = {200.0, 100.0, 1.0};
         double point1[3] = {400.0, 100.0, 1.0};
         double point2[3] = {300.0, 400.0, 0.0};
-        unsigned c = 0xffff0000; // 红色的
-        drawTriangle3D(point0, point1, point2, 0, 0, 0, c, c, c);
+        unsigned c0 = 0x80ff8080; // 红色的
 
         double point3[3] = {200.0, 400.0, 1.0};
         double point4[3] = {400.0, 400.0, 1.0};
         double point5[3] = {300.0, 100.0, 0.0};
-        c = 0xff00ff00; // 绿
-        drawTriangle3D(point3, point4, point5, 0, 0, 0, c, c, c);
+        unsigned c1 = 0x8080ff80; // 绿
 
-        if (Input::Manager::instance().keyboard().isTriggered(' ')) { gDepthTest = !gDepthTest; }
-        if (gDepthTest) {
-            drawDebugString(0, 0, "Depth Test : On (press space)");
+        if (gSwapOrder) {
+            drawTriangle3D(point3, point4, point5, 0, 0, 0, c1, c1, c1);
+            drawTriangle3D(point0, point1, point2, 0, 0, 0, c0, c0, c0);
         } else {
-            drawDebugString(0, 0, "Depth Test : Off (press space)");
+            drawTriangle3D(point0, point1, point2, 0, 0, 0, c0, c0, c0);
+            drawTriangle3D(point3, point4, point5, 0, 0, 0, c1, c1, c1);
+        }
+
+        if (Input::Manager::instance().keyboard().isTriggered('a')) { gSwapOrder = !gSwapOrder; }
+        if (Input::Manager::instance().keyboard().isTriggered('s')) {
+            if (gBlendMode == BLEND_ADDITIVE) {
+                gBlendMode = BLEND_LINEAR;
+            } else {
+                gBlendMode = BLEND_ADDITIVE;
+            }
+        }
+        if (Input::Manager::instance().keyboard().isTriggered('d')) { gDepthWrite = !gDepthWrite; }
+
+        if (gSwapOrder) {
+            drawDebugString(0, 0, "[a] Swap Order : On");
+        } else {
+            drawDebugString(0, 0, "[a] Swap Order : Off");
+        }
+        if (gBlendMode == BLEND_LINEAR) {
+            drawDebugString(0, 1, "[s] Linear Blend");
+        } else {
+            drawDebugString(0, 1, "[s] Additive Blend");
+        }
+        if (gDepthWrite) {
+            drawDebugString(0, 2, "[d] Depth Write : On");
+        } else {
+            drawDebugString(0, 2, "[d] Depth Write : Off");
         }
     }
 } // namespace GameLib
