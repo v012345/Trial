@@ -166,7 +166,7 @@ namespace GameLib {
                 Input::Manager().update(pointerScale, pointerOffset);
                 // 样例
                 mPrimitiveRenderer.enableDepthTest(false);
-                mPrimitiveRenderer.enableDepthWrite(false);
+                mPrimitiveRenderer.enableDepthWrite(true);
                 mPrimitiveRenderer.setCullMode(Graphics::CULL_NONE);
                 mPrimitiveRenderer.setBlendMode(Graphics::BLEND_OPAQUE);
             }
@@ -545,6 +545,7 @@ namespace GameLib {
     void Framework::setTexture(Texture* tex) { gImpl->setTexture(tex->mTexture); }
 
     void Framework::setBlendMode(BlendMode a) { gImpl->setBlendMode(a); }
+    void Framework::enableDepthTest(bool f) { gImpl->mPrimitiveRenderer.enableDepthTest(f); }
 
     // WindowProcedure的用户封装函数
     void WindowCreator::configure(Configuration* config) {

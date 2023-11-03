@@ -59,6 +59,7 @@ namespace GameLib {
             BLEND_OPAQUE,
         };
         void setBlendMode(BlendMode);
+        void enableDepthTest(bool);
         // 以下库用户不需要知道
         void start(void* windowHandle);
         void preUpdate();
