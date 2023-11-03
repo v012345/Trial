@@ -44,8 +44,8 @@ setmetatable(ScenceGame, {
             self.mState:update()
         end
 
-        function obj:startLoading()
-            self.mState = State(self.mStageID)
+        function obj:loadStage()
+            self.mState = GameStage(self.mStageID)
         end
 
         function obj:drawState()
