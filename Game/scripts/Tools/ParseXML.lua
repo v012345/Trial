@@ -1,94 +1,101 @@
-local Parser = {
-    space = {
+---@class ParseXML
+ParseXML = {}
+
+setmetatable(ParseXML, {
+    __call = function(self, path)
+        ---@class ParseXML
+        local obj = {}
+        setmetatable(obj, { __index = self })
+        obj:init(path)
+        obj:_parse()
+        return obj
+    end,
+    __index = Object()
+})
+
+function ParseXML:init(path)
+    local file = io.open(path, "r") or error("can't open " .. path)
+    self._mXmlString = file:read("a")
+    file:close()
+    self._mCharPointer = 0
+end
+
+---@return XMLNode
+function ParseXML:getData()
+    return self.mData
+end
+
+function ParseXML:_isSpace()
+    local space = {
         [" "] = " ",
         ["\t"] = "\t",
         ["\n"] = "\n",
         ["\f"] = "\f",
         ["\v"] = "\v",
     }
-}
-
-local function parse(xml_string)
-    Parser.char_pointer = 0
-    Parser.xml_string = xml_string
-    Parser:get_next_char()
-    Parser:skip_space()
-    return Parser:parser_a_node()
-end
-ParseXML = {}
-setmetatable(ParseXML, {
-    __call = function(self, path)
-        local file = io.open(path, "r") or error("can't open " .. path)
-        local xml_string = file:read("a")
-        file:close()
-        ---@class ParserXML
-        local obj = {}
-        obj.mData = parse(xml_string)
-        function obj:isA(what)
-            if ParseXML == what then
-                return true
-            else
-                local super = getmetatable(self)
-                if super then
-                    return super.__index:isA(what)
-                else
-                    return false
-                end
-            end
-        end
-
-        function obj:getData()
-            return self.mData
-        end
-
-        setmetatable(obj, { __index = Object() })
-        return obj
-    end
-})
-
-function Parser:check_next_char(c)
-    return string.sub(self.xml_string, self.char_pointer + 1, self.char_pointer + 1) == c
+    return space[self._mCurrentChar]
 end
 
-function Parser:parser_a_node()
-    self:get_next_char() -- 跳过 <
+function ParseXML:_checkNextChar(c)
+    return string.sub(self._mXmlString, self._mCharPointer + 1, self._mCharPointer + 1) == c
+end
+
+function ParseXML:_parse()
+    self:_getFirstChar()
+    self:_skipSpace()
+    self.mData = self:_parserNode()
+end
+
+function ParseXML:_getFirstChar()
+    self._mCharPointer = self._mCharPointer + 1
+    self._mCurrentChar = string.sub(self._mXmlString, self._mCharPointer, self._mCharPointer)
+    return self._mCurrentChar
+end
+
+function ParseXML:_parserNode()
+    self:_getNextChar() -- 跳过 <
+    ---@class XMLNode
+    ---@field tag_name string
+    ---@field attributes table<string,string>
+    ---@field children table<XMLNode>
+    ---@field content string
     local node = {
-        tag_name = nil,
+        tag_name = "",
         attributes = {},
         children = {},
         content = ""
     }
-    node.tag_name = self:parser_a_name()
+    node.tag_name = self:_readName()
 
     while true do
-        if self.current_char == "<" then
-            if self:check_next_char("/") then
-                self:get_next_char() -- 跳过 <
-                self:get_next_char() -- 跳过 /
-                if node.tag_name ~= self:parser_a_name() then
+        if self._mCurrentChar == "<" then
+            if self:_checkNextChar("/") then
+                self:_getNextChar() -- 跳过 <
+                self:_getNextChar() -- 跳过 /
+                if node.tag_name ~= self:_readName() then
                     error("don't close tag")
                 end
-                self:skip_space()
-                self:get_next_char() -- 跳过 >
+                self:_skipSpace()
+                self:_getNextChar() -- 跳过 >
                 return node
             else
-                node.children[#node.children + 1] = self:parser_a_node()
+                node.children[#node.children + 1] = self:_parserNode()
             end
-        elseif self.current_char == "/" then
-            self:get_next_char()
-            self:skip_space()
-            if self.current_char == ">" then
-                self:get_next_char() -- 跳过 >
+        elseif self._mCurrentChar == "/" then
+            self:_getNextChar()
+            self:_skipSpace()
+            if self._mCurrentChar == ">" then
+                self:_getNextChar() -- 跳过 >
                 return node
             else
-                error(self.current_char)
+                error(self._mCurrentChar)
             end
-        elseif self.space[self.current_char] then
-            self:skip_space()
-        elseif self.current_char == ">" then
-            self:get_next_char() -- 跳过 >
+        elseif self:_isSpace() then
+            self:_skipSpace()
+        elseif self._mCurrentChar == ">" then
+            self:_getNextChar() -- 跳过 >
         else
-            local key, value = self:parser_a_key_value_pair()
+            local key, value = self:_readAttri()
             if key then
                 node.attributes[key] = value
             else
@@ -98,55 +105,55 @@ function Parser:parser_a_node()
     end
 end
 
-function Parser:parser_a_key_value_pair()
-    local key = self:parser_a_name()
-    self:skip_space()
-    if self.current_char ~= "=" then
-        error("miss = @ " .. self.char_pointer)
+function ParseXML:_readAttri()
+    local key = self:_readName()
+    self:_skipSpace()
+    if self._mCurrentChar ~= "=" then
+        error("miss = @ " .. self._mCharPointer)
     end
-    self:get_next_char() -- 跳过 =
-    local value = self:parser_a_string()
+    self:_getNextChar() -- 跳过 =
+    local value = self:_readString()
     return key, value
 end
 
-function Parser:parser_a_string()
-    self:skip_space()
-    if self.current_char == '"' then
-        self:get_next_char() -- 跳过 "
+function ParseXML:_readString()
+    self:_skipSpace()
+    if self._mCurrentChar == '"' then
+        self:_getNextChar() -- 跳过 "
         local s = {}
         while true do
-            if self.current_char == '"' then
+            if self._mCurrentChar == '"' then
                 break
             end
-            s[#s + 1] = self.current_char
-            self:get_next_char()
+            s[#s + 1] = self._mCurrentChar
+            self:_getNextChar()
         end
-        self:get_next_char() -- 跳过 "
+        self:_getNextChar() -- 跳过 "
         return table.concat(s)
     else
         error("miss \"")
     end
 end
 
-function Parser:get_next_char()
-    self.char_pointer = self.char_pointer + 1
-    self.current_char = string.sub(self.xml_string, self.char_pointer, self.char_pointer)
-    return self.current_char
+function ParseXML:_getNextChar()
+    self._mCharPointer = self._mCharPointer + 1
+    self._mCurrentChar = string.sub(self._mXmlString, self._mCharPointer, self._mCharPointer)
+    return self._mCurrentChar
 end
 
-function Parser:skip_space()
-    while self.space[self.current_char] do
-        self.current_char = self:get_next_char()
+function ParseXML:_skipSpace()
+    while self:_isSpace() do
+        self._mCurrentChar = self:_getNextChar()
     end
-    return self.current_char
+    return self._mCurrentChar
 end
 
-function Parser:parser_a_name()
-    self:skip_space()
+function ParseXML:_readName()
+    self:_skipSpace()
     local s = {}
-    while string.match(self.current_char, "%w") do
-        s[#s + 1] = self.current_char
-        self:get_next_char()
+    while string.match(self._mCurrentChar, "%w") do
+        s[#s + 1] = self._mCurrentChar
+        self:_getNextChar()
     end
     if #s == 0 then
         error("no name" .. debug.traceback())
