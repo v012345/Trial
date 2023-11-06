@@ -13,3 +13,6 @@
 [submodule "libs/freetype"]
 	path = libs/freetype
 	url = git@github.com:freetype/freetype.git
+[submodule "LuaJIT"]
+	path = LuaJIT
+	url = git@github.com:LuaJIT/LuaJIT.git
