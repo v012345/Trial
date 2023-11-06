@@ -211,9 +211,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
     // 生成窗口状态维护类
     gImpl = NEW Impl();
     gImpl->mCommandLine = lpCmdLine;
+    // WindowCreator 的功能是在 Framework.cpp 中实现的
     WindowCreator wc;
     // 呼叫用户设定功能
     WindowCreator::Configuration config;
+    // 在这里生成 Framework 的 Impl 实例, 会改用 Framework 中的一些设置来设置窗口
     wc.configure(&config);
 
     memcpy(szTitle, wc.title(), wc.titleLength());
@@ -230,6 +232,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
     HWND windowHandle = gImpl->mWindowHandle;
     /// 启动前出现异常无法继续，弹出消息框然后结束
     try {
+        // 这里调用 Framework->Impl->start
         wc.start(windowHandle);
     } catch (...) { // 启动时不能忽略异常。
         MessageBoxA(windowHandle, "致命的な問題があり、起動できません。申し訳ありませんが終了いたします", "致命的エラー", MB_OK | MB_ICONERROR);

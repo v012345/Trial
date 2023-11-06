@@ -6,25 +6,25 @@
 #include "Threading/ManagerImpl.h"
 
 namespace GameLib {
-namespace Threading {
+    namespace Threading {
 
-ManagerImpl* gManagerImpl = 0; // Impl实体
+        ManagerImpl* gManagerImpl = 0; // Impl实体
 
-Manager::Manager() {
-    // 不允许来自其他线程的调用
-    ASSERT(WindowCreator::isMainThread() && "you must call from MAIN thread");
-}
+        Manager::Manager() {
+            // 不允许来自其他线程的调用
+            ASSERT(WindowCreator::isMainThread() && "you must call from MAIN thread");
+        }
 
-void Manager::create(int additionalThreadNumber) {
-    STRONG_ASSERT(!gManagerImpl);
-    gManagerImpl = NEW ManagerImpl(additionalThreadNumber);
-}
+        void Manager::create(int additionalThreadNumber) {
+            STRONG_ASSERT(!gManagerImpl);
+            gManagerImpl = NEW ManagerImpl(additionalThreadNumber);
+        }
 
-int Manager::getCoreNumber() const { return gManagerImpl->getCoreNumber(); }
+        int Manager::getCoreNumber() const { return gManagerImpl->getCoreNumber(); }
 
-void Manager::destroy() { SAFE_DELETE(gManagerImpl); }
+        void Manager::destroy() { SAFE_DELETE(gManagerImpl); }
 
-Manager Manager::instance() { return Manager(); }
+        Manager Manager::instance() { return Manager(); }
 
-} // namespace Threading
+    } // namespace Threading
 } // namespace GameLib
