@@ -26,12 +26,28 @@ function ParseXML:getData()
     return self.mData
 end
 
+---@param path string
 function ParseXML:writeTo(path)
-    print()
-    for key, value in pairs(self.mData) do
-        print(key, value)
+    local file = io.open(path, "w") or error("can't open " .. path)
+    ---@param node XMLNode
+    local function dump(node)
+        file:write("<", node:getTagName())
+        for _, key in ipairs(node:getSortedAttriKey()) do
+            file:write(string.format(' %s="%s"', key, node:getAttributeValue(key)))
+        end
+        local children = node:getChildren()
+        if #children > 0 then
+            file:write(">\n")
+            for _, child in ipairs(node:getChildren()) do
+                dump(child)
+            end
+            file:write("</", node:getTagName(), ">\n")
+        else
+            file:write(" />\n")
+        end
     end
-    -- return self.mData
+    dump(self.mData)
+    file:close()
 end
 
 function ParseXML:_isSpace()
@@ -68,15 +84,22 @@ function ParseXML:_parserNode()
     ---@field _attributes table<string,string>
     ---@field _children XMLNode[]
     ---@field _content string
+    ---@field _attris_key_sorted string[]
     local node = {
         _tag_name = "",
         _attributes = {},
+        _attris_key_sorted = {},
         _children = {},
         _content = "",
         ---@param this XMLNode
         ---@return XMLNode[]
         getChildren = function(this)
             return this._children
+        end,
+        ---@param this XMLNode
+        ---@return XMLNode
+        getChild = function(this, idx)
+            return this._children[idx]
         end,
         ---@param this XMLNode
         ---@param key string
@@ -88,6 +111,11 @@ function ParseXML:_parserNode()
         ---@return table<string,string>
         getAttributes = function(this)
             return this._attributes
+        end,
+        ---@param this XMLNode
+        ---@return string[]
+        getSortedAttriKey = function(this)
+            return this._attris_key_sorted
         end,
         ---@param this XMLNode
         ---@return string
@@ -140,6 +168,7 @@ function ParseXML:_parserNode()
             local key, value = self:_readAttri()
             if key then
                 node._attributes[key] = value
+                node._attris_key_sorted[#node._attris_key_sorted + 1] = key
             else
                 error("miss key")
             end
