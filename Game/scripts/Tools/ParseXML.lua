@@ -1,3 +1,4 @@
+require "Object"
 ---@class ParseXML
 ParseXML = {}
 
@@ -23,6 +24,14 @@ end
 ---@return XMLNode
 function ParseXML:getData()
     return self.mData
+end
+
+function ParseXML:writeTo(path)
+    print()
+    for key, value in pairs(self.mData) do
+        print(key, value)
+    end
+    -- return self.mData
 end
 
 function ParseXML:_isSpace()
@@ -79,6 +88,11 @@ function ParseXML:_parserNode()
         ---@return table<string,string>
         getAttributes = function(this)
             return this._attributes
+        end,
+        ---@param this XMLNode
+        ---@return string
+        getTagName = function(this)
+            return this._tag_name
         end,
         ---@param this XMLNode
         ---@param key string
