@@ -14,8 +14,15 @@ setmetatable(Parser, {
 
 function Parser:init(path)
     local file = io.open(path, "r") or error("can't open " .. path)
-    self._mStream = file:read("a")
+    local stream = file:read("a")
     file:close()
+    if #stream > 3 then
+        local bom = string.format("%x%x%x", string.byte(stream, 1, 3))
+        if string.lower(bom) == "efbbbf" then
+            stream = string.sub(stream, 4, #stream)
+        end
+    end
+    self._mStream = stream
     self._mCharPointer = 0
     self._mRowNum = 1
     self._mColNum = 0
