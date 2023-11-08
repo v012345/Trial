@@ -19,6 +19,8 @@ function ParseXML:init(path)
     self._mXmlString = file:read("a")
     file:close()
     self._mCharPointer = 0
+    self._mRowNum = 1
+    self._mColNum = 0
 end
 
 ---@return XMLNode
@@ -72,9 +74,7 @@ function ParseXML:_parse()
 end
 
 function ParseXML:_getFirstChar()
-    self._mCharPointer = self._mCharPointer + 1
-    self._mCurrentChar = string.sub(self._mXmlString, self._mCharPointer, self._mCharPointer)
-    return self._mCurrentChar
+    return self:_getNextChar()
 end
 
 function ParseXML:_parserNode()
@@ -209,6 +209,11 @@ end
 function ParseXML:_getNextChar()
     self._mCharPointer = self._mCharPointer + 1
     self._mCurrentChar = string.sub(self._mXmlString, self._mCharPointer, self._mCharPointer)
+    self._mColNum = self._mColNum + 1
+    if self._mCurrentChar == "\n" then
+        self._mRowNum = self._mRowNum + 1
+        self._mColNum = 0
+    end
     return self._mCurrentChar
 end
 
@@ -222,12 +227,13 @@ end
 function ParseXML:_readName()
     self:_skipSpace()
     local s = {}
-    while string.match(self._mCurrentChar, "%w") do
+    while string.match(self._mCurrentChar, "[%w_]") do
         s[#s + 1] = self._mCurrentChar
         self:_getNextChar()
     end
     if #s == 0 then
-        error("no name" .. debug.traceback())
+        print(self._mCurrentChar)
+        error(string.format("no name @ row %s col %s \n %s", self._mRowNum, self._mColNum, debug.traceback()))
     end
     return table.concat(s)
 end
