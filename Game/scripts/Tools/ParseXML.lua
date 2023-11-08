@@ -1,5 +1,5 @@
-require "Object"
----@class ParseXML
+require "Tools.Parser"
+---@class ParseXML:Parser
 ParseXML = {}
 
 setmetatable(ParseXML, {
@@ -11,17 +11,9 @@ setmetatable(ParseXML, {
         obj:_parse()
         return obj
     end,
-    __index = Object()
+    __index = Parser()
 })
 
-function ParseXML:init(path)
-    local file = io.open(path, "r") or error("can't open " .. path)
-    self._mXmlString = file:read("a")
-    file:close()
-    self._mCharPointer = 0
-    self._mRowNum = 1
-    self._mColNum = 0
-end
 
 ---@return XMLNode
 function ParseXML:getData()
@@ -52,30 +44,12 @@ function ParseXML:writeTo(path)
     file:close()
 end
 
-function ParseXML:_isSpace()
-    local space = {
-        [" "] = " ",
-        ["\t"] = "\t",
-        ["\n"] = "\n",
-        ["\f"] = "\f",
-        ["\v"] = "\v",
-    }
-    return space[self._mCurrentChar]
-end
-
-function ParseXML:_checkNextChar(c)
-    return string.sub(self._mXmlString, self._mCharPointer + 1, self._mCharPointer + 1) == c
-end
-
 function ParseXML:_parse()
     self:_getFirstChar()
     self:_skipSpace()
     self.mData = self:_parserNode()
 end
 
-function ParseXML:_getFirstChar()
-    return self:_getNextChar()
-end
 
 function ParseXML:_parserNode()
     self:_getNextChar() -- 跳过 <
@@ -204,24 +178,6 @@ function ParseXML:_readString()
     else
         error("miss \"")
     end
-end
-
-function ParseXML:_getNextChar()
-    self._mCharPointer = self._mCharPointer + 1
-    self._mCurrentChar = string.sub(self._mXmlString, self._mCharPointer, self._mCharPointer)
-    self._mColNum = self._mColNum + 1
-    if self._mCurrentChar == "\n" then
-        self._mRowNum = self._mRowNum + 1
-        self._mColNum = 0
-    end
-    return self._mCurrentChar
-end
-
-function ParseXML:_skipSpace()
-    while self:_isSpace() do
-        self._mCurrentChar = self:_getNextChar()
-    end
-    return self._mCurrentChar
 end
 
 function ParseXML:_readName()
