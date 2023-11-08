@@ -1,5 +1,7 @@
 #include "Framework.h"
 #include "GameLib/Framework.h"
+#include "GameLib/Input/Manager.h"
+#include "GameLib/Input/Mouse.h"
 
 int Framework::luaopen_Framework(lua_State* L) {
     lua_newtable(L);
@@ -16,6 +18,7 @@ luaL_Reg Framework::lua_reg[] = {
     {"setFrameRate", lua_setFrameRate}, //
     {"isKeyTriggered", lua_isKeyTriggered}, //
     {"drawDebugString", lua_drawDebugString}, //
+    {"mouse", lua_mouse}, //
     {NULL, NULL},
 };
 
@@ -62,5 +65,31 @@ int Framework::lua_isKeyOn(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
     GameLib::Framework f = GameLib::Framework::instance();
     lua_pushboolean(L, f.isKeyOn(c));
+    return 1;
+}
+
+int Framework::lua_mouse(lua_State* L) {
+    GameLib::Input::Mouse mouse = GameLib::Input::Manager::instance().mouse();
+    lua_newtable(L);
+    int x = mouse.x();
+    int y = mouse.y();
+    bool LEFT = mouse.isOn(GameLib::Input::Mouse::BUTTON_LEFT);
+    bool RIGHT = mouse.isOn(GameLib::Input::Mouse::BUTTON_RIGHT);
+    bool MIDDLE = mouse.isOn(GameLib::Input::Mouse::BUTTON_MIDDLE);
+    lua_pushstring(L, "x");
+    lua_pushinteger(L, x);
+    lua_settable(L, -3);
+    lua_pushstring(L, "y");
+    lua_pushinteger(L, y);
+    lua_settable(L, -3);
+    lua_pushstring(L, "left");
+    lua_pushboolean(L, LEFT);
+    lua_settable(L, -3);
+    lua_pushstring(L, "right");
+    lua_pushboolean(L, RIGHT);
+    lua_settable(L, -3);
+    lua_pushstring(L, "middle");
+    lua_pushboolean(L, MIDDLE);
+    lua_settable(L, -3);
     return 1;
 }

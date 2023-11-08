@@ -89,7 +89,7 @@ function StringRenderer:draw(x, y, s, c)
 
 end
 
----comment
+---C 方法
 ---@param path string
 ---@return Image
 function Image(path)
