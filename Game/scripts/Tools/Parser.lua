@@ -26,6 +26,7 @@ function Parser:init(path)
     self._mCharPointer = 0
     self._mRowNum = 1
     self._mColNum = 0
+    self:_getFirstChar()
 end
 
 function Parser:writeTo()

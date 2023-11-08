@@ -45,11 +45,9 @@ function ParseXML:writeTo(path)
 end
 
 function ParseXML:_parse()
-    self:_getFirstChar()
     self:_skipSpace()
     self.mData = self:_parserNode()
 end
-
 
 function ParseXML:_parserNode()
     self:_getNextChar() -- 跳过 <
