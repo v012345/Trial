@@ -29,7 +29,7 @@ function Parser:init(path)
     self:_getFirstChar()
 end
 
-function Parser:writeTo()
+function Parser:writeTo(path)
     error("must implemention")
 end
 
@@ -50,6 +50,10 @@ end
 
 function Parser:_getFirstChar()
     return self:_getNextChar()
+end
+
+function Parser:_isEnd()
+    return self._mCharPointer > #self._mStream
 end
 
 function Parser:_getNextChar()
