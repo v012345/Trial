@@ -114,3 +114,7 @@ end
 ---@param path string
 ---@return ParseXML
 function ParseXML(path) return {} end
+
+---@param path string|nil
+---@return CSV
+function CSV(path) return {} end

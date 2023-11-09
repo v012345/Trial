@@ -1,115 +1,71 @@
--- debug.sethook(function(a, b)
---     print(b, debug.getinfo(2).source)
--- end, "l")
+package.path = package.path .. ";./?.lua"
 xpcall(function()
-    function IsA(A, B)
-        if A == B then
-            return true
-        else
-            local super = getmetatable(A)
-            if super and type(super.__index) == "table" then
-                return IsA(super, B)
-            else
-                return false
-            end
-        end
-    end
-
-    local lfs = require "lfs"
-    -- require "Object"
-    -- require "Enum"
     os.execute("chcp 65001 > NUL")
     print("Hello 👋")
-    Framework:setFrameRate(60)
-    -- require "DataStage"
-    -- require "Director"
-    local m = {}
-    local function getFiles(folder)
+    local lfs = require "lfs"
+    -- local currentdir = lfs.currentdir()
+    local currentdir = "D:\\Closers.cocos\\resource\\ui\\branches\\dzogame_sea\\zhcn"
+    -- local transFileName = "trans.csv"
+    local transFileName = "trans-test.csv"
+
+
+    for i, v in ipairs(arg) do
+        print(i, v)
+    end
+    if arg[3] == "extract" then
+        print("<<<< 开始提取文字 >>>>")
+        require "Tools.ParseXML"
+        require "Tools.CSV"
+        local trans = CSV()
+        -- 5个语言全部加载进来
+        local all_csd_path = {}
+        local folder = currentdir .. "\\cocosstudio\\ui"
         for entry in lfs.dir(folder) do
             if entry ~= "." and entry ~= ".." then
-                local filePath = folder .. "/" .. entry
+                local filePath = folder .. "\\" .. entry
                 local fileAttributes = lfs.attributes(filePath)
                 if fileAttributes.mode == "file" then
-                    if string.match(string.lower(filePath), "^.+%.csd$") then
-                        m[entry] = filePath
+                    if string.match(string.lower(filePath), "^.+%.csd$") and entry ~= "UiNotificationReward.csd" and entry ~= "UiDownload.csd" then
+                        all_csd_path[entry] = {
+                            zhcn = filePath,
+                            vi = string.gsub(filePath, "\\zhcn\\", "\\vi\\", 1),
+                            th = string.gsub(filePath, "\\zhcn\\", "\\th\\", 1),
+                            id = string.gsub(filePath, "\\zhcn\\", "\\id\\", 1),
+                            en = string.gsub(filePath, "\\zhcn\\", "\\en\\", 1),
+                        }
                     end
                 end
             end
         end
-        return m
-    end
-    -- print(package.path)
-    -- require "Tools.ParseCSV"
-    -- local x = ParseCSV("C:\\Users\\Meteor\\Downloads\\trans-client.csv")
-    -- local x = ParseCSV("C:\\Users\\Meteor\\Desktop\\New Microsoft Excel Worksheet (2).csv")
-    -- x:writeTo("tst.csv")
-    -- local x = ParseCSV("D:\\Closers.cocos\\resource\\ui\\branches\\dzogame_sea\\zhcn\\trans.csv")
-    -- local x = ParseCSV("D:\\Trial\\Game\\scripts\\1.txt")
-    -- getFiles("D:\\Closers.cocos\\resource\\ui\\branches\\dzogame_sea\\zhcn\\cocosstudio\\ui")
-    -- local x = {}
-    -- require "Tools.ParseXML"
-    -- for index, value in pairs(m) do
-    --     print(index)
-    --     x[index] = ParseXML(value)
-    -- end
-    -- for index, value in pairs(x) do
-    --     print(index)
-    --     value:writeTo("csd/" .. index)
-    -- end
-    -- local x = ParseXML(
-    --     "D:\\Closers.cocos\\resource\\ui\\branches\\dzogame_sea\\zhcn\\cocosstudio\\ui\\UiCommonDialogSub2.csd")
-    -- x:writeTo("UiCommonDialogSub2.xml")
-    -- print(utf8)
-    -- for key, value in pairs(utf8) do
-    --     print(key, value)
-    -- end
-    -- 主循环协程
-    local button = {
-        normal = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/button-blue.png"),
-        pressed = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/button-gray.png"),
-        status = "normal"
-    }
-
-    local bg = Image(CMAKE_CURRENT_SOURCE_DIR .. "res/console.png")
-
-
-    local render = coroutine.create(function()
-        while true do
-            -- 执行主循环逻辑
-            bg:draw()
-            button[button.status]:draw()
-            coroutine.yield()
+        local tableHead = { "zhcn", "en", "id", "th", "vi", "csd", "name", "tag" }
+        for i, v in ipairs(tableHead) do
+            trans:setCell(1, i, v)
         end
-    end)
-
-    -- 费时操作协程
-    local logic  = coroutine.create(function()
-        while true do
-            local mouse = Framework:mouse()
-            if mouse.left then
-                button.status = "pressed"
-            else
-                button.status = "normal"
-            end
-            coroutine.yield()
+        local row_number = 2
+        for csdName, paths in pairs(all_csd_path) do
+            print(csdName)
+            local zhcnCsd = ParseXML(paths.zhcn)
+            local viCsd = ParseXML(paths.vi)
+            local th = ParseXML(paths.th)
+            local idCsd = ParseXML(paths.id)
+            local enCsd = ParseXML(paths.en)
         end
-    end)
-    function MainLoop()
-        xpcall(function()
-            -- Director:update()
-            coroutine.resume(render)
-            coroutine.resume(logic)
-
-            Framework:drawDebugString(70, 0, "FPS : " .. Framework:frameRate())
-            -- local mouse = Framework:mouse()
-            -- Framework:drawDebugString(0, 20, mouse.x)
-            -- Framework:drawDebugString(0, 21, mouse.y)
-            -- Framework:drawDebugString(0, 23, tostring(mouse.left))
-            -- Framework:drawDebugString(0, 22, tostring(mouse.right))
-        end, function(msg)
-            print(msg)
-        end)
+        trans:writeTo(currentdir .. "\\" .. transFileName)
+        print("<<<< 完成提取文字 >>>>")
+    elseif arg[3] == "publish" then
+        print("<<<< 开始发布变动 csd >>>>")
+        print("<<<< 完成发布变动 csd >>>>")
+    elseif arg[3] == "publishAll" then
+        print("<<<< 开始发布全部 csd >>>>")
+        print("<<<< 完成发布全部 csd >>>>")
+    elseif arg[3] == "plist" then
+        print("<<<< 开始发布 plist >>>>")
+        print("<<<< 完成发布 plist >>>>")
+    elseif arg[3] == "merge" then
+        print("<<<< 开始合并翻译 >>>>")
+        print("<<<< 完成合并翻译 >>>>")
     end
+    os.execute("pause")
 end, function(msg)
     print(msg)
 end)
