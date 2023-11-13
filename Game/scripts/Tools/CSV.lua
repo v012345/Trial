@@ -33,7 +33,6 @@ function CSV:_parse()
         self._mData[#self._mData + 1] = row
         self:_getNextChar()
     until self:_isEnd()
-    print(#self._mData)
 end
 
 function CSV:writeTo(path)
