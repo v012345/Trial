@@ -1,2 +1,5 @@
 culprit 罪魁祸首
 squiggly 上下起伏的
+subtle 细微的
+conform 符合
+sophisticated 复杂的
