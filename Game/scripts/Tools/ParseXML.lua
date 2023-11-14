@@ -49,8 +49,10 @@ function ParseXML:_parse()
     self.mData = self:_parserNode()
 end
 
-function ParseXML:_parserNode()
-    self:_getNextChar() -- 跳过 <
+---comment
+---@param tagName string|nil
+---@return XMLNode
+function ParseXML:newNode(tagName)
     ---@class XMLNode
     ---@field _tag_name string
     ---@field _attributes table<string,string>
@@ -58,7 +60,7 @@ function ParseXML:_parserNode()
     ---@field _content string
     ---@field _attris_key_sorted string[]
     local node = {
-        _tag_name = "",
+        _tag_name = tagName or "",
         _attributes = {},
         _attris_key_sorted = {},
         _children = {},
@@ -74,10 +76,23 @@ function ParseXML:_parserNode()
             return this._children[idx]
         end,
         ---@param this XMLNode
+        addChild = function(this, XMLNode)
+            this._children[#this._children + 1] = XMLNode
+        end,
+        ---@param this XMLNode
         ---@param key string
         ---@return string|nil
         getAttributeValue = function(this, key)
             return this._attributes[key]
+        end,
+        ---@param this XMLNode
+        ---@param key string
+        ---@param value any
+        setAttributeValue = function(this, key, value)
+            if not this._attributes[key] then
+                this._attris_key_sorted[#this._attris_key_sorted + 1] = key
+            end
+            this._attributes[key] = tostring(value)
         end,
         ---@param this XMLNode
         ---@return table<string,string>
@@ -107,6 +122,12 @@ function ParseXML:_parserNode()
             return nil
         end
     }
+    return node
+end
+
+function ParseXML:_parserNode()
+    self:_getNextChar() -- 跳过 <
+    local node = self:newNode()
     node._tag_name = self:_readName()
 
     while true do
