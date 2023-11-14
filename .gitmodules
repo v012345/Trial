@@ -19,3 +19,6 @@
 [submodule "libs/glfw"]
 	path = libs/glfw
 	url = git@github.com:glfw/glfw.git
+[submodule "libs/glew"]
+	path = libs/glew
+	url = git@github.com:nigels-com/glew.git
