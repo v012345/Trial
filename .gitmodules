@@ -16,3 +16,6 @@
 [submodule "LuaJIT"]
 	path = LuaJIT
 	url = git@github.com:LuaJIT/LuaJIT.git
+[submodule "libs/glfw"]
+	path = libs/glfw
+	url = git@github.com:glfw/glfw.git
