@@ -99,12 +99,14 @@
         "set": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "auxiliar.h": "c"
     },
     "Lua.diagnostics.globals": [
         "lfs"
     ],
     "Lua.workspace.library": [
         "${3rd}/lfs/library"
-    ]
+    ],
+    "dotnet.defaultSolution": "disable"
 }
