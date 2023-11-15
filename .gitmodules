@@ -22,3 +22,6 @@
 [submodule "libs/glew"]
 	path = libs/glew
 	url = git@github.com:nigels-com/glew.git
+[submodule "extensions/luasocket"]
+	path = extensions/luasocket
+	url = git@github.com:lunarmodules/luasocket.git
