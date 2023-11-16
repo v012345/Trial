@@ -1,4 +1,6 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Net.Sockets;
 using System.Text;
 namespace Client
 {
@@ -45,6 +47,20 @@ namespace Client
         private void LblConnectionState_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void BtnNextStep_Click(object sender, EventArgs e)
+        {
+            // 发送消息给服务器
+            string message = "Hello, Lua server!\n";
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            mStream.Write(data, 0, data.Length);
+
+            // 接收服务器的响应
+            byte[] buffer = new byte[1024];
+            int bytesRead = mStream.Read(buffer, 0, buffer.Length);
+            string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            Debug.WriteLine($"Re message to server: {response}");
         }
     }
 }

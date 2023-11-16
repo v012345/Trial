@@ -112,9 +112,13 @@ end
 
 ---comment
 ---@param path string
----@return ParseXML
-function ParseXML(path) return {} end
+---@return XML
+function XML(path) return {} end
 
 ---@param path string|nil
 ---@return CSV
 function CSV(path) return {} end
+
+---@param path string|nil
+---@return JSON
+function JSON(path) return {} end

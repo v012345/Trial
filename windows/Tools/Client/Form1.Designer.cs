@@ -28,9 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
+            BtnNextStep = new Button();
             button2 = new Button();
-            richTextBox1 = new RichTextBox();
             radioButton1 = new RadioButton();
             radioButton2 = new RadioButton();
             radioButton3 = new RadioButton();
@@ -40,14 +39,15 @@
             BtnConnectServer = new Button();
             SuspendLayout();
             // 
-            // button1
+            // BtnNextStep
             // 
-            button1.Location = new Point(630, 409);
-            button1.Name = "button1";
-            button1.Size = new Size(158, 29);
-            button1.TabIndex = 1;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            BtnNextStep.Location = new Point(630, 409);
+            BtnNextStep.Name = "BtnNextStep";
+            BtnNextStep.Size = new Size(158, 29);
+            BtnNextStep.TabIndex = 1;
+            BtnNextStep.Text = "下一步";
+            BtnNextStep.UseVisualStyleBackColor = true;
+            BtnNextStep.Click += BtnNextStep_Click;
             // 
             // button2
             // 
@@ -57,14 +57,6 @@
             button2.TabIndex = 2;
             button2.Text = "button2";
             button2.UseVisualStyleBackColor = true;
-            // 
-            // richTextBox1
-            // 
-            richTextBox1.Location = new Point(450, 12);
-            richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(338, 391);
-            richTextBox1.TabIndex = 3;
-            richTextBox1.Text = "";
             // 
             // radioButton1
             // 
@@ -154,9 +146,8 @@
             Controls.Add(radioButton3);
             Controls.Add(radioButton2);
             Controls.Add(radioButton1);
-            Controls.Add(richTextBox1);
             Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(BtnNextStep);
             Name = "Form1";
             Text = "Form1";
             ResumeLayout(false);
@@ -165,9 +156,8 @@
 
         #endregion
 
-        private Button button1;
+        private Button BtnNextStep;
         private Button button2;
-        private RichTextBox richTextBox1;
         private RadioButton radioButton1;
         private RadioButton radioButton2;
         private RadioButton radioButton3;
