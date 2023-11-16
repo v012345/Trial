@@ -548,7 +548,7 @@ namespace GameLib {
     void Framework::enableDepthTest(bool f) { gImpl->mPrimitiveRenderer.enableDepthTest(f); }
     void Framework::enableDepthWrite(bool f) { gImpl->mPrimitiveRenderer.enableDepthWrite(f); }
 
-    // WindowProcedure的用户封装函数
+    // WindowProcedure的用户封装函数, 在 "main" 函数中调用, 通过 config 使用 f 来设置 window
     void WindowCreator::configure(Configuration* config) {
         Framework::create();
         // 用户设定

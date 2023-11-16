@@ -107,7 +107,7 @@ namespace GameLib {
             unsigned mTimeBias; // 可用于获取timeGetTime
             unsigned mThreadId;
             Array<string> mDroppedItems;
-            HWND mWindowHandle;
+            HWND mWindowHandle; // 当前窗口
             RECT mWindowRect;
         };
 
@@ -193,6 +193,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
+/// @brief 主要做了三件事, 先调用 config, 再调用 start, 最后开始 update
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow) {
 #ifdef USE_WIN32_CONSOLE
     AllocConsole();
@@ -200,13 +201,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
 #endif
+    // 应该是兼容 NT 用的, 现在应该没有用了, 应该是早期遗留代码
     CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    // 两行无用变量
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO：请在这里插入代码。
-    MSG msg;
-    HACCEL hAccelTable;
 
     // 生成窗口状态维护类
     gImpl = NEW Impl();
@@ -223,31 +222,40 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
     MyRegisterClass(hInstance);
 
-    // 执行应用程序初始化：
-    if (!InitInstance(hInstance, nCmdShow)) { return FALSE; }
-
+    // 执行应用程序初始化, 生成窗口
+    if (!InitInstance(hInstance, nCmdShow)) { //
+        return FALSE;
+    }
+    HACCEL hAccelTable;
     hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWCREATOR));
 
+    // 拉高刷新率
     timeBeginPeriod(1);
     HWND windowHandle = gImpl->mWindowHandle;
     /// 启动前出现异常无法继续，弹出消息框然后结束
     try {
-        // 这里调用 Framework->Impl->start
+        // 这里调用 Framework->Impl->start, 进行各个管理器的初始化
         wc.start(windowHandle);
     } catch (...) { // 启动时不能忽略异常。
         MessageBoxA(windowHandle, "致命的な問題があり、起動できません。申し訳ありませんが終了いたします", "致命的エラー", MB_OK | MB_ICONERROR);
         wc.requestEnd(); // 结束
         wc.update(); // 结束处理
         SAFE_DELETE(gImpl);
+        // 恢复刷新率
         timeEndPeriod(1);
         return 0;
     }
 
-    //
-    if (gImpl->mFullScreen) { gImpl->createDefaultWindowPos(); }
-    // 启用拖放
-    if (gImpl->mDragAndDropEnabled) { DragAcceptFiles(windowHandle, TRUE); }
-    gImpl->mStarted = true; // 循环启动信号
+    // 现在还不可以全屏
+    if (gImpl->mFullScreen) { //
+        gImpl->createDefaultWindowPos();
+    }
+    // 启用拖放, 应该可以向窗口放文件, 目前不行
+    if (gImpl->mDragAndDropEnabled) { //
+        DragAcceptFiles(windowHandle, TRUE);
+    }
+    gImpl->mStarted = true; // 循环启动信号, 前置工作完成, 可以进入循环, 可以理解为主要调用用户实现的 update
+    MSG msg;
     while (true) {
         // 有消息时处理
         if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
@@ -281,6 +289,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
         }
     }
     SAFE_DELETE(gImpl);
+    // 恢复刷新率
     timeEndPeriod(1);
 
     CoUninitialize();
@@ -295,9 +304,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 //  注释：
 //
 //    该函数和使用方法追加了“RegisterClassEx”函数
-// 只有与Windows 95之前的Win 32系统兼容时，才需要
-//    应用程序已关联
-//    为了获得格式正确的小图标，
+//    只有与Windows 95之前的Win 32系统兼容时，
+//    才需要应用程序已关联为了获得格式正确的小图标，
 //    请调用此函数。
 //
 ATOM MyRegisterClass(HINSTANCE hInstance) {
