@@ -1,14 +1,6 @@
 require "Tools.Parser"
---- 只支持表的, 不支持单 boolean, 数字, null
 ---@class JSON:Parser
 JSON = {
-    space = {
-        [" "] = " ",
-        ["\t"] = "\t",
-        ["\n"] = "\n",
-        ["\f"] = "\f",
-        ["\v"] = "\v",
-    },
     escape = {
         ["\\"] = "\\",
         ["\""] = "\"",
@@ -28,27 +20,29 @@ JSON = {
         ["\n"] = "\\n",
         ["\t"] = "\\t",
         ["\b"] = "\\b",
-    }
-
+    },
+    __parent = Parser
 }
 
 setmetatable(JSON, {
-    __call = function(self, path)
+    __call = function(self, pathOrStream)
         ---@class JSON
         local obj = {}
         setmetatable(obj, { __index = self })
-        -- 如果加上这个, 对于空矩来说计算量太大了,所以先假设第一行都是对齐的
-        obj._mCsvRowNumber = 0
-        obj._mCsvColNumber = 0
-        obj._mData = {}
-        if path then
-            obj:init(path)
-            obj:_parse()
-        end
+        obj:_construct(pathOrStream)
         return obj
     end,
-    __index = Parser()
+    __index = JSON.__parent
 })
+
+function JSON:_construct(pathOrStream)
+    JSON.__parent._construct(self, pathOrStream) -- 调用父类的构建函数
+    self._mData = {}
+    if pathOrStream then
+        self:_parse()
+    end
+end
+
 function JSON:getData()
     return self._mData
 end

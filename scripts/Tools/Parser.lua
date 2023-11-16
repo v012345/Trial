@@ -1,32 +1,43 @@
-require "Object"
----@class Parser
-Parser = {}
+require "Tools.Object"
+---@class Parser:Object
+Parser = {
+    __parent = Object
+}
 
 setmetatable(Parser, {
-    __call = function(self)
+    __call = function(self, pathOrStream)
         ---@class Parser
         local obj = {}
         setmetatable(obj, { __index = self })
+        self:_construct(pathOrStream)
         return obj
     end,
-    __index = Object()
+    __index = Parser.__parent -- 继承 Object 中的方法
 })
 
-function Parser:init(path)
-    local file = io.open(path, "r") or error("can't open " .. path)
-    local stream = file:read("a")
-    file:close()
-    if #stream > 3 then
-        local bom = string.format("%x%x%x", string.byte(stream, 1, 3))
-        if string.lower(bom) == "efbbbf" then
-            stream = string.sub(stream, 4, #stream)
+function Parser:_construct(pathOrStream)
+    Parser.__parent._construct(self)
+    if pathOrStream then
+        local file = io.open(pathOrStream, "r")
+        if file then
+            local stream = file:read("a")
+            file:close()
+            if #stream > 3 then
+                local bom = string.format("%x%x%x", string.byte(stream, 1, 3))
+                if string.lower(bom) == "efbbbf" then
+                    stream = string.sub(stream, 4, #stream)
+                end
+            end
+            self._mStream = stream
+        else
+            self._mStream = pathOrStream
         end
+
+        self._mCharPointer = 0
+        self._mRowNum = 1
+        self._mColNum = 0
+        self:_getFirstChar()
     end
-    self._mStream = stream
-    self._mCharPointer = 0
-    self._mRowNum = 1
-    self._mColNum = 0
-    self:_getFirstChar()
 end
 
 function Parser:writeTo(path)

@@ -1,27 +1,34 @@
 require "Tools.Parser"
----@class ParseXML:Parser
-ParseXML = {}
+---@class XML:Parser
+XML = {
+    __parent = Parser
+}
 
-setmetatable(ParseXML, {
-    __call = function(self, path)
-        ---@class ParseXML
+setmetatable(XML, {
+    __call = function(self, pathOrStream)
+        ---@class XML
         local obj = {}
         setmetatable(obj, { __index = self })
-        obj:init(path)
-        obj:_parse()
+        obj:_construct(pathOrStream)
         return obj
     end,
-    __index = Parser()
+    __index = XML.__parent
 })
 
+function XML:_construct(pathOrStream)
+    XML.__parent._construct(self, pathOrStream) -- 调用父类的构建函数
+    if pathOrStream then
+        self:_parse()
+    end
+end
 
 ---@return XMLNode
-function ParseXML:getData()
-    return self.mData
+function XML:getData()
+    return self._mData
 end
 
 ---@param path string
-function ParseXML:writeTo(path)
+function XML:writeTo(path)
     local file = io.open(path, "w") or error("can't open " .. path)
     ---@param node XMLNode
     local function dump(node)
@@ -40,19 +47,19 @@ function ParseXML:writeTo(path)
             file:write(" />\n")
         end
     end
-    dump(self.mData)
+    dump(self._mData)
     file:close()
 end
 
-function ParseXML:_parse()
+function XML:_parse()
     self:_skipSpace()
-    self.mData = self:_parserNode()
+    self._mData = self:_parserNode()
 end
 
 ---comment
 ---@param tagName string|nil
 ---@return XMLNode
-function ParseXML:newNode(tagName)
+function XML:newNode(tagName)
     ---@class XMLNode
     ---@field _tag_name string
     ---@field _attributes table<string,string>
@@ -125,7 +132,7 @@ function ParseXML:newNode(tagName)
     return node
 end
 
-function ParseXML:_parserNode()
+function XML:_parserNode()
     self:_getNextChar() -- 跳过 <
     local node = self:newNode()
     node._tag_name = self:_readName()
@@ -169,7 +176,7 @@ function ParseXML:_parserNode()
     end
 end
 
-function ParseXML:_readAttri()
+function XML:_readAttri()
     local key = self:_readName()
     self:_skipSpace()
     if self._mCurrentChar ~= "=" then
@@ -180,7 +187,7 @@ function ParseXML:_readAttri()
     return key, value
 end
 
-function ParseXML:_readString()
+function XML:_readString()
     self:_skipSpace()
     if self._mCurrentChar == '"' then
         self:_getNextChar() -- 跳过 "
@@ -199,7 +206,7 @@ function ParseXML:_readString()
     end
 end
 
-function ParseXML:_readName()
+function XML:_readName()
     self:_skipSpace()
     local s = {}
     while string.match(self._mCurrentChar, "[%w_]") do

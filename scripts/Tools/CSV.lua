@@ -1,25 +1,31 @@
 require "Tools.Parser"
 ---@class CSV:Parser
 ---@field _mData CSVCell[][]
-CSV = {}
+CSV = {
+    __parent = Parser
+}
 
 setmetatable(CSV, {
-    __call = function(self, path)
+    __call = function(self, pathOrStream)
         ---@class CSV
         local obj = {}
         setmetatable(obj, { __index = self })
-        -- 如果加上这个, 对于空矩来说计算量太大了,所以先假设第一行都是对齐的
-        obj._mCsvRowNumber = 0
-        obj._mCsvColNumber = 0
-        obj._mData = {}
-        if path then
-            obj:init(path)
-            obj:_parse()
-        end
+        obj:_construct(pathOrStream)
         return obj
     end,
-    __index = Parser()
+    __index = CSV.__parent
 })
+function CSV:_construct(pathOrStream)
+    CSV.__parent._construct(self, pathOrStream) -- 调用父类的构建函数
+    -- 如果加上这个, 对于空矩来说计算量太大了,所以先假设第一行都是对齐的
+    self._mCsvRowNumber = 0
+    self._mCsvColNumber = 0
+    self._mData = {}
+    if pathOrStream then
+        self:_parse()
+    end
+end
+
 function CSV:getData()
     return self._mData
 end
@@ -51,7 +57,7 @@ end
 
 ---@param data string|nil
 ---@return CSVCell
-function CSV:spawnCell(data)
+function CSV:_spawnCell(data)
     ---@class CSVCell
     local cell = {
         getData = function(this)
@@ -72,7 +78,9 @@ function CSV:spawnCell(data)
             else
                 return this._mData
             end
-        end
+        end,
+        _useQuotation = false,
+        _mData = ""
     }
     if data then
         cell:setData(data)
@@ -86,12 +94,12 @@ function CSV:setCell(row, col, data)
     if cell then
         cell:setData(data)
     else
-        self._mData[row][col] = self:spawnCell(data)
+        self._mData[row][col] = self:_spawnCell(data)
     end
 end
 
 function CSV:_readString()
-    local cell = self:spawnCell()
+    local cell = self:_spawnCell()
     local s = {}
     -- 以 " 开头
     if self._mCurrentChar == '"' then
@@ -108,17 +116,15 @@ function CSV:_readString()
             self:_getNextChar()
         end
         self:_getNextChar() -- 跳过 "
-        cell._useQuotation = true
     else
         while self._mCurrentChar ~= "," and self._mCurrentChar ~= "\n" do
             s[#s + 1] = self._mCurrentChar
             self:_getNextChar()
         end
-        cell._useQuotation = false
     end
     if self._mCurrentChar == "," then
         self:_getNextChar() -- 吞掉 ,
     end
-    cell._mData = table.concat(s)
+    cell:setData(table.concat(s))
     return cell
 end
