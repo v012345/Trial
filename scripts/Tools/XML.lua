@@ -17,6 +17,7 @@ setmetatable(XML, {
 
 function XML:_construct(pathOrStream)
     XML.__parent._construct(self, pathOrStream) -- 调用父类的构建函数
+    self._mData = self:newNode()
     if pathOrStream then
         self:_parse()
     end
