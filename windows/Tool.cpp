@@ -1,86 +1,100 @@
-#include <windows.h>
+#include <Windows.h>
+#include <d3d9.h>
 
-HWND hButton = NULL;
-HWND hEdit = NULL; // 输入框句柄
-HWND hLog = NULL; // 日志文本框句柄
+// 全局变量
+LPDIRECT3D9 d3d; // Direct3D 对象
+LPDIRECT3DDEVICE9 d3dDevice; // Direct3D 设备对象
 
-void Log(const wchar_t* message) {
-    // 获取日志文本框的当前文本长度
-    int len = GetWindowTextLength(hLog);
+// 三角形的顶点结构体
+struct CUSTOMVERTEX {
+    FLOAT x, y, z, rhw;
+    DWORD color;
+};
 
-    // 设置日志文本框的选择范围为文本的末尾
-    SendMessage(hLog, EM_SETSEL, len, len);
+// 三角形的顶点数据
+CUSTOMVERTEX vertices[] = {
+    {320.0f, 50.0f, 1.0f, 1.0f, 0xffff0000}, // x, y, z, rhw, color
+    {520.0f, 400.0f, 1.0f, 1.0f, 0xff00ff00},
+    {120.0f, 400.0f, 1.0f, 1.0f, 0xff0000ff},
+};
 
-    // 在日志文本框中追加消息
-    SendMessage(hLog, EM_REPLACESEL, 0, (LPARAM)message);
+// 初始化Direct3D
+HRESULT InitD3D(HWND hWnd) {
+    // 创建 Direct3D 对象
+    if ((d3d = Direct3DCreate9(D3D_SDK_VERSION)) == NULL) return E_FAIL;
 
-    // 滚动日志文本框以显示最新消息
-    SendMessage(hLog, EM_SCROLL, SB_LINEDOWN, 0);
+    // 设置 Direct3D 的显示模式
+    D3DPRESENT_PARAMETERS d3dpp;
+    ZeroMemory(&d3dpp, sizeof(d3dpp));
+    d3dpp.Windowed = TRUE;
+    d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    d3dpp.hDeviceWindow = hWnd;
+
+    // 创建 Direct3D 设备
+    if (FAILED(d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_SOFTWARE_VERTEXPROCESSING, &d3dpp, &d3dDevice))) { return E_FAIL; }
+
+    return S_OK;
 }
 
-void SimulateTimeConsumingOperation() {
-    Log(L"Starting operation...\r\n");
+// 渲染函数
+void Render() {
+    // 清空屏幕
+    d3dDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    // 模拟一个耗时操作，这里使用 Sleep 函数暂停程序执行
-    // Sleep(5000); // 5秒
+    // 开始场景
+    if (SUCCEEDED(d3dDevice->BeginScene())) {
+        // 设置顶点格式
+        d3dDevice->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
 
-    Log(L"Operation completed.\r\n");
-}
+        // 绘制三角形
+        d3dDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 1, vertices, sizeof(CUSTOMVERTEX));
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    switch (msg) {
-        case WM_CLOSE: PostQuitMessage(0); break;
-        case WM_PAINT: {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-            TextOut(hdc, 10, 10, L"Hello, World!", 12);
-            EndPaint(hwnd, &ps);
-            break;
-        }
-        case WM_COMMAND:
-            if (LOWORD(wParam) == 1) {
-                EnableWindow(hButton, FALSE);
-                SimulateTimeConsumingOperation();
-                EnableWindow(hButton, TRUE);
-            }
-            break;
-        default: return DefWindowProc(hwnd, msg, wParam, lParam);
+        // 结束场景
+        d3dDevice->EndScene();
     }
-    return 0;
+
+    // 显示场景
+    d3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+// 释放Direct3D资源
+void Cleanup() {
+    if (d3dDevice != NULL) d3dDevice->Release();
+
+    if (d3d != NULL) d3d->Release();
+}
+
+// 主函数
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    const wchar_t className[] = L"HelloWorldClass";
+    // 创建窗口
+    HWND hWnd;
+    WNDCLASSEX wc = {sizeof(WNDCLASSEX), CS_CLASSDC, DefWindowProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, "DX9Triangle", NULL};
+    RegisterClassEx(&wc);
+    hWnd = CreateWindow(wc.lpszClassName, "DirectX 9 Triangle", WS_OVERLAPPEDWINDOW, 100, 100, 640, 480, GetDesktopWindow(), NULL, wc.hInstance, NULL);
 
-    WNDCLASS wc = {};
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = hInstance;
-    wc.lpszClassName = className;
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    // 初始化Direct3D
+    if (SUCCEEDED(InitD3D(hWnd))) {
+        // 显示窗口
+        ShowWindow(hWnd, nCmdShow);
+        UpdateWindow(hWnd);
 
-    if (RegisterClass(&wc)) {
-        HWND hwnd = CreateWindow(className, L"Tool", WS_OVERLAPPEDWINDOW, 100, 100, 600, 400, NULL, NULL, hInstance, NULL);
-
-        if (hwnd) {
-            ShowWindow(hwnd, nCmdShow);
-            UpdateWindow(hwnd);
-
-            // 创建一个按钮
-            hButton = CreateWindow(L"BUTTON", L"replace", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 10, 40, 100, 30, hwnd, (HMENU)1, hInstance, NULL);
-
-            // 创建一个输入框
-            hEdit = CreateWindow(L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 10, 80, 200, 30, hwnd, (HMENU)2, hInstance, NULL);
-
-            // 创建一个多行文本框用于日志
-            hLog = CreateWindow(L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOVSCROLL | ES_MULTILINE, 10, 120, 360, 220, hwnd, (HMENU)3, hInstance, NULL);
-
-            MSG msg;
-            while (GetMessage(&msg, NULL, 0, 0)) {
+        // 主消息循环
+        MSG msg;
+        ZeroMemory(&msg, sizeof(msg));
+        while (msg.message != WM_QUIT) {
+            if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
+            } else {
+                // 渲染场景
+                Render();
             }
         }
     }
 
+    // 释放资源
+    Cleanup();
+
+    // 返回退出代码
     return 0;
 }
