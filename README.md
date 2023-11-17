@@ -13,6 +13,7 @@
 ## 下载项目
 ```console
 $ git clone https://github.com/v012345/Trial.git
+$ cd Trial
 $ git submodule init
 $ git submodule update
 ```
