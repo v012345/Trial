@@ -35,7 +35,7 @@ $ git submodule update
 + Main 是一个测试新功能的东西
 
 ## 其他
-# 在编译不通过的情况下, 看看是不是忘了复制一份 `libs\libpng\scripts\pnglibconf.h.prebuilt` => `libs\libpng\pnglibconf.h`
+**在编译不通过的情况下, 看看是不是忘了复制一份 `libs\libpng\scripts\pnglibconf.h.prebuilt` => `libs\libpng\pnglibconf.h`**
 
 ## 说明
 说白了, 平山尚先生(原书作者, 下文件尊称为"先生")其实是写了一个游戏引擎, 而我们是在这个引擎的基础上学习游戏开发的"**技术**"与"**技巧**", 但是我发现, 如果完全使用 c++ 学习, 那是一个很痛苦的过程, 还有 vs 也不是一个新手友好的东西, 所以我才做了本项目.
