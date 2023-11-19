@@ -16,7 +16,6 @@ debug.sethook(function(_, line_number)
         local msg_from_debugger, err = debugger:receive()
         if not err then
             print(msg_from_debugger)
-
             local info = debug.getinfo(2, "n") -- 获取上一层函数的信息
             if info then
                 print("Local variables in function " .. (info.name or "unknown") .. ":")
