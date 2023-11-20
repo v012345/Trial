@@ -54,15 +54,21 @@ Image::Image(const char* filename) : mWidth(0), mHeight(0), mTextureWidth(0), mT
     free(row_pointers);
     png_destroy_read_struct(&png, &info, NULL);
 
+    // 使用 cpu 进行处理
+    mBuffer = buffer;
+
+    // 使用 gpu 进行处理
     // createTexture。
     // 为此，必须找到一个为2的n次幂的分辨率。
-    mTextureWidth = powerOfTwo(mWidth);
-    mTextureHeight = powerOfTwo(mHeight);
-    GameLib::Framework::instance().createTexture(&mTexture, mTextureWidth, mTextureHeight, buffer, mWidth, mHeight);
-    SAFE_DELETE_ARRAY(buffer); // 不再需要了
+    // mTextureWidth = powerOfTwo(mWidth);
+    // mTextureHeight = powerOfTwo(mHeight);
+    // GameLib::Framework::instance().createTexture(&mTexture, mTextureWidth, mTextureHeight, buffer, mWidth, mHeight);
+    // SAFE_DELETE_ARRAY(buffer); // 不再需要了
 }
 
-Image::~Image() { GameLib::Framework::instance().destroyTexture(&mTexture); }
+Image::~Image() {
+    // GameLib::Framework::instance().destroyTexture(&mTexture);
+}
 
 int Image::width() const { return mWidth; }
 
@@ -92,12 +98,12 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
     std::vector<double> t3 = {u1, v1};
     GameLib::Framework f = GameLib::Framework::instance();
     // 纹理集
-    f.setTexture(mTexture);
-    // 线性合成
-    f.setBlendMode(GameLib::Framework::BLEND_LINEAR);
-    // 绘制
-    f.drawTriangle2D(&p0[0], &p1[0], &p2[0], &t0[0], &t1[0], &t2[0]);
-    f.drawTriangle2D(&p3[0], &p1[0], &p2[0], &t3[0], &t1[0], &t2[0]);
+    // f.setTexture(mTexture);
+    // // 线性合成
+    // f.setBlendMode(GameLib::Framework::BLEND_LINEAR);
+    // // 绘制
+    // f.drawTriangle2D(&p0[0], &p1[0], &p2[0], &t0[0], &t1[0], &t2[0]);
+    // f.drawTriangle2D(&p3[0], &p1[0], &p2[0], &t3[0], &t1[0], &t2[0]);
     // unsigned* vram = GameLib::Framework::instance().videoMemory();
     // unsigned windowWidth = GameLib::Framework::instance().width();
     // for (int y = 0; y < height; ++y) {
@@ -119,6 +125,9 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
     // }
 }
 
+unsigned Image::pixel(int x, int y) const { //
+    return mBuffer[y * mWidth + x];
+}
 // 指定颜色绘制
 void Image::drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const {
     // unsigned* vram = GameLib::Framework::instance().videoMemory();
@@ -181,8 +190,17 @@ luaL_Reg Image::lua_reg[] = {
     {"draw", lua_draw}, //
     {"width", lua_width}, //
     {"height", lua_height}, //
+    {"pixel", lua_pixel}, //
     {NULL, NULL},
 };
+
+int Image::lua_pixel(lua_State* L) {
+    Image** image = static_cast<Image**>(lua_touserdata(L, 1));
+    int x = luaL_checkinteger(L, 2);
+    int y = luaL_checkinteger(L, 3);
+    lua_pushinteger(L, (*image)->pixel(x, y));
+    return 1;
+}
 
 int Image::lua_draw(lua_State* L) {
     Image* image = *(static_cast<Image**>(lua_touserdata(L, 1)));

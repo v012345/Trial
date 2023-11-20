@@ -19,8 +19,21 @@ luaL_Reg Framework::lua_reg[] = {
     {"isKeyTriggered", lua_isKeyTriggered}, //
     {"drawDebugString", lua_drawDebugString}, //
     {"mouse", lua_mouse}, //
+    {"setVideoMemory", lua_setVideoMemory}, //
     {NULL, NULL},
 };
+
+int Framework::lua_setVideoMemory(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    int x = luaL_checkinteger(L, 2);
+    int y = luaL_checkinteger(L, 3);
+    unsigned c = luaL_checkinteger(L, 4);
+    unsigned* vram = f.videoMemory();
+    int ww = f.width(); // window width
+    int wh = f.height(); // window height
+    vram[y * ww + x] = c;
+    return 0;
+}
 
 int Framework::lua_drawDebugString(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
@@ -46,7 +59,7 @@ int Framework::lua_setFrameRate(lua_State* L) {
 int Framework::lua_isKeyTriggered(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
     GameLib::Framework f = GameLib::Framework::instance();
-    lua_pushboolean(L, f.isKeyTriggered(c));
+    // lua_pushboolean(L, f.isKeyTriggered(c));
     return 1;
 }
 
@@ -64,7 +77,7 @@ int Framework::lua_time(lua_State* L) {
 int Framework::lua_isKeyOn(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
     GameLib::Framework f = GameLib::Framework::instance();
-    lua_pushboolean(L, f.isKeyOn(c));
+    // lua_pushboolean(L, f.isKeyOn(c));
     return 1;
 }
 

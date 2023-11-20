@@ -13,6 +13,7 @@ class Image {
     void draw() const;
     void draw(int dstX, int dstY, int srcX, int srcY, int width, int height) const;
     void drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const;
+    unsigned pixel(int, int) const;
 
     static int luaopen_Image(lua_State* L);
     static int lua_Image(lua_State* L);
@@ -21,12 +22,14 @@ class Image {
     static int lua_width(lua_State* L);
     static int lua_height(lua_State* L);
     static int lua_draw(lua_State* L);
+    static int lua_pixel(lua_State* L);
 
   private:
+    unsigned* mBuffer;
     int mWidth;
     int mHeight;
     int mTextureWidth;
     int mTextureHeight;
     GameLib::Texture* mTexture;
-    static luaL_Reg lua_reg[4];
+    static luaL_Reg lua_reg[5];
 };

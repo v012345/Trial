@@ -13,7 +13,8 @@ class Framework {
     static int lua_isKeyTriggered(lua_State* L);
     static int lua_drawDebugString(lua_State* L);
     static int lua_mouse(lua_State* L);
+    static int lua_setVideoMemory(lua_State* L);
 
   private:
-    static luaL_Reg lua_reg[9];
+    static luaL_Reg lua_reg[10];
 };
