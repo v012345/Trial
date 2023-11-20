@@ -124,3 +124,8 @@ function CSV(path) return {} end
 ---@param path string|nil
 ---@return JSON
 function JSON(path) return {} end
+
+---@param x any
+---@param y any
+---@return Vector2
+function Vector2(x,y) return {} end

@@ -11,6 +11,20 @@ setmetatable(Object, {
 })
 function Object:_construct() end
 
+function Object:isA(what)
+    local mt = getmetatable(self)
+    if mt and mt.__index then
+        local md = mt.__index
+        if md == what then
+            return true
+        else
+            return md:isA(what)
+        end
+    else
+        return Object == what
+    end
+end
+
 function Object:dump(where)
     local attri = {}
     local function collectAttri(who)

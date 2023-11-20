@@ -14,11 +14,10 @@ target_include_directories(MyWork PRIVATE
     "${CMAKE_SOURCE_DIR}/libs"
 )
 target_compile_definitions(MyWork PRIVATE
-
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
-    # LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/Main.lua"
+    LUA_MAIN_SCRIPT="${CMAKE_SOURCE_DIR}/scripts/Game/Main.lua"
     CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/"
-    LUA_PACKAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/scripts/?.lua"
+    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
 )
 
 target_link_libraries(MyWork

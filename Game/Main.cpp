@@ -17,7 +17,7 @@ namespace GameLib {
             ::Framework::luaopen_Framework(L);
             // ::StringRenderer::luaopen_StringRenderer(L);
             luaopen_Config(L);
-            luaL_dofile(L, CMAKE_CURRENT_SOURCE_DIR "scripts/Main.lua");
+            luaL_dofile(L, LUA_MAIN_SCRIPT);
         }
         lua_getglobal(L, "MainLoop");
         lua_pcall(L, 0, 0, 0);
