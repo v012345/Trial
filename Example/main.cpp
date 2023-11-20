@@ -5,41 +5,34 @@
 #include <sstream>
 using namespace GameLib;
 using namespace std;
+namespace M {
+    int round(double a) {
+        a += (a > 0.0) ? 0.5 : -0.5f;
+        return static_cast<int>(a);
+    }
 
-int myround(double a) {
-    a += (a > 0.0) ? 0.5 : -0.5f;
-    return static_cast<int>(a);
-}
+} // namespace M
 
-void rotate(int* rx, int* ry, int x, int y, double xOffset, double yOffset, double rotation) {
+void rotate(int* rx, int* ry, int x, int y, double xOffset, double yOffset, double sine, double cosine) {
     double xf = static_cast<double>(x);
     double yf = static_cast<double>(y);
-    // 将下标转换为坐标
-    xf += 0.5f;
-    yf += 0.5f;
-    // 移动原点
-    xf -= xOffset;
-    yf -= yOffset;
-    // 查找角度和半径
-    double r = GameLib::sqrt(xf * xf + yf * yf);
-    double angle = GameLib::atan2(yf, xf);
-    // 增加旋转角度。
-    angle += rotation;
-    // 正弦余弦
-    double sine = GameLib::sin(angle);
-    double cosine = GameLib::cos(angle);
-    // 重新计算xf和yf
-    xf = r * cosine;
-    yf = r * sine;
-    // 恢复原点
-    xf += xOffset;
-    yf += yOffset;
-    // 从坐标到下标
-    xf -= 0.5;
-    yf -= 0.5;
+    // 合并偏移量和0.5
+    double tmpOffsetX = xOffset - 0.5;
+    double tmpOffsetY = yOffset - 0.5;
+    // 将下标转换为坐标并移动原点
+    xf -= tmpOffsetX;
+    yf -= tmpOffsetY;
+    // 准确应用表达式
+    double xf2 = cosine * xf - sine * yf;
+    double yf2 = sine * xf + cosine * yf;
+    xf = xf2;
+    yf = yf2;
+    // 将原点还原为下标
+    xf += tmpOffsetX;
+    yf += tmpOffsetY;
     // 四舍五入为整数
-    *rx = myround(xf);
-    *ry = myround(yf);
+    *rx = M::round(xf);
+    *ry = M::round(yf);
 }
 
 bool gFirstFrame = true;
@@ -61,13 +54,14 @@ namespace GameLib {
         int ih = gImage->height(); // image height
         double offsetX = static_cast<double>(iw) / 2.0;
         double offsetY = static_cast<double>(ih) / 2.0;
-
         double rotation = static_cast<double>(gCount);
+        double sine = sin(rotation);
+        double cosine = cos(rotation);
         for (int y = 0; y < ih; ++y) {
             for (int x = 0; x < iw; ++x) {
                 // 计算轮换目的地
                 int rx, ry;
-                rotate(&rx, &ry, x, y, offsetX, offsetY, rotation);
+                rotate(&rx, &ry, x, y, offsetX, offsetY, sine, cosine);
                 // 如果在范围内则粘贴
                 if (rx >= 0 && rx < ww && ry >= 0 && ry < wh) { vram[ry * ww + rx] = gImage->pixel(x, y); }
             }
