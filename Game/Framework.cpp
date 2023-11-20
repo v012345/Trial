@@ -20,8 +20,21 @@ luaL_Reg Framework::lua_reg[] = {
     {"drawDebugString", lua_drawDebugString}, //
     {"mouse", lua_mouse}, //
     {"setVideoMemory", lua_setVideoMemory}, //
+    {"width", lua_width}, //
+    {"height", lua_height}, //
     {NULL, NULL},
 };
+
+int Framework::lua_width(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    lua_pushinteger(L, f.width());
+    return 1;
+}
+int Framework::lua_height(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    lua_pushinteger(L, f.height());
+    return 1;
+}
 
 int Framework::lua_setVideoMemory(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();

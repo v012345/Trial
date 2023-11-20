@@ -14,7 +14,9 @@ class Framework {
     static int lua_drawDebugString(lua_State* L);
     static int lua_mouse(lua_State* L);
     static int lua_setVideoMemory(lua_State* L);
+    static int lua_width(lua_State* L);
+    static int lua_height(lua_State* L);
 
   private:
-    static luaL_Reg lua_reg[10];
+    static luaL_Reg lua_reg[12];
 };

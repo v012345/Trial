@@ -99,6 +99,8 @@ function Image(path)
 
     function obj:width() return 0 end
 
+    function obj:pixel(x, y) return 0 end
+
     ---@param dstX integer|nil
     ---@param dstY integer|nil
     ---@param srcX integer|nil
