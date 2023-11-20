@@ -45,6 +45,7 @@ xpcall(function()
                 end
             end
             gCount = gCount + 1
+            Framework:drawDebugString(70, 0, "FPS : " .. Framework:frameRate())
         end, function(msg)
             print(msg)
         end)
