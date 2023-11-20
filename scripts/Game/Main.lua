@@ -3,15 +3,10 @@ xpcall(function()
     require "Math.Matrix22"
     local gImage = Image(CMAKE_SOURCE_DIR .. "res/background.png")
     local gCount = 0
-    local function rotate(x, y, offset, matrix)
-        local p = Vector2(x, y)
-        local tmpOffset = Vector2(0.5, 0.5)
-        p = p + tmpOffset
-        p = p - offset
-        local r = Vector2()
-        matrix:multiply(r, p)
-        r = r + offset
-        return math.floor(r.x), math.floor(r.y)
+    local function rotate(out, input, offset, matrix)
+        out:setSub(input, offset);
+        matrix:multiply(out, out);
+        out = out + offset;
     end
     print(math.atan(1, 1) * 180 / math.pi)
     print(math.atan(1, -1) * 180 / math.pi)
@@ -35,9 +30,23 @@ xpcall(function()
             local sine = math.sin(rotation * math.pi / 180)
             local cosine = math.cos(rotation * math.pi / 180)
             local matrix = Matrix22(cosine, -sine, sine, cosine);
+            local a, b, c = Vector2(), Vector2(), Vector2()
+            rotate(a, Vector2(0, 0), offset, matrix)
+            rotate(b, Vector2(iw, 0), offset, matrix)
+            rotate(c, Vector2(0, ih), offset, matrix)
+            local ab, ac = Vector2(), Vector2()
+            ab:setSub(b, a);
+            ac:setSub(c, a);
+            local rcpWidth = 1.0 / iw;
+            local rcpHeight = 1.0 / ih;
             for y = 0, ih - 1 do
+                local v = (y + 0.5) * rcpHeight
                 for x = 1, iw - 1 do
-                    local rx, ry = rotate(x, y, offset, matrix);
+                    local u = (x + 0.5) * rcpWidth
+                    local p = Vector2();
+                    p:setInterporation(a, ab, ac, u, v);
+                    local rx = math.floor(p.x);
+                    local ry = math.floor(p.y);
                     if rx >= 0 and rx < ww and ry >= 0 and ry < wh then
                         Framework:setVideoMemory(rx, ry, gImage:pixel(x, y))
                     end

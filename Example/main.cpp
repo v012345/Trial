@@ -5,7 +5,6 @@
 #include "Matrix22.h"
 #include "Vector2.h"
 #include <sstream>
-using namespace GameLib;
 using namespace std;
 
 int myround(double a) {
@@ -13,20 +12,13 @@ int myround(double a) {
     return static_cast<int>(a);
 }
 
-void rotate(int* rx, int* ry, int x, int y, const Vector2& offset, const Matrix22& matrix) {
-    Vector2 p(x, y);
-    // 合并偏移量和0.5
-    Vector2 tmpOffset(-0.5, -0.5);
-    tmpOffset += offset; // tmpOffset = offset-(0.5,0.5)
-    // 将下标转换为坐标并移动原点
-    p -= tmpOffset;
-    //
-    matrix.multiply(&p, p);
-    // 将原点还原为下标
-    p += tmpOffset;
-    // 四舍五入为整数
-    *rx = myround(p.x);
-    *ry = myround(p.y);
+void rotate(Vector2* out, const Vector2& in, const Vector2& offset, const Matrix22& matrix) {
+    // 移动原点
+    out->setSub(in, offset);
+    // 矩阵相乘
+    matrix.multiply(out, *out);
+    // 恢复原点
+    *out += offset;
 }
 
 bool gFirstFrame = true;
@@ -52,12 +44,31 @@ namespace GameLib {
         double rotation = static_cast<double>(gCount);
         double sine = sin(rotation);
         double cosine = cos(rotation);
-        Matrix22 matrix(cosine, -sine, sine, cosine);
+        Matrix22 matrix(cosine, -sine, sine, cosine); // 创建矩阵
+        // 3打点
+        Vector2 a, b, c;
+        rotate(&a, Vector2(0, 0), offset, matrix); // 左上方
+        rotate(&b, Vector2(iw, 0), offset, matrix); // 右上方
+        rotate(&c, Vector2(0, ih), offset, matrix); // 左下
+        // 计算b-a,c-a
+        Vector2 ab, ac;
+        ab.setSub(b, a);
+        ac.setSub(c, a);
+        // 开始插值
+        double rcpWidth = 1.0 / static_cast<double>(iw);
+        double rcpHeight = 1.0 / static_cast<double>(ih);
         for (int y = 0; y < ih; ++y) {
+            double yf = static_cast<double>(y) + 0.5;
+            double v = yf * rcpHeight;
             for (int x = 0; x < iw; ++x) {
-                // 计算轮换目的地
+                double xf = static_cast<double>(x) + 0.5;
+                double u = xf * rcpWidth;
+                Vector2 p;
+                p.setInterporation(a, ab, ac, u, v);
+                p -= Vector2(0.5, 0.5); // 下标
                 int rx, ry;
-                rotate(&rx, &ry, x, y, offset, matrix);
+                rx = myround(p.x);
+                ry = myround(p.y);
                 // 如果在范围内则粘贴
                 if (rx >= 0 && rx < ww && ry >= 0 && ry < wh) { vram[ry * ww + rx] = gImage->pixel(x, y); }
             }

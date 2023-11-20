@@ -46,3 +46,18 @@ function Vector2:__add(v)
     end
     return self
 end
+
+function Vector2:setAdd(a, b)
+    self.x = a.x + b.x;
+    self.y = a.y + b.y;
+end
+
+function Vector2:setSub(a, b)
+    self.x = a.x - b.x;
+    self.y = a.y - b.y;
+end
+
+function Vector2:setInterporation(a, ab, ac, u, v)
+    self.x = a.x + ab.x * u + ac.x * v;
+    self.y = a.y + ab.y * u + ac.y * v;
+end
