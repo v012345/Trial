@@ -36,6 +36,11 @@ void Vector2::setSub(const Vector2& a, const Vector2& b) {
     y = a.y - b.y;
 }
 
+void Vector2::setMul(const Vector2& a, const Vector2& b) {
+    x = a.x * b.x;
+    y = a.y * b.y;
+}
+
 void Vector2::setInterporation(const Vector2& a, const Vector2& ab, const Vector2& ac, double u, double v) {
     x = a.x + ab.x * u + ac.x * v;
     y = a.y + ab.y * u + ac.y * v;

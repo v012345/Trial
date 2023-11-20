@@ -8,6 +8,12 @@ xpcall(function()
         matrix:multiply(out, out);
         out = out + offset;
     end
+
+    ---@param out Vector2
+    local function scale(out, input, offset, ratio)
+        out:setMul(ratio, input);
+        out = out + offset;
+    end
     print(math.atan(1, 1) * 180 / math.pi)
     print(math.atan(1, -1) * 180 / math.pi)
     print(math.atan(-1, -1) * 180 / math.pi)
@@ -23,17 +29,18 @@ xpcall(function()
             end
             local iw = gImage:width();
             local ih = gImage:height();
-            local offset = Vector2()
-            offset.x = iw / 2;
-            offset.y = ih / 2;
+            local offset = Vector2(16,16)
+            -- offset.x = iw / 2;
+            -- offset.y = ih / 2;
             local rotation = gCount
-            local sine = math.sin(rotation * math.pi / 180)
-            local cosine = math.cos(rotation * math.pi / 180)
-            local matrix = Matrix22(cosine, -sine, sine, cosine);
+            -- local sine = math.sin(rotation * math.pi / 180)
+            -- local cosine = math.cos(rotation * math.pi / 180)
+            -- local matrix = Matrix22(cosine, -sine, sine, cosine);
             local a, b, c = Vector2(), Vector2(), Vector2()
-            rotate(a, Vector2(0, 0), offset, matrix)
-            rotate(b, Vector2(iw, 0), offset, matrix)
-            rotate(c, Vector2(0, ih), offset, matrix)
+            local ratio = Vector2(1.1 + math.sin(rotation * math.pi / 180), 1.1 + math.cos(rotation * math.pi / 180));
+            scale(a, Vector2(0, 0), offset, ratio)
+            scale(b, Vector2(iw, 0), offset, ratio)
+            scale(c, Vector2(0, ih), offset, ratio)
             local ab, ac = Vector2(), Vector2()
             ab:setSub(b, a);
             ac:setSub(c, a);

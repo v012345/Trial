@@ -2,7 +2,6 @@
 #include "GameLib/GameLib.h"
 #include "GameLib/Math.h"
 #include "Image.h"
-#include "Matrix22.h"
 #include "Vector2.h"
 #include <sstream>
 using namespace std;
@@ -12,12 +11,10 @@ int myround(double a) {
     return static_cast<int>(a);
 }
 
-void rotate(Vector2* out, const Vector2& in, const Vector2& offset, const Matrix22& matrix) {
+void scale(Vector2* out, const Vector2& in, const Vector2& offset, const Vector2& ratio) {
+    // 缩放比例
+    out->setMul(ratio, in);
     // 移动原点
-    out->setSub(in, offset);
-    // 矩阵相乘
-    matrix.multiply(out, *out);
-    // 恢复原点
     *out += offset;
 }
 
@@ -38,18 +35,18 @@ namespace GameLib {
         for (int i = 0; i < ww * wh; ++i) { vram[i] = 0; }
         int iw = gImage->width(); // image width
         int ih = gImage->height(); // image height
-        Vector2 offset;
-        offset.x = static_cast<double>(iw) / 2.0;
-        offset.y = static_cast<double>(ih) / 2.0;
-        double rotation = static_cast<double>(gCount);
-        double sine = sin(rotation);
-        double cosine = cos(rotation);
-        Matrix22 matrix(cosine, -sine, sine, cosine); // 创建矩阵
+        double rotation = static_cast<double>(gCount); // 用于放大率
+        // 放大倍数
+        Vector2 ratio(1.1 + sin(rotation), 1.1 + cos(rotation));
+
+        // 偏移
+        Vector2 offset(16.0, 16.0);
+
         // 3打点
         Vector2 a, b, c;
-        rotate(&a, Vector2(0, 0), offset, matrix); // 左上方
-        rotate(&b, Vector2(iw, 0), offset, matrix); // 右上方
-        rotate(&c, Vector2(0, ih), offset, matrix); // 左下
+        scale(&a, Vector2(0, 0), offset, ratio); // 左上方
+        scale(&b, Vector2(iw, 0), offset, ratio); // 右上方
+        scale(&c, Vector2(0, ih), offset, ratio); // 左下
         // 计算b-a,c-a
         Vector2 ab, ac;
         ab.setSub(b, a);
