@@ -14,6 +14,14 @@ xpcall(function()
         out:setMul(ratio, input);
         out = out + offset;
     end
+
+    local function transform(out, input, scalingOffset, scalingRatio, rotationOffset, rotationMatrix)
+        out:setMul(scalingRatio, input);
+        out = out + scalingOffset;
+        out = out - rotationOffset;
+        rotationMatrix:multiply(out, out);
+        out = out + rotationOffset;
+    end
     print(math.atan(1, 1) * 180 / math.pi)
     print(math.atan(1, -1) * 180 / math.pi)
     print(math.atan(-1, -1) * 180 / math.pi)
@@ -29,18 +37,18 @@ xpcall(function()
             end
             local iw = gImage:width();
             local ih = gImage:height();
-            local offset = Vector2(16,16)
-            -- offset.x = iw / 2;
-            -- offset.y = ih / 2;
             local rotation = gCount
-            -- local sine = math.sin(rotation * math.pi / 180)
-            -- local cosine = math.cos(rotation * math.pi / 180)
-            -- local matrix = Matrix22(cosine, -sine, sine, cosine);
+            local sine = math.sin(rotation * math.pi / 180)
+            local cosine = math.cos(rotation * math.pi / 180)
+            local rotationMatrix = Matrix22(cosine, -sine, sine, cosine)
+            local rotationOffset = Vector2(ww / 2, wh / 2)
+            local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
+                1.1 + math.cos(rotation * math.pi / 180));
+            local scalingOffset = Vector2(ww / 2 - iw / 2 * scalingRatio.x, wh / 2 - ih / 2 * scalingRatio.y);
             local a, b, c = Vector2(), Vector2(), Vector2()
-            local ratio = Vector2(1.1 + math.sin(rotation * math.pi / 180), 1.1 + math.cos(rotation * math.pi / 180));
-            scale(a, Vector2(0, 0), offset, ratio)
-            scale(b, Vector2(iw, 0), offset, ratio)
-            scale(c, Vector2(0, ih), offset, ratio)
+            transform(a, Vector2(0, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
+            transform(b, Vector2(iw, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
+            transform(c, Vector2(0, ih), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
             local ab, ac = Vector2(), Vector2()
             ab:setSub(b, a);
             ac:setSub(c, a);
