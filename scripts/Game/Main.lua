@@ -1,6 +1,7 @@
 xpcall(function()
     require "Math.Vector2"
     require "Math.Matrix22"
+    require "Math.Matrix23"
     local gImage = Image(CMAKE_SOURCE_DIR .. "res/background.png")
     local gCount = 0
     local function rotate(out, input, offset, matrix)
@@ -40,15 +41,15 @@ xpcall(function()
             local rotation = gCount
             local sine = math.sin(rotation * math.pi / 180)
             local cosine = math.cos(rotation * math.pi / 180)
-            local rotationMatrix = Matrix22(cosine, -sine, sine, cosine)
-            local rotationOffset = Vector2(ww / 2, wh / 2)
-            local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
-                1.1 + math.cos(rotation * math.pi / 180));
-            local scalingOffset = Vector2(ww / 2 - iw / 2 * scalingRatio.x, wh / 2 - ih / 2 * scalingRatio.y);
+            local matrix = Matrix23(cosine, -sine, 0, sine, cosine, 0)
+            -- local rotationOffset = Vector2(ww / 2, wh / 2)
+            -- local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
+            --     1.1 + math.cos(rotation * math.pi / 180));
+            -- local scalingOffset = Vector2(ww / 2 - iw / 2 * scalingRatio.x, wh / 2 - ih / 2 * scalingRatio.y);
             local a, b, c = Vector2(), Vector2(), Vector2()
-            transform(a, Vector2(0, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
-            transform(b, Vector2(iw, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
-            transform(c, Vector2(0, ih), scalingOffset, scalingRatio, rotationOffset, rotationMatrix);
+            matrix:multiply(a, Vector2(0, 0));
+            matrix:multiply(b, Vector2(iw, 0));
+            matrix:multiply(c, Vector2(0, ih));
             local ab, ac = Vector2(), Vector2()
             ab:setSub(b, a);
             ac:setSub(c, a);

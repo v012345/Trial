@@ -2,7 +2,7 @@
 #include "GameLib/GameLib.h"
 #include "GameLib/Math.h"
 #include "Image.h"
-#include "Matrix22.h"
+#include "Matrix23.h"
 #include "Vector2.h"
 #include <sstream>
 using namespace std;
@@ -10,19 +10,6 @@ using namespace std;
 int myround(double a) {
     a += (a > 0.0) ? 0.5 : -0.5f;
     return static_cast<int>(a);
-}
-
-void transform(Vector2* out, const Vector2& in, const Vector2& scalingOffset, const Vector2& scalingRatio, const Vector2& rotationOffset, const Matrix22& rotationMatrix) {
-    // 缩放比例
-    out->setMul(scalingRatio, in);
-    // 移动
-    *out += scalingOffset;
-    // 旋转中心偏移
-    *out -= rotationOffset;
-    // 旋转角度
-    rotationMatrix.multiply(out, *out);
-    // 旋转中心向后移
-    *out += rotationOffset;
 }
 
 bool gFirstFrame = true;
@@ -42,23 +29,16 @@ namespace GameLib {
         for (int i = 0; i < ww * wh; ++i) { vram[i] = 0; }
         int iw = gImage->width(); // image width
         int ih = gImage->height(); // image height
-        double rotation = static_cast<double>(gCount); // 用于放大率
-        // 放大倍数
-        Vector2 scalingRatio(1.1 + sin(rotation), 1.1 + cos(rotation));
-        //
-        Vector2 scalingOffset(ww / 2 - iw / 2 * scalingRatio.x, wh / 2 - ih / 2 * scalingRatio.y);
-        // 旋转偏移
-        Vector2 rotationOffset(ww / 2, wh / 2);
-        // 旋转矩阵
+        // 做一个旋转矩阵。
+        double rotation = static_cast<double>(gCount);
         double sine = sin(rotation);
         double cosine = cos(rotation);
-        Matrix22 rotationMatrix(cosine, -sine, sine, cosine);
-
+        Matrix23 matrix(cosine, -sine, 0.0, sine, cosine, 0.0); // 创建矩阵
         // 3打点
         Vector2 a, b, c;
-        transform(&a, Vector2(0, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix); // 左上方
-        transform(&b, Vector2(iw, 0), scalingOffset, scalingRatio, rotationOffset, rotationMatrix); // 右上方
-        transform(&c, Vector2(0, ih), scalingOffset, scalingRatio, rotationOffset, rotationMatrix); // 左下
+        matrix.multiply(&a, Vector2(0, 0));
+        matrix.multiply(&b, Vector2(iw, 0));
+        matrix.multiply(&c, Vector2(0, ih));
         // 计算b-a,c-a
         Vector2 ab, ac;
         ab.setSub(b, a);
