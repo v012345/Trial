@@ -42,9 +42,9 @@ xpcall(function()
             -- local sine = math.sin(rotation * math.pi / 180)
             -- local cosine = math.cos(rotation * math.pi / 180)
             -- local matrix = Matrix23(cosine, -sine, 0, sine, cosine, 0)
-            local sx = (gCount % 199) / 100.0;
-            local sy = (gCount % 113) / 60.0;
-            local matrix = Matrix23(sx, 0.0, 0.0, 0.0, sy, 0.0);
+            local tx = (gCount % 200)
+            local ty = (gCount % 120);
+            local matrix = Matrix23(1.0, 0.0, tx, 0.0, 1.0, ty);
             -- local rotationOffset = Vector2(ww / 2, wh / 2)
             -- local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
             --     1.1 + math.cos(rotation * math.pi / 180));

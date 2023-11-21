@@ -29,10 +29,10 @@ namespace GameLib {
         for (int i = 0; i < ww * wh; ++i) { vram[i] = 0; }
         int iw = gImage->width(); // image width
         int ih = gImage->height(); // image height
-        // 创建一个缩放矩阵。
-        double sx = static_cast<double>(gCount % 199) / 100.0;
-        double sy = static_cast<double>(gCount % 113) / 60.0;
-        Matrix23 matrix(sx, 0.0, 0.0, 0.0, sy, 0.0);
+        // 做一个移动矩阵。
+        double tx = static_cast<double>(gCount % 200);
+        double ty = static_cast<double>(gCount % 120);
+        Matrix23 matrix(1.0, 0.0, tx, 0.0, 1.0, ty);
         // 3打点
         Vector2 a, b, c;
         matrix.multiply(&a, Vector2(0, 0));
