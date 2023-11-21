@@ -16,7 +16,8 @@ class Framework {
     static int lua_setVideoMemory(lua_State* L);
     static int lua_width(lua_State* L);
     static int lua_height(lua_State* L);
+    static int lua_drawTriangle2D(lua_State* L);
 
   private:
-    static luaL_Reg lua_reg[12];
+    static luaL_Reg lua_reg[13];
 };

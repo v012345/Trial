@@ -22,8 +22,20 @@ luaL_Reg Framework::lua_reg[] = {
     {"setVideoMemory", lua_setVideoMemory}, //
     {"width", lua_width}, //
     {"height", lua_height}, //
+    {"drawTriangle2D", lua_drawTriangle2D}, //
     {NULL, NULL},
 };
+int Framework::lua_drawTriangle2D(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    int c = luaL_(L, 2);
+    int c = luaL_checkinteger(L, 3);
+    int c = luaL_checkinteger(L, 4);
+    double p0[2] = {100.0, 100.0};
+    double p1[2] = {200.0, 120.0};
+    double p2[2] = {120.0, 200.0};
+    f.drawTriangle2D(p0, p1, p2);
+    return 0;
+}
 
 int Framework::lua_width(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
@@ -37,14 +49,15 @@ int Framework::lua_height(lua_State* L) {
 }
 
 int Framework::lua_setVideoMemory(lua_State* L) {
-    GameLib::Framework f = GameLib::Framework::instance();
-    int x = luaL_checkinteger(L, 2);
-    int y = luaL_checkinteger(L, 3);
-    unsigned c = luaL_checkinteger(L, 4);
-    unsigned* vram = f.videoMemory();
-    int ww = f.width(); // window width
-    int wh = f.height(); // window height
-    vram[y * ww + x] = c;
+    luaL_error(L, "plz not use this, use gpu~");
+    // GameLib::Framework f = GameLib::Framework::instance();
+    // int x = luaL_checkinteger(L, 2);
+    // int y = luaL_checkinteger(L, 3);
+    // unsigned c = luaL_checkinteger(L, 4);
+    // unsigned* vram = f.videoMemory();
+    // int ww = f.width(); // window width
+    // int wh = f.height(); // window height
+    // vram[y * ww + x] = c;
     return 0;
 }
 

@@ -14,6 +14,8 @@
 
 // 示例类库
 // #include "GameLib/Input/Keyboard.h"
+#include "GameLib/Math/Vector3.h"
+#include "GameLib/Scene/PrimitiveRenderer.h"
 
 #include "FontTextureGenerated.h"
 #include "Framework.h"
@@ -51,16 +53,23 @@ namespace GameLib {
                 // 帧历史记录重置
                 unsigned t = time();
                 for (int i = 0; i < TIME_HISTORY_SIZE; ++i) { mTimeHistory[i] = t; }
-
-                mVideoMemoryWithPadding.setSize(mWidth * (mHeight + 2));
-                // 0初始化
-                for (int i = 0; i < mWidth * (mHeight + 2); ++i) { mVideoMemoryWithPadding[i] = 0; }
-                for (int i = 0; i < mWidth; ++i) {
-                    mVideoMemoryWithPadding[i] = MAGIC_NUMBER;
-                    mVideoMemoryWithPadding[mWidth * (mHeight + 1) + i] = MAGIC_NUMBER;
-                }
+                /*
+                                mVideoMemoryWithPadding.setSize( mWidth * ( mHeight + 2 ) );
+                                //0初始化
+                                for ( int i = 0; i < mWidth * ( mHeight + 2 ); ++i ){
+                                        mVideoMemoryWithPadding[ i ] = 0;
+                                }
+                                for ( int i = 0; i < mWidth; ++i ){
+                                        mVideoMemoryWithPadding[ i ] = MAGIC_NUMBER;
+                                        mVideoMemoryWithPadding[ mWidth * ( mHeight + 1 ) + i ] = MAGIC_NUMBER;
+                                }
+                */
             }
             ~Impl() {
+                //
+                mPrimitiveRenderer.release();
+                for (int i = 0; i < TEXTURE_NUMBER; ++i) { mTextures[i].release(); }
+
                 if (mArchiveNames) { SAFE_DELETE_ARRAY(mArchiveNames); }
                 mDebugStringRenderer.release();
                 mDebugFont.release();
@@ -127,8 +136,9 @@ namespace GameLib {
                 mDebugStringRenderer = Scene::StringRenderer::create(2048, 128); // 这样够了吗
                 mDebugStringRenderer.setFont(mDebugFont);
                 // 2D图层
-                m2dTexture = Graphics::Texture::create(mWidth, mHeight, false);
+                //		m2dTexture = Graphics::Texture( mWidth, mHeight, false );
                 Graphics::Manager().setTextureFilter(Graphics::TEXTURE_FILTER_POINT);
+                mPrimitiveRenderer = Scene::PrimitiveRenderer::create(100000, 10000); // 大量过剩
 
                 mStarted = true;
             }
@@ -153,40 +163,148 @@ namespace GameLib {
                 float pointerScale;
                 Vector2 pointerOffset;
                 Graphics::Manager().getPointerModifier(&pointerScale, &pointerOffset);
-                pointerScale *= 0.5f; // 因为屏幕分辨率只有一半所以要修正
                 Input::Manager().update(pointerScale, pointerOffset);
+                // 样例
+                mPrimitiveRenderer.enableDepthTest(false);
+                mPrimitiveRenderer.enableDepthWrite(false);
+                mPrimitiveRenderer.setCullMode(Graphics::CULL_NONE);
+                mPrimitiveRenderer.setBlendMode(Graphics::BLEND_OPAQUE);
             }
             void postUpdate() {
                 //----2D处理
-                // 检查销毁
-                for (int i = 0; i < mWidth; ++i) {
-                    ASSERT(mVideoMemoryWithPadding[i] == MAGIC_NUMBER && "VRAM RANGE ERROR!");
-                    ASSERT(mVideoMemoryWithPadding[mWidth * (mHeight + 1) + i] == MAGIC_NUMBER && "VRAM RANGE ERROR!");
-                }
-                // 复制VRAM
-                unsigned* dst;
-                int pitch;
-                m2dTexture.lock(&dst, &pitch);
-                const unsigned* src = &mVideoMemoryWithPadding[mWidth];
-                for (int y = 0; y < mHeight; ++y) {
-                    for (int x = 0; x < mWidth; ++x) {
-                        dst[x] = 0xff000000 | src[x]; // 强制alpha ff
-                    }
-                    src += mWidth;
-                    dst += pitch / 4;
-                }
-                src = 0; // 使用终止
-                m2dTexture.unlock(&dst);
-                Graphics::Manager().blendToScreen(m2dTexture);
+                /*
+                                //检查销毁
+                                for ( int i = 0; i < mWidth; ++i ){
+                                        ASSERT( mVideoMemoryWithPadding[ i ] == MAGIC_NUMBER && "VRAM RANGE ERROR!" );
+                                        ASSERT( mVideoMemoryWithPadding[ mWidth * ( mHeight + 1 ) + i ] == MAGIC_NUMBER && "VRAM RANGE ERROR!" );
+                                }
+                                //复制VRAM
+                                unsigned* dst;
+                                int pitch;
+                                m2dTexture.lock( &dst, &pitch );
+                                const unsigned* src = &mVideoMemoryWithPadding[ mWidth ];
+                                for ( int y = 0; y < mHeight; ++y ){
+                                        for ( int x = 0; x < mWidth; ++x ){
+                                                dst[ x ] = 0xff000000 | src[ x ]; //强制alpha ff
+                                        }
+                                        src += mWidth;
+                                        dst += pitch / 4;
+                                }
+                                src = 0; //使用终止
+                                m2dTexture.unlock( &dst );
+                                Graphics::Manager::getInstance().blendToScreen( m2dTexture );
+                */
+                mPrimitiveRenderer.draw();
 
                 // 合成文字
                 mDebugStringRenderer.draw();
                 Graphics::Manager().endDraw();
             }
             // 示例类库
-            Array<unsigned> mVideoMemoryWithPadding;
-            Graphics::Texture m2dTexture;
-            static const unsigned MAGIC_NUMBER = 0x12345678;
+            void setBlendMode(Framework::BlendMode a) {
+                Graphics::BlendMode b = Graphics::BLEND_OPAQUE;
+                switch (a) {
+                    case Framework::BLEND_LINEAR: b = Graphics::BLEND_LINEAR; break;
+                    case Framework::BLEND_ADDITIVE: b = Graphics::BLEND_ADDITIVE; break;
+                    case Framework::BLEND_OPAQUE: b = Graphics::BLEND_OPAQUE; break;
+                    default: ASSERT(false); break;
+                }
+                mPrimitiveRenderer.setBlendMode(b);
+            }
+            void drawTriangle2D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+                // 转换为浮点数
+                Vector3 p[3];
+                Vector2 t[3];
+
+                p[0].x = static_cast<float>(p0[0]);
+                p[0].y = static_cast<float>(p0[1]);
+                p[1].x = static_cast<float>(p1[0]);
+                p[1].y = static_cast<float>(p1[1]);
+                p[2].x = static_cast<float>(p2[0]);
+                p[2].y = static_cast<float>(p2[1]);
+                p[0].z = p[1].z = p[2].z = 0.f;
+
+                if (t0) {
+                    t[0].x = static_cast<float>(t0[0]);
+                    t[0].y = static_cast<float>(t0[1]);
+                }
+                if (t1) {
+                    t[1].x = static_cast<float>(t1[0]);
+                    t[1].y = static_cast<float>(t1[1]);
+                }
+                if (t2) {
+                    t[2].x = static_cast<float>(t2[0]);
+                    t[2].y = static_cast<float>(t2[1]);
+                }
+                // 转换为clip坐标系
+                //[0, w ] -> [ -1, 1 ]
+                //[0，h]-> [1，-1]
+                float sx = 2.f / static_cast<float>(mWidth);
+                float sy = -2.f / static_cast<float>(mHeight);
+                for (int i = 0; i < 3; ++i) {
+                    p[i].x *= sx;
+                    p[i].y *= sy;
+                    p[i].x -= 1.f;
+                    p[i].y += 1.f;
+                }
+                mPrimitiveRenderer.addTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
+            }
+            Graphics::Texture createTexture(int dw, int dh, const unsigned* src, int sw, int sh) {
+                // 2乘幂检查
+                bool dwOk = false;
+                bool dhOk = false;
+                for (int i = 0; i < 32; ++i) {
+                    if (dw == (1 << i)) { dwOk = true; }
+                    if (dh == (1 << i)) { dhOk = true; }
+                }
+                ASSERT(dwOk && dhOk && "Texture size must be POWER OF 2");
+                // 寻找可用空间
+                int newPos = -1;
+                for (int i = 0; i < TEXTURE_NUMBER; ++i) {
+                    if (!mTextures[i]) {
+                        newPos = i;
+                        break;
+                    }
+                }
+                ASSERT(newPos >= 0 && "Texture Full! can't create!");
+                mTextures[newPos] = Graphics::Texture::create(dw, dh, false);
+                unsigned* dst;
+                int pitch;
+                mTextures[newPos].lock(&dst, &pitch, 0);
+                int yEnd = (dh < sh) ? dh : sh;
+                int xEnd = (dw < sw) ? dw : sw;
+                for (int y = 0; y < yEnd; ++y) {
+                    for (int x = 0; x < xEnd; ++x) { dst[x] = src[x]; }
+                    for (int x = xEnd; x < pitch / 4; ++x) { // X太黑
+                        dst[x] = 0;
+                    }
+                    dst += pitch / 4;
+                    src += sw;
+                }
+                // Y
+                for (int y = yEnd; y < dh; ++y) {
+                    for (int x = 0; x < pitch / 4; ++x) { dst[x] = 0; }
+                    dst += pitch / 4;
+                }
+                mTextures[newPos].unlock(&dst);
+                return mTextures[newPos];
+            }
+            void destroyTexture(Graphics::Texture& t) {
+                for (int i = 0; i < TEXTURE_NUMBER; ++i) {
+                    if (mTextures[i] == t) {
+                        mTextures[i].release();
+                        break;
+                    }
+                }
+            }
+            void setTexture(Graphics::Texture& t) { mPrimitiveRenderer.setTexture(t); }
+
+            //	Array< unsigned > mVideoMemoryWithPadding;
+            //	Graphics::Texture m2dTexture;
+            //	static const unsigned MAGIC_NUMBER = 0x12345678;
+            Scene::PrimitiveRenderer mPrimitiveRenderer;
+            static const int TEXTURE_NUMBER = 1024; // 已经够了。
+            Graphics::Texture mTextures[TEXTURE_NUMBER];
 
             int mWidth;
             int mHeight;
@@ -338,8 +456,10 @@ namespace GameLib {
     */
 
     // 示例类库使用的函数
-    unsigned* Framework::videoMemory() { return &gImpl->mVideoMemoryWithPadding[gImpl->mWidth]; }
     /*
+    unsigned* Framework::getVideoMemory(){
+            return &gImpl->mVideoMemoryWithPadding[ gImpl->mWidth ];
+    }
     bool Framework::isKeyOn( int c ) const {
             return Input::Manager::getInstance().getKeyboard().isOn( c );
     }
@@ -357,6 +477,31 @@ namespace GameLib {
             return gImpl->mRandom.getInt(0, m);
         }
     }
+
+    void Framework::drawTriangle2D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+        gImpl->drawTriangle2D(p0, p1, p2, t0, t1, t2, c0, c1, c2);
+    }
+
+    class Texture { // 纹理dummy类
+      public:
+        Graphics::Texture mTexture;
+    };
+
+    void Framework::createTexture(Texture** tex, int tw, int th, const unsigned* data, int iw, int ih) {
+        ASSERT(!(*tex) && "Non Null Pointer! it might be alrady created.");
+        *tex = NEW Texture();
+        (*tex)->mTexture = gImpl->createTexture(tw, th, data, iw, ih);
+    }
+
+    void Framework::destroyTexture(Texture** tex) {
+        ASSERT(tex && "NULL Pointer!");
+        if (*tex) { gImpl->destroyTexture((*tex)->mTexture); }
+        SAFE_DELETE(*tex);
+    }
+
+    void Framework::setTexture(Texture* tex) { gImpl->setTexture(tex->mTexture); }
+
+    void Framework::setBlendMode(BlendMode a) { gImpl->setBlendMode(a); }
 
     // WindowProcedure的用户封装函数
     void WindowCreator::configure(Configuration* config) {
