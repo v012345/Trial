@@ -39,9 +39,12 @@ xpcall(function()
             local iw = gImage:width();
             local ih = gImage:height();
             local rotation = gCount
-            local sine = math.sin(rotation * math.pi / 180)
-            local cosine = math.cos(rotation * math.pi / 180)
-            local matrix = Matrix23(cosine, -sine, 0, sine, cosine, 0)
+            -- local sine = math.sin(rotation * math.pi / 180)
+            -- local cosine = math.cos(rotation * math.pi / 180)
+            -- local matrix = Matrix23(cosine, -sine, 0, sine, cosine, 0)
+            local sx = (gCount % 199) / 100.0;
+            local sy = (gCount % 113) / 60.0;
+            local matrix = Matrix23(sx, 0.0, 0.0, 0.0, sy, 0.0);
             -- local rotationOffset = Vector2(ww / 2, wh / 2)
             -- local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
             --     1.1 + math.cos(rotation * math.pi / 180));
