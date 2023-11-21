@@ -1,5 +1,6 @@
 ﻿#include "Image.h"
 #include "File.h"
+#include "Vector2.h"
 
 #include "GameLib/Framework.h"
 using namespace GameLib;
@@ -18,4 +19,18 @@ int Image::width() const { return mWidth; }
 
 int Image::height() const { return mHeight; }
 
-unsigned Image::pixel(int x, int y) const { return mData[y * mWidth + x]; }
+unsigned Image::pixel(const Vector2& v) const {
+    double x = v.x;
+    double y = v.y;
+    x += (x > 0) ? 0.5 : -0.5;
+    y += (y > 0) ? 0.5 : -0.5;
+    int xi = static_cast<int>(x);
+    int yi = static_cast<int>(y);
+    if (xi < 0 || xi >= mWidth) {
+        return 0;
+    } else if (yi < 0 || yi > mHeight) {
+        return 0;
+    } else {
+        return mData[yi * mWidth + xi];
+    }
+}

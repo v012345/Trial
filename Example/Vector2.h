@@ -21,8 +21,6 @@ class Vector2 {
     void setAdd(const Vector2&, const Vector2&);
     // 设置减法
     void setSub(const Vector2&, const Vector2&);
-    // 设置乘法
-    void setMul(const Vector2&, const Vector2&);
     // 设置插值（this = a + u * ab + v * ac）
     void setInterporation(const Vector2& a, const Vector2& ab, const Vector2& ac, double u, double v);
 
