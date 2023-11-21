@@ -4,25 +4,6 @@ xpcall(function()
     require "Math.Matrix23"
     local gImage = Image(CMAKE_SOURCE_DIR .. "res/background.png")
     local gCount = 0
-    local function rotate(out, input, offset, matrix)
-        out:setSub(input, offset);
-        matrix:multiply(out, out);
-        out = out + offset;
-    end
-
-    ---@param out Vector2
-    local function scale(out, input, offset, ratio)
-        out:setMul(ratio, input);
-        out = out + offset;
-    end
-
-    local function transform(out, input, scalingOffset, scalingRatio, rotationOffset, rotationMatrix)
-        out:setMul(scalingRatio, input);
-        out = out + scalingOffset;
-        out = out - rotationOffset;
-        rotationMatrix:multiply(out, out);
-        out = out + rotationOffset;
-    end
     print(math.atan(1, 1) * 180 / math.pi)
     print(math.atan(1, -1) * 180 / math.pi)
     print(math.atan(-1, -1) * 180 / math.pi)
@@ -39,20 +20,25 @@ xpcall(function()
             local iw = gImage:width();
             local ih = gImage:height();
             local rotation = gCount
-            -- local sine = math.sin(rotation * math.pi / 180)
-            -- local cosine = math.cos(rotation * math.pi / 180)
-            -- local matrix = Matrix23(cosine, -sine, 0, sine, cosine, 0)
-            local tx = (gCount % 200)
-            local ty = (gCount % 120);
-            local matrix = Matrix23(1.0, 0.0, tx, 0.0, 1.0, ty);
-            -- local rotationOffset = Vector2(ww / 2, wh / 2)
-            -- local scalingRatio = Vector2(1.1 + math.sin(rotation * math.pi / 180),
-            --     1.1 + math.cos(rotation * math.pi / 180));
-            -- local scalingOffset = Vector2(ww / 2 - iw / 2 * scalingRatio.x, wh / 2 - ih / 2 * scalingRatio.y);
+            local translationMatrix1 = Matrix23()
+            translationMatrix1:setTranslation(Vector2(-iw / 2, -ih / 2));
+            local scalingMatrix = Matrix23()
+            local scale = Vector2(math.sin(rotation * math.pi / 180) * 2.0 + 1.0,
+                math.cos(rotation * math.pi / 180) * 2.0 + 1.0);
+            scalingMatrix:setScaling(Vector2(scale.x, scale.y));
+            local rotationMatrix = Matrix23()
+            rotationMatrix:setRotation(rotation);
+            local translationMatrix2 = Matrix23()
+            translationMatrix2:setTranslation(Vector2(iw / 2, ih / 2));
+            local transform = Matrix23();
+            transform = translationMatrix2;
+            transform = transform * rotationMatrix;
+            transform = transform * scalingMatrix;
+            transform = transform * translationMatrix1;
             local a, b, c = Vector2(), Vector2(), Vector2()
-            matrix:multiply(a, Vector2(0, 0));
-            matrix:multiply(b, Vector2(iw, 0));
-            matrix:multiply(c, Vector2(0, ih));
+            transform:multiply(a, Vector2(0, 0));
+            transform:multiply(b, Vector2(iw, 0));
+            transform:multiply(c, Vector2(0, ih));
             local ab, ac = Vector2(), Vector2()
             ab:setSub(b, a);
             ac:setSub(c, a);

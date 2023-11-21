@@ -1,15 +1,43 @@
 ﻿#include "Matrix23.h"
 #include "Vector2.h"
+#include "GameLib/Math.h" //sin,cos
+using namespace GameLib;
 
-Matrix23::Matrix23( 
-double e00, double e01, double e02,
-double e10, double e11, double e12 ) :
-m00( e00 ),
-m01( e01 ),
-m02( e02 ),
-m10( e10 ),
-m11( e11 ),
-m12( e12 ){
+Matrix23::Matrix23(){
+}
+
+void Matrix23::setTranslation( const Vector2& a ){
+	m00 = m11 = 1.0;
+	m01 = m10 = 0.0;
+	m02 = a.x;
+	m12 = a.y;
+}
+
+void Matrix23::setRotation( double r ){
+	double s = ::GameLib::sin( r );
+	double c = ::GameLib::cos( r );
+	m00 = m11 = c;
+	m01 = s;
+	m10 = -s;
+	m02 = m12 = 0.0;
+}
+
+void Matrix23::setScaling( const Vector2& a ){
+	m00 = a.x;
+	m11 = a.y;
+	m01 = m10 = m02 = m12 = 0.0;
+}
+
+void Matrix23::operator*=( const Matrix23& m ){
+	double tx, ty;
+	tx = m00; ty = m01;
+	m00 = tx * m.m00 + ty * m.m10;
+	m01 = tx * m.m01 + ty * m.m11;
+	m02 = tx * m.m02 + ty * m.m12 + m02;
+	tx = m10; ty = m11;
+	m10 = tx * m.m00 + ty * m.m10;
+	m11 = tx * m.m01 + ty * m.m11;
+	m12 = tx * m.m02 + ty * m.m12 + m12;
 }
 
 void Matrix23::multiply( Vector2* out, const Vector2& in ) const {

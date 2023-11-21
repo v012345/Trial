@@ -5,12 +5,17 @@ class Vector2;
 
 class Matrix23{
 public:
-	//6元素构成
-	Matrix23( 
-		double e00, double e01, double e02,
-		double e10, double e11, double e12 );
+	Matrix23(); //默认构造
+	//移动矩阵生成
+	void setTranslation( const Vector2& );
+	//旋转矩阵生成
+	void setRotation( double radian );
+	//生成缩放矩阵
+	void setScaling( const Vector2& );
 	//向量与乘法
 	void multiply( Vector2* out, const Vector2& in ) const;
+	//矩阵与乘法
+	void operator*=( const Matrix23& );
 private:
 	double m00, m01, m02;
 	double m10, m11, m12;

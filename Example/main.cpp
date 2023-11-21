@@ -29,15 +29,34 @@ namespace GameLib {
         for (int i = 0; i < ww * wh; ++i) { vram[i] = 0; }
         int iw = gImage->width(); // image width
         int ih = gImage->height(); // image height
-        // 做一个移动矩阵。
-        double tx = static_cast<double>(gCount % 200);
-        double ty = static_cast<double>(gCount % 120);
-        Matrix23 matrix(1.0, 0.0, tx, 0.0, 1.0, ty);
+        // 创建矩阵
+        double rotation = static_cast<double>(gCount);
+        // 从图像的中心到原点，放大，旋转并返回中心。
+        Matrix23 translationMatrix1;
+        Matrix23 scalingMatrix;
+        Matrix23 rotationMatrix;
+        Matrix23 translationMatrix2;
+        // 移动1（原点位于图像中心）
+        translationMatrix1.setTranslation(Vector2(-iw / 2, -ih / 2));
+        // 放大
+        Vector2 scale(sin(rotation) * 2.0 + 1.0, cos(rotation) * 2.0 + 1.0);
+        scalingMatrix.setScaling(Vector2(scale.x, scale.y));
+        // 旋转角度
+        rotationMatrix.setRotation(rotation);
+        // 放回去
+        translationMatrix2.setTranslation(Vector2(iw / 2, ih / 2));
+        //
+        Matrix23 transform;
+        transform = translationMatrix2;
+        transform *= rotationMatrix;
+        transform *= scalingMatrix;
+        transform *= translationMatrix1;
+
         // 3打点
         Vector2 a, b, c;
-        matrix.multiply(&a, Vector2(0, 0));
-        matrix.multiply(&b, Vector2(iw, 0));
-        matrix.multiply(&c, Vector2(0, ih));
+        transform.multiply(&a, Vector2(0, 0));
+        transform.multiply(&b, Vector2(iw, 0));
+        transform.multiply(&c, Vector2(0, ih));
         // 计算b-a,c-a
         Vector2 ab, ac;
         ab.setSub(b, a);
