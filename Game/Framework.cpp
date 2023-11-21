@@ -27,12 +27,39 @@ luaL_Reg Framework::lua_reg[] = {
 };
 int Framework::lua_drawTriangle2D(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
-    int c = luaL_(L, 2);
-    int c = luaL_checkinteger(L, 3);
-    int c = luaL_checkinteger(L, 4);
-    double p0[2] = {100.0, 100.0};
-    double p1[2] = {200.0, 120.0};
-    double p2[2] = {120.0, 200.0};
+    // 从Lua中获取三个点的坐标（每个点是一个包含两个元素的数组）
+    luaL_checktype(L, 2, LUA_TTABLE);
+    luaL_checktype(L, 3, LUA_TTABLE);
+    luaL_checktype(L, 4, LUA_TTABLE);
+
+    // 读取数组中的元素值
+    lua_rawgeti(L, 2, 1);
+    double point1X = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, 2, 2);
+    double point1Y = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, 3, 1);
+    double point2X = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, 3, 2);
+    double point2Y = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, 4, 1);
+    double point3X = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, 4, 2);
+    double point3Y = luaL_checknumber(L, -1);
+    lua_pop(L, 1);
+
+    double p0[2] = {point1X, point1Y};
+    double p1[2] = {point2X, point2Y};
+    double p2[2] = {point3X, point3Y};
     f.drawTriangle2D(p0, p1, p2);
     return 0;
 }
