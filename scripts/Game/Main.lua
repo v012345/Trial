@@ -1,12 +1,16 @@
 xpcall(function()
+    local t = Framework:createTexture(CMAKE_SOURCE_DIR .. "res/background.png")
     function MainLoop()
         xpcall(function()
+            Framework:setTexture(t);
             Framework:drawTriangle2D(
                 { 100, 100 },
-                { 50, 200 },
-                { 150, 200 },
-                0, 0, 0,
-                0xffff0000, 0xff00ff00, 0xff0000ff)
+                { 200.0, 120.0 },
+                { 120.0, 200.0 },
+                { 0.0, 0.0 },
+                { 1.0, 0.0 },
+                { 0.0, 1.0 }
+            )
             Framework:drawDebugString(70, 0, "FPS : " .. Framework:frameRate())
         end, function(msg)
             print(msg)

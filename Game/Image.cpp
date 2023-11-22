@@ -128,6 +128,9 @@ void Image::draw(int dstX, int dstY, int srcX, int srcY, int width, int height) 
 unsigned Image::pixel(int x, int y) const { //
     return mBuffer[y * mWidth + x];
 }
+const unsigned* Image::data() const { //
+    return mBuffer;
+}
 // 指定颜色绘制
 void Image::drawWithFixedColor(int dstX, int dstY, int srcX, int srcY, int width, int height, unsigned color) const {
     // unsigned* vram = GameLib::Framework::instance().videoMemory();

@@ -2,6 +2,7 @@
 #include "GameLib/Framework.h"
 #include "GameLib/Input/Manager.h"
 #include "GameLib/Input/Mouse.h"
+#include "Image.h"
 
 int Framework::luaopen_Framework(lua_State* L) {
     lua_newtable(L);
@@ -23,50 +24,72 @@ luaL_Reg Framework::lua_reg[] = {
     {"width", lua_width}, //
     {"height", lua_height}, //
     {"drawTriangle2D", lua_drawTriangle2D}, //
+    {"createTexture", lua_createTexture}, //
+    {"setTexture", lua_setTexture}, //
     {NULL, NULL},
 };
+int Framework::lua_setTexture(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_touserdata(L, 2));
+    f.setTexture(*texture);
+    return 0;
+}
+
+static int lua_gcDestroyTexture(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_touserdata(L, 1));
+    f.destroyTexture(texture);
+    return 0;
+}
+
+int Framework::lua_createTexture(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    const char* filename = lua_tostring(L, 2);
+    GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_newuserdata(L, sizeof(GameLib::Texture*)));
+    *texture = nullptr;
+    Image* pImage = new Image(filename);
+    f.createTexture(texture, pImage->width(), pImage->height(), pImage->data(), pImage->width(), pImage->height());
+    SAFE_DELETE(pImage);
+    lua_newtable(L);
+    lua_pushstring(L, "__gc");
+    lua_pushcfunction(L, lua_gcDestroyTexture);
+    lua_settable(L, -3);
+    lua_setmetatable(L, -2);
+    return 1;
+}
+
 int Framework::lua_drawTriangle2D(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
-    // 从Lua中获取三个点的坐标（每个点是一个包含两个元素的数组）
-    luaL_checktype(L, 2, LUA_TTABLE);
-    luaL_checktype(L, 3, LUA_TTABLE);
-    luaL_checktype(L, 4, LUA_TTABLE);
+    double p[3][2];
+    for (size_t i = 0; i < 3; i++) {
+        luaL_checktype(L, i + 2, LUA_TTABLE);
+        for (size_t j = 0; j < 2; j++) {
+            lua_rawgeti(L, i + 2, j + 1);
+            p[i][j] = luaL_checknumber(L, -1);
+            lua_pop(L, 1);
+        }
+    }
 
-    // 读取数组中的元素值
-    lua_rawgeti(L, 2, 1);
-    double point1X = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_rawgeti(L, 2, 2);
-    double point1Y = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_rawgeti(L, 3, 1);
-    double point2X = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_rawgeti(L, 3, 2);
-    double point2Y = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_rawgeti(L, 4, 1);
-    double point3X = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-
-    lua_rawgeti(L, 4, 2);
-    double point3Y = luaL_checknumber(L, -1);
-    lua_pop(L, 1);
-    double t1 = luaL_optnumber(L, 5, 0);
-    double t2 = luaL_optnumber(L, 6, 0);
-    double t3 = luaL_optnumber(L, 7, 0);
+    double* t[3] = {nullptr, nullptr, nullptr};
+    for (size_t i = 0; i < 3; i++) {
+        if (lua_type(L, i + 5) == LUA_TTABLE) {
+            double* tt = new double[2];
+            for (size_t j = 0; j < 2; j++) {
+                lua_rawgeti(L, i + 5, j + 1);
+                tt[j] = luaL_checknumber(L, -1);
+                lua_pop(L, 1);
+            }
+            t[i] = tt;
+        }
+    }
     double c1 = luaL_optnumber(L, 8, 0xffffffff);
     double c2 = luaL_optnumber(L, 9, 0xffffffff);
     double c3 = luaL_optnumber(L, 10, 0xffffffff);
 
-    double p0[2] = {point1X, point1Y};
-    double p1[2] = {point2X, point2Y};
-    double p2[2] = {point3X, point3Y};
-    f.drawTriangle2D(p0, p1, p2, &t1, &t2, &t3, c1, c2, c3);
+    f.drawTriangle2D(p[0], p[1], p[2], t[0], t[1], t[2], c1, c2, c3);
+    for (size_t i = 0; i < 3; i++) {
+        if (t[i]) { delete[] t[i]; }
+    }
     return 0;
 }
 
