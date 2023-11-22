@@ -84,6 +84,12 @@ local Mode = {
     MODE_NONE = 0
 }
 
+local BlendMode = {
+    BLEND_LINEAR = 0,
+    BLEND_ADDITIVE = 1,
+    BLEND_OPAQUE = 2,
+}
+
 Enum = {
     Obj = Obj,
     State = State,
@@ -93,4 +99,5 @@ Enum = {
     InputToDirection = InputToDirection,
     Mode = Mode,
     UIType = UIType,
+    BlendMode = BlendMode,
 }

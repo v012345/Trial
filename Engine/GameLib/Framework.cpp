@@ -13,7 +13,7 @@
 #include "GameLib/WindowCreator/WindowCreator.h"
 
 // 示例类库
-// #include "GameLib/Input/Keyboard.h"
+#include "GameLib/Input/Keyboard.h"
 #include "GameLib/Math/Vector3.h"
 #include "GameLib/Scene/PrimitiveRenderer.h"
 
@@ -463,11 +463,8 @@ namespace GameLib {
     bool Framework::isKeyOn( int c ) const {
             return Input::Manager::getInstance().getKeyboard().isOn( c );
     }
-
-    bool Framework::isKeyTriggered( int c ) const {
-            return Input::Manager::getInstance().getKeyboard().isTriggered( c );
-    }
     */
+    bool Framework::isKeyTriggered(int c) const { return Input::Manager::instance().keyboard().isTriggered(c); }
     void Framework::sleep(int ms) const { Threading::sleep(ms); }
 
     int Framework::getRandom(int m) {

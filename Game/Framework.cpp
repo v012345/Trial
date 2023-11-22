@@ -26,6 +26,7 @@ luaL_Reg Framework::lua_reg[] = {
     {"drawTriangle2D", lua_drawTriangle2D}, //
     {"createTexture", lua_createTexture}, //
     {"setTexture", lua_setTexture}, //
+    {"setBlendMode", lua_setBlendMode}, //
     {NULL, NULL},
 };
 int Framework::lua_setTexture(lua_State* L) {
@@ -34,7 +35,13 @@ int Framework::lua_setTexture(lua_State* L) {
     f.setTexture(*texture);
     return 0;
 }
-
+int Framework::lua_setBlendMode(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    int mode = lua_tointeger(L, 2);
+    GameLib::Framework::BlendMode a = static_cast<GameLib::Framework::BlendMode>(mode);
+    f.setBlendMode(a);
+    return 0;
+}
 static int lua_gcDestroyTexture(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
     GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_touserdata(L, 1));
@@ -141,7 +148,7 @@ int Framework::lua_setFrameRate(lua_State* L) {
 int Framework::lua_isKeyTriggered(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
     GameLib::Framework f = GameLib::Framework::instance();
-    // lua_pushboolean(L, f.isKeyTriggered(c));
+    lua_pushboolean(L, f.isKeyTriggered(c));
     return 1;
 }
 
