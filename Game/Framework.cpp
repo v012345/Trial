@@ -56,11 +56,17 @@ int Framework::lua_drawTriangle2D(lua_State* L) {
     lua_rawgeti(L, 4, 2);
     double point3Y = luaL_checknumber(L, -1);
     lua_pop(L, 1);
+    double t1 = luaL_optnumber(L, 5, 0);
+    double t2 = luaL_optnumber(L, 6, 0);
+    double t3 = luaL_optnumber(L, 7, 0);
+    double c1 = luaL_optnumber(L, 8, 0xffffffff);
+    double c2 = luaL_optnumber(L, 9, 0xffffffff);
+    double c3 = luaL_optnumber(L, 10, 0xffffffff);
 
     double p0[2] = {point1X, point1Y};
     double p1[2] = {point2X, point2Y};
     double p2[2] = {point3X, point3Y};
-    f.drawTriangle2D(p0, p1, p2);
+    f.drawTriangle2D(p0, p1, p2, &t1, &t2, &t3, c1, c2, c3);
     return 0;
 }
 
