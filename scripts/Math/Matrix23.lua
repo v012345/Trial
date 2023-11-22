@@ -61,6 +61,29 @@ function Matrix23:setScaling(a)
     self.m12 = 0
 end
 
+function Matrix23:scale(a)
+    self.m00 = self.m00 * a.x;
+    self.m01 = self.m01 * a.y;
+    self.m10 = self.m10 * a.x;
+    self.m11 = self.m11 * a.y;
+end
+
+function Matrix23:translate(a)
+    self.m02 = self.m02 + self.m00 * a.x + self.m01 * a.y;
+    self.m12 = self.m12 + self.m10 * a.x + self.m11 * a.y;
+end
+
+function Matrix23:rotate(r)
+    local c = math.cos(r * math.pi / 180);
+    local s = math.sin(r * math.pi / 180);
+    local t = self.m00;
+    self.m00 = t * c + self.m01 * s;
+    self.m01 = t * (-s) + self.m01 * c;
+    t = self.m10;
+    self.m10 = t * c + self.m11 * s;
+    self.m11 = t * (-s) + self.m11 * c;
+end
+
 function Matrix23:__mul(m)
     local tx = self.m00;
     local ty = self.m01;

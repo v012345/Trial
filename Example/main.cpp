@@ -2,42 +2,81 @@
 #include "GameLib/Input/Manager.h"
 #include "GameLib/Input/Keyboard.h"
 using namespace GameLib;
+#include "Image.h"
+#include "Matrix23.h"
+#include "Vector2.h"
+#include "GameLib/Math.h"
 
-Framework::BlendMode gBlendMode = Framework::BLEND_LINEAR;
+Image* gImage;
+Texture* gTexture;
+bool gFirstFrame = true;
+bool gScaleFirst = true;
+int gImageWidth;
+int gImageHeight;
 int gCount = 0;
 
 namespace GameLib{
 	void Framework::update(){
 		sleep( 16 );
-		//1第二张不透明
-		setBlendMode( BLEND_OPAQUE );
-		double p00[ 2 ] = { 100.0, 100.0 };
-		double p01[ 2 ] = { 200.0, 120.0 };
-		double p02[ 2 ] = { 120.0, 200.0 };
-		drawTriangle2D( p00, p01, p02, 0, 0, 0, 0xffff8080, 0xff80ff80, 0xff8080ff );
+		if ( gFirstFrame ){
+			gFirstFrame = false;
+			gImage = new Image(CMAKE_CURRENT_SOURCE_DIR "background.dds" ); 
+			gImageWidth = gImage->width();
+			gImageHeight = gImage->height();
+			createTexture( 
+				&gTexture,
+				gImageWidth, 
+				gImageHeight, 
+				gImage->data(), 
+				gImageWidth, 
+				gImageHeight );
+			SAFE_DELETE( gImage );
+		}
+		setTexture( gTexture );
+		
+		double rotation = static_cast< double >( gCount );
+		Vector2 scale( sin( rotation ) + 0.5, cos( rotation ) + 0.5 );
 
-		//2第二张是根据个人喜好。
-		setBlendMode( gBlendMode );  
-		double p10[ 2 ] = { 110.0, 110.0 };
-		double p11[ 2 ] = { 210.0, 130.0 };
-		double p12[ 2 ] = { 130.0, 210.0 };
-		unsigned alpha = ( gCount % 256 ) << 24;
-		++gCount;  
-		drawTriangle2D( 
-			p10, p11, p12, 
-			0, 0, 0, 
-			0x80ff80 | alpha, 
-			0x8080ff | alpha, 
-			0xff8080 | alpha );
+		//制作矩阵
+		Matrix23 m;
+		m.setTranslation( Vector2( gImageWidth/2, gImageHeight/2 ) );
+		if ( gScaleFirst ){
+			m.rotate( rotation );
+			m.scale( scale );
+		}else{
+			m.scale( scale );
+			m.rotate( rotation );
+		}
+		m.translate( Vector2( -gImageWidth/2, -gImageHeight/2 ) );
+
+		Vector2 p0( 0.0, 0.0 );
+		Vector2 p1( 100.0, 0.0 );
+		Vector2 p2( 0.0, 100.0 );
+		Vector2 p3( 100.0, 100.0 );
+		double t0[ 2 ] = { 0.0, 0.0 };
+		double t1[ 2 ] = { 1.0, 0.0 };
+		double t2[ 2 ] = { 0.0, 1.0 };
+		double t3[ 2 ] = { 1.0, 1.0 };
+		//矩阵乘法
+		m.multiply( &p0, p0 );
+		m.multiply( &p1, p1 );
+		m.multiply( &p2, p2 );
+		m.multiply( &p3, p3 );
+		//绘制
+		//Vector2无法原样​​传递。
+		drawTriangle2D( &p0.x, &p1.x, &p2.x, t0, t1, t2 ); //012
+		drawTriangle2D( &p3.x, &p1.x, &p2.x, t3, t1, t2 ); //312
 
 		//空格切换
 		if ( Input::Manager::instance().keyboard().isTriggered( ' ' ) ){
-			switch ( gBlendMode ){
-				case BLEND_LINEAR: gBlendMode = BLEND_ADDITIVE; break;
-				case BLEND_ADDITIVE: gBlendMode = BLEND_OPAQUE; break;
-				case BLEND_OPAQUE: gBlendMode = BLEND_LINEAR; break;
-			}
+			gScaleFirst = !gScaleFirst;
 		}
-		drawDebugString( 0, 0, "press SPACE to change blend mode." );
+		++gCount;
+
+		drawDebugString( 0, 0, "press SPACE to swap ROTATION and SCALING" );
+		//结束处理
+		if ( isEndRequested() ){
+			destroyTexture( &gTexture );
+		}
 	}
 }

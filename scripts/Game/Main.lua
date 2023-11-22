@@ -1,58 +1,54 @@
 xpcall(function()
     require "Game.Enum"
-    -- local t = Framework:createTexture(CMAKE_SOURCE_DIR .. "res/background.png")
+    require "Math.Vector2"
+    require "Math.Matrix23"
+    local gImage = Image(CMAKE_SOURCE_DIR .. "res/background.png")
+    local gImageWidth = gImage:width();
+    local gImageHeight = gImage:height();
+    ---@diagnostic disable-next-line
+    gImage = nil
+    local gTexture = Framework:createTexture(CMAKE_SOURCE_DIR .. "res/background.png")
     local gCount = 0;
+    local gScaleFirst = true;
     Framework:setFrameRate(60)
-    local A = Enum.BlendMode.BLEND_OPAQUE
-    local a = "OPAQUE"
-    local B = Enum.BlendMode.BLEND_LINEAR
-    local b = "LINEAR"
     function MainLoop()
         xpcall(function()
-            Framework:drawDebugString(0, 0, "press A or D to change blend mode.");
-            Framework:drawDebugString(0, 1, "current blend mode of A : " .. a);
-            Framework:drawDebugString(0, 2, "current blend mode of D : " .. b);
-            -- Framework:setTexture(t);
-            Framework:setBlendMode(A)
-            Framework:drawTriangle2D(
-                { 100.0, 100.0 },
-                { 200.0, 120.0 },
-                { 120.0, 200.0 },
-                0, 0, 0, 0xffff8080, 0xff80ff80, 0xff8080ff
+            Framework:drawDebugString(0, 0, "press SPACE to swap rotation and scaling");
+            -- Framework:drawDebugString(0, 1, "current blend mode of A : " .. a);
+            -- Framework:drawDebugString(0, 2, "current blend mode of D : " .. b);
+            Framework:setTexture(gTexture);
+            local rotation = gCount
+            local scale = Vector2(
+                math.sin(rotation * math.pi / 180) + 0.5,
+                math.cos(rotation * math.pi / 180) + 0.5
             )
-            local alpha = (gCount % 256) << 24;
-            gCount = gCount + 1
-            Framework:setBlendMode(B)
-            Framework:drawTriangle2D(
-                { 110.0, 110.0 },
-                { 210.0, 130.0 },
-                { 130.0, 210.0 },
-                0, 0, 0,
-                0x80ff80| alpha, 0x8080ff| alpha, 0xff8080| alpha
-            )
-            if Framework:isKeyTriggered(Enum.Keyboard.D) then
-                if B == Enum.BlendMode.BLEND_LINEAR then
-                    B = Enum.BlendMode.BLEND_ADDITIVE
-                    b = "ADDITIVE"
-                elseif B == Enum.BlendMode.BLEND_ADDITIVE then
-                    B = Enum.BlendMode.BLEND_OPAQUE
-                    b = "OPAQUE"
-                elseif B == Enum.BlendMode.BLEND_OPAQUE then
-                    B = Enum.BlendMode.BLEND_LINEAR
-                    b = "LINEAR"
-                end
+            local m = Matrix23();
+            m:setTranslation(Vector2(gImageWidth / 2, gImageHeight / 2));
+            if gScaleFirst then
+                m:rotate(rotation);
+                m:scale(scale);
+            else
+                m:scale(scale);
+                m:rotate(rotation);
             end
-            if Framework:isKeyTriggered(Enum.Keyboard.A) then
-                if A == Enum.BlendMode.BLEND_LINEAR then
-                    A = Enum.BlendMode.BLEND_ADDITIVE
-                    a = "ADDITIVE"
-                elseif A == Enum.BlendMode.BLEND_ADDITIVE then
-                    A = Enum.BlendMode.BLEND_OPAQUE
-                    a = "OPAQUE"
-                elseif A == Enum.BlendMode.BLEND_OPAQUE then
-                    A = Enum.BlendMode.BLEND_LINEAR
-                    a = "LINEAR"
-                end
+            m:translate(Vector2(-gImageWidth / 2, -gImageHeight / 2))
+            local p0 = Vector2(0.0, 0.0);
+            local p1 = Vector2(100.0, 0.0);
+            local p2 = Vector2(0.0, 100.0);
+            local p3 = Vector2(100.0, 100.0);
+            local t0 = { 0.0, 0.0 };
+            local t1 = { 1.0, 0.0 };
+            local t2 = { 0.0, 1.0 };
+            local t3 = { 1.0, 1.0 };
+            m:multiply(p0, p0);
+            m:multiply(p1, p1);
+            m:multiply(p2, p2);
+            m:multiply(p3, p3);
+            Framework:drawTriangle2D({ p0.x, p0.y }, { p1.x, p1.y }, { p2.x, p2.y }, t0, t1, t2);
+            Framework:drawTriangle2D({ p3.x, p3.y }, { p1.x, p1.y }, { p2.x, p2.y }, t3, t1, t2);
+            gCount = gCount + 1
+            if Framework:isKeyTriggered(Enum.Keyboard.Space) then
+                gScaleFirst = not gScaleFirst;
             end
             Framework:drawDebugString(70, 0, "FPS : " .. Framework:frameRate())
         end, function(msg)
