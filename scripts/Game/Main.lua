@@ -9,7 +9,8 @@ xpcall(function()
                 { 120.0, 200.0 },
                 { 0.0, 0.0 },
                 { 1.0, 0.0 },
-                { 0.0, 1.0 }
+                { 0.0, 1.0 },
+                0xffffff00, 0xff00ffff, 0xffff00ff
             )
             Framework:drawDebugString(70, 0, "FPS : " .. Framework:frameRate())
         end, function(msg)
