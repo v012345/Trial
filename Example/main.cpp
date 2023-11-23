@@ -1,82 +1,25 @@
 ﻿#include "GameLib/Framework.h"
-#include "GameLib/Input/Manager.h"
-#include "GameLib/Input/Keyboard.h"
 using namespace GameLib;
-#include "Image.h"
-#include "Matrix23.h"
-#include "Vector2.h"
-#include "GameLib/Math.h"
 
-Image* gImage;
-Texture* gTexture;
-bool gFirstFrame = true;
-bool gScaleFirst = true;
-int gImageWidth;
-int gImageHeight;
-int gCount = 0;
+#include "Pad.h"
+#include "Sequence/Parent.h"
 
+//用户封装函数。内容在Sequence :: Parent
 namespace GameLib{
 	void Framework::update(){
-		sleep( 16 );
-		if ( gFirstFrame ){
-			gFirstFrame = false;
-			gImage = new Image(CMAKE_CURRENT_SOURCE_DIR "background.dds" ); 
-			gImageWidth = gImage->width();
-			gImageHeight = gImage->height();
-			createTexture( 
-				&gTexture,
-				gImageWidth, 
-				gImageHeight, 
-				gImage->data(), 
-				gImageWidth, 
-				gImageHeight );
-			SAFE_DELETE( gImage );
+		if ( !Sequence::Parent::instance() ){
+			Sequence::Parent::create();
+			setFrameRate( 60 );
 		}
-		setTexture( gTexture );
-		
-		double rotation = static_cast< double >( gCount );
-		Vector2 scale( sin( rotation ) + 0.5, cos( rotation ) + 0.5 );
-
-		//制作矩阵
-		Matrix23 m;
-		m.setTranslation( Vector2( gImageWidth/2, gImageHeight/2 ) );
-		if ( gScaleFirst ){
-			m.rotate( rotation );
-			m.scale( scale );
-		}else{
-			m.scale( scale );
-			m.rotate( rotation );
+		Sequence::Parent::instance()->update();
+		//结束判断（是否按下q或用鼠标按下X按钮）
+		if ( Pad::isOn( Pad::Q ) ){
+			requestEnd();
 		}
-		m.translate( Vector2( -gImageWidth/2, -gImageHeight/2 ) );
-
-		Vector2 p0( 0.0, 0.0 );
-		Vector2 p1( 100.0, 0.0 );
-		Vector2 p2( 0.0, 100.0 );
-		Vector2 p3( 100.0, 100.0 );
-		double t0[ 2 ] = { 0.0, 0.0 };
-		double t1[ 2 ] = { 1.0, 0.0 };
-		double t2[ 2 ] = { 0.0, 1.0 };
-		double t3[ 2 ] = { 1.0, 1.0 };
-		//矩阵乘法
-		m.multiply( &p0, p0 );
-		m.multiply( &p1, p1 );
-		m.multiply( &p2, p2 );
-		m.multiply( &p3, p3 );
-		//绘制
-		//Vector2无法原样​​传递。
-		drawTriangle2D( &p0.x, &p1.x, &p2.x, t0, t1, t2 ); //012
-		drawTriangle2D( &p3.x, &p1.x, &p2.x, t3, t1, t2 ); //312
-
-		//空格切换
-		if ( Input::Manager::instance().keyboard().isTriggered( ' ' ) ){
-			gScaleFirst = !gScaleFirst;
-		}
-		++gCount;
-
-		drawDebugString( 0, 0, "press SPACE to swap ROTATION and SCALING" );
-		//结束处理
 		if ( isEndRequested() ){
-			destroyTexture( &gTexture );
+			Sequence::Parent::destroy();
 		}
 	}
 }
+
+

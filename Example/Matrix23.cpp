@@ -48,7 +48,6 @@ void Matrix23::multiply( Vector2* out, const Vector2& in ) const {
 
 //和移动矩阵相乘的做法
 
-
 void Matrix23::translate( const Vector2& a ){
 	m02 += m00 * a.x + m01 * a.y; 
 	m12 += m10 * a.x + m11 * a.y;
