@@ -24,6 +24,7 @@ target_link_libraries(MyWork
     GameLib
     liblua
     lfs
+    luasocket
     png_shared
     freetype
 )

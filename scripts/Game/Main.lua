@@ -1,3 +1,4 @@
+require("LuaPanda").start("127.0.0.1", 8818);
 xpcall(function()
     require "Game.Enum"
     require "Math.Vector2"
