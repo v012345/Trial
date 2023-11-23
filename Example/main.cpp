@@ -1,25 +1,21 @@
 ﻿#include "GameLib/Framework.h"
-using namespace GameLib;
 
-#include "Pad.h"
-#include "Sequence/Parent.h"
+int gCount;
 
-//用户封装函数。内容在Sequence :: Parent
 namespace GameLib{
 	void Framework::update(){
-		if ( !Sequence::Parent::instance() ){
-			Sequence::Parent::create();
-			setFrameRate( 60 );
-		}
-		Sequence::Parent::instance()->update();
-		//结束判断（是否按下q或用鼠标按下X按钮）
-		if ( Pad::isOn( Pad::Q ) ){
-			requestEnd();
-		}
-		if ( isEndRequested() ){
-			Sequence::Parent::destroy();
-		}
+		setFrameRate( 60 );
+		double p0[ 3 ] = { 100.0, 100.0, 0.0 };
+		double p1[ 3 ] = { 400.0, 200.0, 0.4 };
+		double p2[ 3 ] = { 200.0, 400.0, 0.8 };
+
+		double zOffset = ( gCount % 200 ) * 0.01 - 1.0;
+		p0[ 2 ] += zOffset;
+		p1[ 2 ] += zOffset;
+		p2[ 2 ] += zOffset;
+
+		drawTriangle3D( p0, p1, p2 );
+
+		++gCount;
 	}
 }
-
-

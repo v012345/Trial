@@ -15,6 +15,7 @@
 // 示例类库
 #include "GameLib/Input/Keyboard.h"
 #include "GameLib/Math/Vector3.h"
+#include "GameLib/Math/Vector4.h"
 #include "GameLib/Scene/PrimitiveRenderer.h"
 
 #include "FontTextureGenerated.h"
@@ -30,8 +31,8 @@ namespace GameLib {
         class Impl {
           public:
             Impl()
-                : mWidth(320),
-                  mHeight(240),
+                : mWidth(640),
+                  mHeight(480),
                   mFullScreen(false),
                   mFullScreenForbidden(true),
                   mVSync(false),
@@ -100,7 +101,7 @@ namespace GameLib {
                 // 输入初始化
                 Input::Manager::create(windowHandle);
                 // 初始化绘制
-                Graphics::Manager::create(windowHandle, mWidth * 2, mHeight * 2, mFullScreen, mVSync, mAntiAlias);
+                Graphics::Manager::create(windowHandle, mWidth, mHeight, mFullScreen, mVSync, mAntiAlias);
                 // 绘制文字
                 // ASCII表（ASCII（126-32 + 1 = 95个字符+ 63个字符，158个字符
                 Array<Scene::Font::BitmapChar> chars(158);
@@ -166,7 +167,7 @@ namespace GameLib {
                 Input::Manager().update(pointerScale, pointerOffset);
                 // 样例
                 mPrimitiveRenderer.enableDepthTest(false);
-                mPrimitiveRenderer.enableDepthWrite(false);
+                mPrimitiveRenderer.enableDepthWrite(true);
                 mPrimitiveRenderer.setCullMode(Graphics::CULL_NONE);
                 mPrimitiveRenderer.setBlendMode(Graphics::BLEND_OPAQUE);
             }
@@ -248,6 +249,67 @@ namespace GameLib {
                     p[i].y += 1.f;
                 }
                 mPrimitiveRenderer.addTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
+            }
+            void drawTriangle3D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+                // 转换为浮点数
+                Vector3 p[3];
+                Vector2 t[3];
+
+                for (int i = 0; i < 3; ++i) {
+                    p[0][i] = static_cast<float>(p0[i]);
+                    p[1][i] = static_cast<float>(p1[i]);
+                    p[2][i] = static_cast<float>(p2[i]);
+                }
+
+                if (t0) {
+                    t[0].x = static_cast<float>(t0[0]);
+                    t[0].y = static_cast<float>(t0[1]);
+                }
+                if (t1) {
+                    t[1].x = static_cast<float>(t1[0]);
+                    t[1].y = static_cast<float>(t1[1]);
+                }
+                if (t2) {
+                    t[2].x = static_cast<float>(t2[0]);
+                    t[2].y = static_cast<float>(t2[1]);
+                }
+                // 转换为clip坐标系
+                //[0, w ] -> [ -1, 1 ]
+                //[0，h]-> [1，-1]
+                float sx = 2.f / static_cast<float>(mWidth);
+                float sy = -2.f / static_cast<float>(mHeight);
+                for (int i = 0; i < 3; ++i) {
+                    p[i].x *= sx;
+                    p[i].y *= sy;
+                    p[i].x -= 1.f;
+                    p[i].y += 1.f;
+                }
+                mPrimitiveRenderer.addTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
+            }
+            void drawTriangle3DH(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+                // 转换为浮点数
+                Vector4 p[3];
+                Vector2 t[3];
+
+                for (int i = 0; i < 4; ++i) {
+                    p[0][i] = static_cast<float>(p0[i]);
+                    p[1][i] = static_cast<float>(p1[i]);
+                    p[2][i] = static_cast<float>(p2[i]);
+                }
+
+                if (t0) {
+                    t[0].x = static_cast<float>(t0[0]);
+                    t[0].y = static_cast<float>(t0[1]);
+                }
+                if (t1) {
+                    t[1].x = static_cast<float>(t1[0]);
+                    t[1].y = static_cast<float>(t1[1]);
+                }
+                if (t2) {
+                    t[2].x = static_cast<float>(t2[0]);
+                    t[2].y = static_cast<float>(t2[1]);
+                }
+                mPrimitiveRenderer.addTransformedTriangle(p[0], p[1], p[2], t[0], t[1], t[2], c0, c1, c2);
             }
             Graphics::Texture createTexture(int dw, int dh, const unsigned* src, int sw, int sh) {
                 // 2乘幂检查
@@ -479,6 +541,14 @@ namespace GameLib {
         gImpl->drawTriangle2D(p0, p1, p2, t0, t1, t2, c0, c1, c2);
     }
 
+    void Framework::drawTriangle3D(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+        gImpl->drawTriangle3D(p0, p1, p2, t0, t1, t2, c0, c1, c2);
+    }
+
+    void Framework::drawTriangle3DH(const double* p0, const double* p1, const double* p2, const double* t0, const double* t1, const double* t2, unsigned c0, unsigned c1, unsigned c2) {
+        gImpl->drawTriangle3DH(p0, p1, p2, t0, t1, t2, c0, c1, c2);
+    }
+
     class Texture { // 纹理dummy类
       public:
         Graphics::Texture mTexture;
@@ -490,15 +560,41 @@ namespace GameLib {
         (*tex)->mTexture = gImpl->createTexture(tw, th, data, iw, ih);
     }
 
+    void Framework::createTexture(Texture** tex, const char* filename) {
+        ASSERT(!(*tex) && "Non Null Pointer! it might be alrady created.");
+        *tex = NEW Texture();
+        (*tex)->mTexture = Graphics::Texture::create(filename);
+        while (!(*tex)->mTexture.isReady()) {
+            ; // 等待加载
+        }
+    }
+
+    void Framework::getTextureSizes(const Texture* tex, int* width, int* height, int* originalWidth, int* originalHeight) {
+        if (width) { *width = tex->mTexture.width(); }
+        if (height) { *height = tex->mTexture.height(); }
+        if (originalWidth) { *originalWidth = tex->mTexture.originalWidth(); }
+        if (originalHeight) { *originalHeight = tex->mTexture.originalHeight(); }
+    }
+
     void Framework::destroyTexture(Texture** tex) {
         ASSERT(tex && "NULL Pointer!");
         if (*tex) { gImpl->destroyTexture((*tex)->mTexture); }
         SAFE_DELETE(*tex);
     }
 
-    void Framework::setTexture(Texture* tex) { gImpl->setTexture(tex->mTexture); }
+    void Framework::setTexture(const Texture* tex) {
+        if (tex) {
+            gImpl->mPrimitiveRenderer.setTexture(tex->mTexture);
+        } else {
+            gImpl->mPrimitiveRenderer.setTexture(0);
+        }
+    }
 
     void Framework::setBlendMode(BlendMode a) { gImpl->setBlendMode(a); }
+
+    void Framework::enableDepthTest(bool f) { gImpl->mPrimitiveRenderer.enableDepthTest(f); }
+
+    void Framework::enableDepthWrite(bool f) { gImpl->mPrimitiveRenderer.enableDepthWrite(f); }
 
     // WindowProcedure的用户封装函数
     void WindowCreator::configure(Configuration* config) {
@@ -507,9 +603,9 @@ namespace GameLib {
         Framework f;
         //	Framework::Configuration fwConfig;
         //	f.configure( &fwConfig );
-        config->setWidth(f.width() * 2);
-        config->setHeight(f.height() * 2);
-        config->setTitle("2D Graphics1 samples");
+        config->setWidth(f.width());
+        config->setHeight(f.height());
+        config->setTitle("3D Graphics1 samples");
         config->enableFullScreen(false);
         config->forbidFullScreen(true);
     }

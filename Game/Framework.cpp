@@ -27,8 +27,23 @@ luaL_Reg Framework::lua_reg[] = {
     {"createTexture", lua_createTexture}, //
     {"setTexture", lua_setTexture}, //
     {"setBlendMode", lua_setBlendMode}, //
+    {"drawTriangle3D", lua_drawTriangle3D}, //
     {NULL, NULL},
 };
+int Framework::lua_drawTriangle3D(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    double p[3][3];
+    for (size_t i = 0; i < 3; i++) {
+        luaL_checktype(L, i + 2, LUA_TTABLE);
+        for (size_t j = 0; j < 3; j++) {
+            lua_rawgeti(L, i + 2, j + 1);
+            p[i][j] = luaL_checknumber(L, -1);
+            lua_pop(L, 1);
+        }
+    }
+    f.drawTriangle3D(p[0], p[1], p[2]);
+    return 0;
+}
 int Framework::lua_setTexture(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
     GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_touserdata(L, 2));

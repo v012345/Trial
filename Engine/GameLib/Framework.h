@@ -17,8 +17,6 @@ namespace GameLib {
         int width() const;
         /// 获取画面高度
         int height() const;
-        // 获取VRAM
-        unsigned* videoMemory();
         // 向Framework发出结束命令
         void requestEnd();
         // 检查Framework是否发出结束命令
@@ -44,12 +42,25 @@ namespace GameLib {
         void drawTriangle2D(
             const double* p0, const double* p1, const double* p2, const double* t0 = 0, const double* t1 = 0, const double* t2 = 0, unsigned c0 = 0xffffffff, unsigned c1 = 0xffffffff,
             unsigned c2 = 0xffffffff);
+
+        /// 画三角形。p含3个元素，t是含2元素的数组
+        void drawTriangle3D(
+            const double* p0, const double* p1, const double* p2, const double* t0 = 0, const double* t1 = 0, const double* t2 = 0, unsigned c0 = 0xffffffff, unsigned c1 = 0xffffffff,
+            unsigned c2 = 0xffffffff);
+        /// 画三角形。由于涉及齐次坐标，所以p含有4个元素。t含有2个元素。
+        void drawTriangle3DH(
+            const double* p0, const double* p1, const double* p2, const double* t0 = 0, const double* t1 = 0, const double* t2 = 0, unsigned c0 = 0xffffffff, unsigned c1 = 0xffffffff,
+            unsigned c2 = 0xffffffff);
+
         // 创建纹理
         void createTexture(Texture** textureOut, int textureWidth, int textureHeight, const unsigned* imageData, int imageWidth, int imageHeight);
+        void createTexture(Texture** textureOut, const char* filename);
         // 丢弃纹理
         void destroyTexture(Texture**);
         // 设置纹理
-        void setTexture(Texture*);
+        void setTexture(const Texture*);
+        // 查找纹理的大小
+        void getTextureSizes(const Texture*, int* width, int* height, int* originalWidth, int* originalHeight);
         // 混合模式
         enum BlendMode {
             BLEND_LINEAR,
@@ -57,6 +68,8 @@ namespace GameLib {
             BLEND_OPAQUE,
         };
         void setBlendMode(BlendMode);
+        void enableDepthTest(bool);
+        void enableDepthWrite(bool);
 
         // 以下库用户不需要知道
         void start(void* windowHandle);
