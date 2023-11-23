@@ -23,7 +23,7 @@ xpcall(function()
                 math.cos(rotation * math.pi / 180) + 0.5
             )
             local m = Matrix23();
-            m:setTranslation(Vector2(gImageWidth / 2, gImageHeight / 2));
+            m:setTranslation(Vector2(-gImageWidth / 2, -gImageHeight / 2));
             if gScaleFirst then
                 m:rotate(rotation);
                 m:scale(scale);
@@ -31,7 +31,7 @@ xpcall(function()
                 m:scale(scale);
                 m:rotate(rotation);
             end
-            m:translate(Vector2(-gImageWidth / 2, -gImageHeight / 2))
+            m:translate(Vector2(gImageWidth , gImageHeight))
             local p0 = Vector2(0.0, 0.0);
             local p1 = Vector2(100.0, 0.0);
             local p2 = Vector2(0.0, 100.0);

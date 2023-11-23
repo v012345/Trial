@@ -136,3 +136,10 @@ function Vector2(x,y) return {} end
 ---@param e11 any
 ---@return Matrix22
 function Matrix22(e00,e01,e10,e11) return {} end
+
+---@param e00 any
+---@param e01 any
+---@param e10 any
+---@param e11 any
+---@return Matrix23
+function Matrix23(e00,e01,e10,e11) return {} end
