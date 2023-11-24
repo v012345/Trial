@@ -12,48 +12,28 @@ function _getch() return 0 end
 CMAKE_SOURCE_DIR = "${CMAKE_SOURCE_DIR}/"
 CMAKE_CURRENT_SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}/"
 
-Screen = {}
----在窗口的指定位置画一个点, lua 里的 (1,100) 对 c 里的 (0,99)
----@param x integer
----@param y integer
----@param color integer
-function Screen:setColor(x, y, color) end
-
----窗口的高
----@return integer
-function Screen:height() return 0 end
-
----窗口的宽
----@return integer
-function Screen:width() return 0 end
-
----返回指定点的颜色, lua 里的 (1,100) 对 c 里的 (0,99)
----@return integer
-function Screen:colorAt(x, y) return 0 end
-
----清空屏幕
-function Screen:clear() end
-
----在 c 里解析 png 图片
----@param path string png 图片的路径
----@return Image
-function ReadPngFile(path) return {} end
-
 Framework = {}
----休息多少毫秒
----@param ms integer
-function Framework:sleep(ms) end
-
 ---返回时间毫秒
 ---@return integer
 function Framework:time() return 0 end
 
-function Framework:frameRate() return 0 end
+---休息多少毫秒
+---@param ms integer
+function Framework:sleep(ms) end
 
 ---是否按了某个键
 ---@param c integer
 ---@return boolean
 function Framework:isKeyOn(c) return true end
+
+function Framework:frameRate() return 0 end
+
+function Framework:setFrameRate(fps) end
+
+---是否按了某个键(一次)
+---@param c integer
+---@return boolean
+function Framework:isKeyTriggered(c) return true end
 
 ---在窗口输出 debug 信息
 ---@param c integer
@@ -62,12 +42,32 @@ function Framework:isKeyOn(c) return true end
 ---@param color integer|nil
 function Framework:drawDebugString(c, r, text, color) end
 
----是否按了某个键(一次)
----@param c integer
----@return boolean
-function Framework:isKeyTriggered(c) return true end
+function Framework:mouse() return {} end
 
-function Framework:setFrameRate(fps) end
+---@deprecated
+function Framework:setVideoMemory(x, y, c) return {} end
+
+function Framework:width() return 0 end
+
+function Framework:height() return 0 end
+
+function Framework:drawTriangle2D(p1, p2, p3, t1, t2, t3, c1, c2, c3) end
+
+---comment
+---@param filename any
+---@return userdata
+function Framework:createTexture(filename)
+    return self:createTexture("")
+end
+
+---@param texture userdata
+function Framework:setTexture(texture) end
+
+function Framework:setBlendMode(mode) end
+
+function Framework:drawTriangle3D(p1, p2, p3, t1, t2, t3, c1, c2, c3) end
+
+function Framework:enableDepthTest(b) end
 
 ---comment
 ---@param char integer unicode
@@ -128,18 +128,18 @@ function JSON(path) return {} end
 ---@param x any
 ---@param y any
 ---@return Vector2
-function Vector2(x,y) return {} end
+function Vector2(x, y) return {} end
 
 ---@param e00 any
 ---@param e01 any
 ---@param e10 any
 ---@param e11 any
 ---@return Matrix22
-function Matrix22(e00,e01,e10,e11) return {} end
+function Matrix22(e00, e01, e10, e11) return {} end
 
 ---@param e00 any
 ---@param e01 any
 ---@param e10 any
 ---@param e11 any
 ---@return Matrix23
-function Matrix23(e00,e01,e10,e11) return {} end
+function Matrix23(e00, e01, e10, e11) return {} end

@@ -21,7 +21,8 @@ class Framework {
     static int lua_setTexture(lua_State* L);
     static int lua_setBlendMode(lua_State* L);
     static int lua_drawTriangle3D(lua_State* L);
+    static int lua_enableDepthTest(lua_State* L);
 
   private:
-    static luaL_Reg lua_reg[17];
+    static luaL_Reg lua_reg[18];
 };
