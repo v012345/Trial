@@ -8,7 +8,8 @@
         "**/*.code-search": true,
         "libs/**": true,
         "lua/doc/**": true,
-        "extensions/**": true
+        "extensions/**": true,
+        "LuaJIT":true
     },
     "files.associations": {
         "windows.h": "c",
