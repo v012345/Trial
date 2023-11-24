@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body id="yourContainerId">
+
+</body>
+<script>
+    for (let index = 1; index <= 921; index++) {
+        setTimeout(() => {
+            if (index % 2 != 0) {
+                // 创建一个<img>元素
+                var imgElement = document.createElement("img");
+
+                // 获取包含 Base64 字符串的 .txt 文件的路径
+                var txtFilePath = "res/" + index + ".txt";
+
+                // 创建一个新的 XMLHttpRequest 对象
+                var xhr = new XMLHttpRequest();
+
+                // 配置 XMLHttpRequest 对象
+                xhr.open("GET", txtFilePath, true);
+
+                // 响应加载完成时的回调函数
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        // 成功加载文件内容
+                        var downloadLink = document.createElement("a");
+                        var base64String = xhr.responseText.trim();
+
+                        // 将 Base64 字符串设置为<img>元素的src属性
+                        imgElement.src = base64String;
+
+                        // 监听图片加载完成事件
+                        imgElement.onload = function () {
+                            // 将图片添加到<a>元素中
+                            downloadLink.href = imgElement.src;
+
+                            // 设置下载链接的属性
+                            downloadLink.download = (index + 1) / 2 + ".png"; // 指定下载的文件名，可以根据需要修改
+
+                            // 将<a>元素添加到DOM中
+                            document.body.appendChild(downloadLink);
+
+                            // 模拟点击下载链接
+                            downloadLink.click();
+
+                            // 移除<a>元素
+                            document.body.removeChild(downloadLink);
+                        };
+
+                        // 如果图片加载失败，处理错误
+                        imgElement.onerror = function () {
+                            console.error("Failed to load the image.");
+                        };
+
+                        // 将<img>元素添加到DOM中的某个容器中
+                        var container = document.getElementById("yourContainerId"); // 替换为实际的容器ID
+                        container.appendChild(imgElement);
+                    } else {
+                        console.error("Failed to load file");
+                    }
+                };
+
+                // 发送请求
+                xhr.send();
+            }
+        }, index * 200);
+
+
+    }
+
+</script>
+
+</html>
