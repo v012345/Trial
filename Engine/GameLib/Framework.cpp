@@ -522,10 +522,8 @@ namespace GameLib {
     unsigned* Framework::getVideoMemory(){
             return &gImpl->mVideoMemoryWithPadding[ gImpl->mWidth ];
     }
-    bool Framework::isKeyOn( int c ) const {
-            return Input::Manager::getInstance().getKeyboard().isOn( c );
-    }
     */
+    bool Framework::isKeyOn(int c) const { return Input::Manager::instance().keyboard().isOn(c); }
     bool Framework::isKeyTriggered(int c) const { return Input::Manager::instance().keyboard().isTriggered(c); }
     void Framework::sleep(int ms) const { Threading::sleep(ms); }
 

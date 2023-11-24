@@ -9,6 +9,7 @@ namespace GameLib {
       public:
         Framework();
         bool isKeyTriggered(int c) const;
+        bool isKeyOn(int c) const;
         /// 用户定义函数。
         void update();
         /// 获取实例

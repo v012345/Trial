@@ -214,7 +214,7 @@ int Framework::lua_time(lua_State* L) {
 int Framework::lua_isKeyOn(lua_State* L) {
     int c = luaL_checkinteger(L, 2);
     GameLib::Framework f = GameLib::Framework::instance();
-    // lua_pushboolean(L, f.isKeyOn(c));
+    lua_pushboolean(L, f.isKeyOn(c));
     return 1;
 }
 
