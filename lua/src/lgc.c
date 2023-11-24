@@ -121,7 +121,7 @@ static void entersweep (lua_State *L);
 */
 #define gnodelast(h)	gnode(h, cast_sizet(sizenode(h)))
 
-
+// 就是拿到对象的 gclist 的地址, 要干什么我也不知道
 static GCObject **getgclist (GCObject *o) {
   switch (o->tt) {
     case LUA_VTABLE: return &gco2t(o)->gclist;
@@ -143,7 +143,7 @@ static GCObject **getgclist (GCObject *o) {
 ** Link a collectable object 'o' with a known type into the list 'p'.
 ** (Must be a macro to access the 'gclist' field in different types.)
 */
-#define linkgclist(o,p)	linkgclist_(obj2gco(o), &(o)->gclist, &(p))
+#define linkgclist(o,p)	linkgclist_(obj2gco(o), &(o)->gclist, &(p)) // 就是把 o 链到 p 链上
 
 static void linkgclist_ (GCObject *o, GCObject **pnext, GCObject **list) {
   lua_assert(!isgray(o));  /* cannot be in a gray list */
@@ -156,7 +156,7 @@ static void linkgclist_ (GCObject *o, GCObject **pnext, GCObject **list) {
 /*
 ** Link a generic collectable object 'o' into the list 'p'.
 */
-#define linkobjgclist(o,p) linkgclist_(obj2gco(o), getgclist(o), &(p))
+#define linkobjgclist(o,p) linkgclist_(obj2gco(o), getgclist(o), &(p)) // 就是把 o 链到 p 链上
 
 
 
