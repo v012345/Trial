@@ -69,6 +69,8 @@ function Framework:drawTriangle3D(p1, p2, p3, t1, t2, t3, c1, c2, c3) end
 
 function Framework:enableDepthTest(b) end
 
+function Framework:enableDepthWrite(b) end
+
 ---comment
 ---@param char integer unicode
 ---@param width integer

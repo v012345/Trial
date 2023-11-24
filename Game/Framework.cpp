@@ -29,8 +29,15 @@ luaL_Reg Framework::lua_reg[] = {
     {"setBlendMode", lua_setBlendMode}, //
     {"drawTriangle3D", lua_drawTriangle3D}, //
     {"enableDepthTest", lua_enableDepthTest},
+    {"enableDepthWrite", lua_enableDepthWrite},
     {NULL, NULL},
 };
+int Framework::lua_enableDepthWrite(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    bool b = lua_toboolean(L, 2);
+    f.enableDepthWrite(b);
+    return 0;
+}
 int Framework::lua_enableDepthTest(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
     bool b = lua_toboolean(L, 2);
