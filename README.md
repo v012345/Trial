@@ -27,6 +27,7 @@ $ git submodule update
 1. extensions lua 功能的扩展
 1. libs c/c++ 功能扩展
 1. lua lua 源码
+1. tools 可能会使用到的工具
 
 ## 运行
 可执行文件中
