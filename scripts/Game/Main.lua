@@ -3,12 +3,8 @@ xpcall(function()
     require "Game.Enum"
     require "Math.Vector2"
     require "Math.Matrix23"
-    local gDepthTest = true;
-    local gDepthWrite = true;
-    local gSwapOrder = false;
-    local gBlendMode = Enum.BlendMode.BLEND_LINEAR;
-    local gZMove = -999.0
-    local gXMove = -0.0
+    local gZMove = 5000.0;
+    local gXMove = 0.0;
     -- Framework:setFrameRate(60)
     function MainLoop()
         xpcall(function()
@@ -21,8 +17,10 @@ xpcall(function()
             for i = 1, 4 do
                 p[i][1] = p[i][1] + gXMove
                 p[i][3] = p[i][3] + gZMove
-                p[i][1] = p[i][1] / p[i][3]
-                p[i][2] = p[i][2] / p[i][3]
+                p[i][1] = p[i][1] * 640.0 / p[i][3];
+                p[i][2] = p[i][2] * 640.0 / p[i][3];
+                p[i][1] = p[i][1] + 320
+                p[i][2] = p[i][2] + 240
                 p[i][3] = (1.0 / 9999.0) * p[i][3] - (1.0 / 9999.0)
             end
 
