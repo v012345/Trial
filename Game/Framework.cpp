@@ -28,10 +28,44 @@ luaL_Reg Framework::lua_reg[] = {
     {"setTexture", lua_setTexture}, //
     {"setBlendMode", lua_setBlendMode}, //
     {"drawTriangle3D", lua_drawTriangle3D}, //
+    {"drawTriangle3DH", lua_drawTriangle3DH},
     {"enableDepthTest", lua_enableDepthTest},
     {"enableDepthWrite", lua_enableDepthWrite},
     {NULL, NULL},
 };
+int Framework::lua_drawTriangle3DH(lua_State* L) {
+    GameLib::Framework f = GameLib::Framework::instance();
+    double p[3][4];
+    for (size_t i = 0; i < 3; i++) {
+        luaL_checktype(L, i + 2, LUA_TTABLE);
+        for (size_t j = 0; j < 4; j++) {
+            lua_rawgeti(L, i + 2, j + 1);
+            p[i][j] = luaL_checknumber(L, -1);
+            lua_pop(L, 1);
+        }
+    }
+    double* t[3] = {nullptr, nullptr, nullptr};
+    for (size_t i = 0; i < 3; i++) {
+        if (lua_type(L, i + 5) == LUA_TTABLE) {
+            double* tt = new double[2];
+            for (size_t j = 0; j < 2; j++) {
+                lua_rawgeti(L, i + 5, j + 1);
+                tt[j] = luaL_checknumber(L, -1);
+                lua_pop(L, 1);
+            }
+            t[i] = tt;
+        }
+    }
+    double c1 = luaL_optnumber(L, 8, 0xffffffff);
+    double c2 = luaL_optnumber(L, 9, 0xffffffff);
+    double c3 = luaL_optnumber(L, 10, 0xffffffff);
+
+    f.drawTriangle3DH(p[0], p[1], p[2], t[0], t[1], t[2], c1, c2, c3);
+    for (size_t i = 0; i < 3; i++) {
+        if (t[i]) { delete[] t[i]; }
+    }
+    return 0;
+}
 int Framework::lua_enableDepthWrite(lua_State* L) {
     GameLib::Framework f = GameLib::Framework::instance();
     bool b = lua_toboolean(L, 2);
@@ -105,7 +139,7 @@ int Framework::lua_createTexture(lua_State* L) {
     // Image* pImage = new Image(filename);
     // f.createTexture(texture, pImage->width(), pImage->height(), pImage->data(), pImage->width(), pImage->height());
     // SAFE_DELETE(pImage);
-    f.createTexture(texture,filename);
+    f.createTexture(texture, filename);
     lua_newtable(L);
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, lua_gcDestroyTexture);
