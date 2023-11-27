@@ -102,9 +102,10 @@ int Framework::lua_createTexture(lua_State* L) {
     const char* filename = lua_tostring(L, 2);
     GameLib::Texture** texture = static_cast<GameLib::Texture**>(lua_newuserdata(L, sizeof(GameLib::Texture*)));
     *texture = nullptr;
-    Image* pImage = new Image(filename);
-    f.createTexture(texture, pImage->width(), pImage->height(), pImage->data(), pImage->width(), pImage->height());
-    SAFE_DELETE(pImage);
+    // Image* pImage = new Image(filename);
+    // f.createTexture(texture, pImage->width(), pImage->height(), pImage->data(), pImage->width(), pImage->height());
+    // SAFE_DELETE(pImage);
+    f.createTexture(texture,filename);
     lua_newtable(L);
     lua_pushstring(L, "__gc");
     lua_pushcfunction(L, lua_gcDestroyTexture);
