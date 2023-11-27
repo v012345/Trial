@@ -5,7 +5,9 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LangManager", "LangManager\LangManager.csproj", "{370C412E-9DB4-4E04-82DD-EE37712F2474}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{3CDACB6D-4815-4C02-81EF-2D501DDC1BD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{3CDACB6D-4815-4C02-81EF-2D501DDC1BD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameToJson", "NameToJson\NameToJson.csproj", "{74C1E013-E031-4E77-A3E9-0A4B21F55F94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{3CDACB6D-4815-4C02-81EF-2D501DDC1BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CDACB6D-4815-4C02-81EF-2D501DDC1BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CDACB6D-4815-4C02-81EF-2D501DDC1BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74C1E013-E031-4E77-A3E9-0A4B21F55F94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74C1E013-E031-4E77-A3E9-0A4B21F55F94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74C1E013-E031-4E77-A3E9-0A4B21F55F94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74C1E013-E031-4E77-A3E9-0A4B21F55F94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
