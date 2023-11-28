@@ -29,3 +29,6 @@
 	path = libs/glad
 	url = git@github.com:Dav1dde/glad.git
 	branch = master
+[submodule "libs/glm"]
+	path = libs/glm
+	url = git@github.com:g-truc/glm.git
