@@ -15,16 +15,23 @@ add_subdirectory("Example")
 # add_subdirectory("windows")
 # add_subdirectory("server")
 
-# add_executable(Main main.cpp)
-# target_link_libraries(Main
-#     liblua
-#     lfs
-#     luasocket
-#     png_shared
-#     freetype
-# )
-# target_compile_definitions(Main PRIVATE
-#     LUA_MAIN_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/main.lua"
-#     LUA_PACKAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/scripts/?.lua"
-#     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
-# )
+add_executable(Main main.cpp)
+target_link_libraries(Main
+    liblua
+    lfs
+    luasocket
+    png_shared
+    freetype
+    # glad
+    glfw
+    glew
+)
+target_include_directories(Main PRIVATE
+    libs/glfw/include
+    libs/glew-2.2.0/include
+)
+target_compile_definitions(Main PRIVATE
+    LUA_MAIN_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/main.lua"
+    LUA_PACKAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/scripts/?.lua"
+    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
+)
