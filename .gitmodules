@@ -25,3 +25,7 @@
 [submodule "extensions/luasocket"]
 	path = extensions/luasocket
 	url = git@github.com:lunarmodules/luasocket.git
+[submodule "libs/glad"]
+	path = libs/glad
+	url = git@github.com:Dav1dde/glad.git
+	branch = master
