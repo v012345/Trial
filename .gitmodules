@@ -32,3 +32,6 @@
 [submodule "libs/glm"]
 	path = libs/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "libs/SOIL2"]
+	path = libs/SOIL2
+	url = git@github.com:SpartanJ/SOIL2.git
