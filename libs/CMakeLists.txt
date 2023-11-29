@@ -60,3 +60,6 @@ add_subdirectory(glad)
 # 这里重要说一下, 直接从 git clone 或 submodule 到的没有 include 与 src, 所以要去 git 上去下载发行版, 目前是 2.2.0 版
 # add_subdirectory(glew/build/cmake)
 add_subdirectory(glew-2.2.0/build/cmake)
+
+add_subdirectory(glm)
+add_subdirectory(SOIL2)
