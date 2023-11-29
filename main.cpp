@@ -1,7 +1,9 @@
 #include <GL\glew.h>
 //
 #include <GLFW\glfw3.h>
+#include <fstream>
 #include <iostream>
+#include <string>
 using namespace std;
 
 #define numVAOs 1
@@ -9,97 +11,36 @@ using namespace std;
 GLuint renderingProgram;
 GLuint vao[numVAOs];
 
-void printShaderLog(GLuint shader) {
-    int len = 0;
-    int chWrittn = 0;
-    char* log;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
-    if (len > 0) {
-        log = (char*)malloc(len);
-        glGetShaderInfoLog(shader, len, &chWrittn, log);
-        cout << "Shader Info Log: " << log << endl;
-        free(log);
+string readFile(const char* filePath) {
+    string content;
+    ifstream fileStream(filePath, ios::in);
+    string line = "";
+    while (!fileStream.eof()) {
+        getline(fileStream, line);
+        content.append(line + "\n");
     }
-}
-
-void printProgramLog(int prog) {
-    int len = 0;
-    int chWrittn = 0;
-    char* log;
-    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &len);
-    if (len > 0) {
-        log = (char*)malloc(len);
-        glGetProgramInfoLog(prog, len, &chWrittn, log);
-        cout << "Program Info Log: " << log << endl;
-        free(log);
-    }
-}
-
-bool checkOpenGLError() {
-    bool foundError = false;
-    int glErr = glGetError();
-    while (glErr != GL_NO_ERROR) {
-        cout << "glError: " << glErr << endl;
-        foundError = true;
-        glErr = glGetError();
-    }
-    return foundError;
+    fileStream.close();
+    return content;
 }
 
 GLuint createShaderProgram() {
-    GLint vertCompiled;
-    GLint fragCompiled;
-    GLint linked;
-
-    const char* vshaderSource = "#version 430    \n"
-                                "void main(void) \n"
-                                "{ gl_Position = vec4(0.0, 0.0, 0.0, 1.0); }";
-
-    const char* fshaderSource = "#version 430    \n"
-                                "out vec4 color; \n"
-                                "void main(void) \n"
-                                "{ color = vec4(0.0, 0.0, 1.0, 1.0); }";
-
     GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
     GLuint vfprogram = glCreateProgram();
 
-    glShaderSource(vShader, 1, &vshaderSource, NULL);
-    glShaderSource(fShader, 1, &fshaderSource, NULL);
+    string vertShaderStr = readFile(CMAKE_SOURCE_DIR "shaders/vertShader.glsl");
+    string fragShaderStr = readFile(CMAKE_SOURCE_DIR "shaders/fragShader.glsl");
+    const char* vertShaderSrc = vertShaderStr.c_str();
+    const char* fragShaderSrc = fragShaderStr.c_str();
 
+    glShaderSource(vShader, 1, &vertShaderSrc, NULL);
+    glShaderSource(fShader, 1, &fragShaderSrc, NULL);
     glCompileShader(vShader);
-    checkOpenGLError();
-    glGetShaderiv(vShader, GL_COMPILE_STATUS, &vertCompiled);
-    if (vertCompiled == 1) {
-        cout << "vertex compilation success" << endl;
-    } else {
-        cout << "vertex compilation failed" << endl;
-        printShaderLog(vShader);
-    }
-
     glCompileShader(fShader);
-    checkOpenGLError();
-    glGetShaderiv(fShader, GL_COMPILE_STATUS, &fragCompiled);
-    if (fragCompiled == 1) {
-        cout << "fragment compilation success" << endl;
-    } else {
-        cout << "fragment compilation failed" << endl;
-        printShaderLog(fShader);
-    }
 
     glAttachShader(vfprogram, vShader);
     glAttachShader(vfprogram, fShader);
     glLinkProgram(vfprogram);
-
-    glLinkProgram(vfprogram);
-    checkOpenGLError();
-    glGetProgramiv(vfprogram, GL_LINK_STATUS, &linked);
-    if (linked == 1) {
-        cout << "linking succeeded" << endl;
-    } else {
-        cout << "linking failed" << endl;
-        printProgramLog(vfprogram);
-    }
 
     return vfprogram;
 }
@@ -120,7 +61,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter 2 - program 3", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter 2 - program 4", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
