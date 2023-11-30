@@ -2,13 +2,13 @@
 //
 #include "Utils\Utils.h"
 #include <GLFW\glfw3.h>
+#include <SOIL2\soil2.h>
 #include <cmath>
 #include <fstream>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm\gtc\type_ptr.hpp> // glm::value_ptr
 #include <iostream>
-#include <stack>
 #include <string>
 using namespace std;
 
@@ -16,6 +16,7 @@ using namespace std;
 #define numVBOs 2
 
 float cameraX, cameraY, cameraZ;
+float pyrLocX, pyrLocY, pyrLocZ;
 GLuint renderingProgram;
 GLuint vao[numVAOs];
 GLuint vbo[numVBOs];
@@ -26,23 +27,9 @@ int width, height;
 float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
-stack<glm::mat4> mvStack;
+GLuint brickTexture;
 
 void setupVertices(void) {
-    float vertexPositions[108] = {
-        -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, //
-        1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, //
-        1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, //
-        1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, //
-        1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f, //
-        -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f, //
-        -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f, //
-        -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f, //
-        -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, //
-        1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, //
-        -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f, //
-        1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f //
-    };
     float pyramidPositions[54] = {
         -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  0.0f,  1.0f,  0.0f, // front
         1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 0.0f,  1.0f,  0.0f, // right
@@ -51,27 +38,41 @@ void setupVertices(void) {
         -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f, // LF
         1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f // RR
     };
+    float textureCoordinates[36] = {
+        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
+        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
+        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
+        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
+        0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, //
+        1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f //
+    };
     glGenVertexArrays(1, vao);
     glBindVertexArray(vao[0]);
     glGenBuffers(numVBOs, vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertexPositions), vertexPositions, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidPositions), pyramidPositions, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoordinates), textureCoordinates, GL_STATIC_DRAW);
 }
 
 void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
+    cameraX = 0.0f;
+    cameraY = 0.0f;
+    cameraZ = 4.0f;
+    pyrLocX = 0.0f;
+    pyrLocY = 0.0f;
+    pyrLocZ = 0.0f;
+    setupVertices();
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
     pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
-    cameraX = 0.0f;
-    cameraY = 0.0f;
-    cameraZ = 12.0f;
-    setupVertices();
+    brickTexture = Utils::loadTexture(RES_DIR "brick1upArrow.jpg");
+    // SEE Utils.cpp, the "loadTexture()" function, the code before the mipmapping section
 }
 
 void display(GLFWwindow* window, double currentTime) {
@@ -85,54 +86,33 @@ void display(GLFWwindow* window, double currentTime) {
     projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-    mvStack.push(vMat);
 
+    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(pyrLocX, pyrLocY, pyrLocZ));
+
+    mMat = glm::rotate(mMat, -0.45f, glm::vec3(1.0f, 0.0f, 0.0f));
+    mMat = glm::rotate(mMat, 0.61f, glm::vec3(0.0f, 1.0f, 0.0f));
+    mMat = glm::rotate(mMat, 0.00f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+    mvMat = vMat * mMat;
+
+    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
-    // ----------------------  pyramid == sun
-    mvStack.push(mvStack.top());
-    mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-    mvStack.push(mvStack.top());
-    mvStack.top() *= rotate(glm::mat4(1.0f), (float)currentTime, glm::vec3(1.0, 0.0, 0.0));
-    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, brickTexture);
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
+
     glDrawArrays(GL_TRIANGLES, 0, 18);
-    mvStack.pop();
-
-    //-----------------------  cube == planet
-    mvStack.push(mvStack.top());
-    mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(sin((float)currentTime) * 4.0, 0.0f, cos((float)currentTime) * 4.0));
-    mvStack.push(mvStack.top());
-    mvStack.top() *= rotate(glm::mat4(1.0f), (float)currentTime, glm::vec3(0.0, 1.0, 0.0));
-    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(0);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    mvStack.pop();
-
-    //-----------------------  smaller cube == moon
-    mvStack.push(mvStack.top());
-    mvStack.top() *= glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, sin((float)currentTime) * 2.0, cos((float)currentTime) * 2.0));
-    mvStack.top() *= rotate(glm::mat4(1.0f), (float)currentTime, glm::vec3(0.0, 0.0, 1.0));
-    mvStack.top() *= scale(glm::mat4(1.0f), glm::vec3(0.25f, 0.25f, 0.25f));
-    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvStack.top()));
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(0);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    mvStack.pop();
-    mvStack.pop();
-    mvStack.pop();
-    mvStack.pop(); // the final pop is for the view matrix
 }
 
 void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
@@ -145,7 +125,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter 4 - program 4", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter5 - program1", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);

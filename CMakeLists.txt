@@ -43,4 +43,5 @@ target_compile_definitions(Main PRIVATE
     LUA_PACKAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/scripts/?.lua"
     CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
     SHADERS_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+    RES_DIR="${CMAKE_SOURCE_DIR}/res/"
 )
