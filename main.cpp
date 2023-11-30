@@ -12,9 +12,8 @@
 using namespace std;
 
 #define numVAOs 1
-#define numVBOs 2
+#define numVBOs 1
 
-Utils util = Utils();
 float cameraX, cameraY, cameraZ;
 float cubeLocX, cubeLocY, cubeLocZ;
 GLuint renderingProgram;
@@ -53,6 +52,11 @@ void setupVertices(void) {
 
 void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
+
+    glfwGetFramebufferSize(window, &width, &height);
+    aspect = (float)width / (float)height;
+    pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
+
     cameraX = 0.0f;
     cameraY = 0.0f;
     cameraZ = 8.0f;
@@ -72,10 +76,6 @@ void display(GLFWwindow* window, double currentTime) {
     mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
     projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 
-    glfwGetFramebufferSize(window, &width, &height);
-    aspect = (float)width / (float)height;
-    pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
-
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
     mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));
     mvMat = vMat * mMat;
@@ -93,14 +93,22 @@ void display(GLFWwindow* window, double currentTime) {
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
+void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
+    aspect = (float)newWidth / (float)newHeight;
+    glViewport(0, 0, newWidth, newHeight);
+    pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
+}
+
 int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter 4 - program 1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter 4 - program 1b", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
+
+    glfwSetWindowSizeCallback(window, window_size_callback);
 
     init(window);
 
