@@ -19,6 +19,7 @@ add_executable(Main
     main.cpp
     Utils/Utils.cpp
     Utils/Sphere.cpp
+    Utils/Torus.cpp
 )
 target_link_libraries(Main
     liblua
