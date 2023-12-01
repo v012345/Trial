@@ -3,3 +3,4 @@ squiggly 上下起伏的
 subtle 细微的
 conform 符合
 sophisticated 复杂的
+shuttle 梭

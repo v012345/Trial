@@ -20,6 +20,7 @@ add_executable(Main
     Utils/Utils.cpp
     Utils/Sphere.cpp
     Utils/Torus.cpp
+    Utils/ImportedModel.cpp
 )
 target_link_libraries(Main
     liblua
