@@ -28,6 +28,7 @@ float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
 GLuint brickTexture;
+float rotAmt = 0.0f;
 
 void setupVertices(void) {
     float pyramidPositions[54] = {
@@ -65,14 +66,15 @@ void init(GLFWwindow* window) {
     pyrLocX = 0.0f;
     pyrLocY = 0.0f;
     pyrLocZ = 0.0f;
-    setupVertices();
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
     pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
-    brickTexture = Utils::loadTexture(RES_DIR "brick1upArrow.jpg");
-    // SEE Utils.cpp, the "loadTexture()" function, the code before the mipmapping section
+    setupVertices();
+
+    brickTexture = Utils::loadTexture(RES_DIR "brick1.jpg");
+    // SEE Utils.cpp, the function "loadTexture", the mipmapping/anisotropic section
 }
 
 void display(GLFWwindow* window, double currentTime) {
@@ -88,9 +90,10 @@ void display(GLFWwindow* window, double currentTime) {
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
 
     mMat = glm::translate(glm::mat4(1.0f), glm::vec3(pyrLocX, pyrLocY, pyrLocZ));
+    rotAmt += 0.0018f;
 
     mMat = glm::rotate(mMat, -0.45f, glm::vec3(1.0f, 0.0f, 0.0f));
-    mMat = glm::rotate(mMat, 0.61f, glm::vec3(0.0f, 1.0f, 0.0f));
+    mMat = glm::rotate(mMat, rotAmt, glm::vec3(0.0f, 1.0f, 0.0f));
     mMat = glm::rotate(mMat, 0.00f, glm::vec3(0.0f, 0.0f, 1.0f));
 
     mvMat = vMat * mMat;
@@ -125,7 +128,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter5 - program1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter5 - program1b", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
