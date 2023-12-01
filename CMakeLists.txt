@@ -18,6 +18,7 @@ add_subdirectory("extensions")
 add_executable(Main
     main.cpp
     Utils/Utils.cpp
+    Utils/Sphere.cpp
 )
 target_link_libraries(Main
     liblua

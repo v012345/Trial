@@ -1,5 +1,6 @@
 #include <GL\glew.h>
 //
+#include "Utils\Sphere.h"
 #include "Utils\Utils.h"
 #include <GLFW\glfw3.h>
 #include <SOIL2\soil2.h>
@@ -13,13 +14,15 @@
 using namespace std;
 
 #define numVAOs 1
-#define numVBOs 2
+#define numVBOs 3
 
 float cameraX, cameraY, cameraZ;
-float pyrLocX, pyrLocY, pyrLocZ;
+float sphLocX, sphLocY, sphLocZ;
 GLuint renderingProgram;
 GLuint vao[numVAOs];
 GLuint vbo[numVBOs];
+GLuint earthTexture;
+float rotAmt = 0.0f;
 
 // variable allocation for display
 GLuint mvLoc, projLoc;
@@ -27,54 +30,59 @@ int width, height;
 float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
-GLuint brickTexture;
-float rotAmt = 0.0f;
+Sphere mySphere = Sphere(48);
 
 void setupVertices(void) {
-    float pyramidPositions[54] = {
-        -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  0.0f,  1.0f,  0.0f, // front
-        1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 0.0f,  1.0f,  0.0f, // right
-        1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f,  1.0f,  0.0f, // back
-        -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  0.0f,  1.0f,  0.0f, // left
-        -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f, // LF
-        1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f // RR
-    };
-    float textureCoordinates[36] = {
-        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
-        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
-        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
-        0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f, //
-        0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, //
-        1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f //
-    };
+    std::vector<int> ind = mySphere.getIndices();
+    std::vector<glm::vec3> vert = mySphere.getVertices();
+    std::vector<glm::vec2> tex = mySphere.getTexCoords();
+    std::vector<glm::vec3> norm = mySphere.getNormals();
+
+    std::vector<float> pvalues;
+    std::vector<float> tvalues;
+    std::vector<float> nvalues;
+
+    int numIndices = mySphere.getNumIndices();
+    for (int i = 0; i < numIndices; i++) {
+        pvalues.push_back((vert[ind[i]]).x);
+        pvalues.push_back((vert[ind[i]]).y);
+        pvalues.push_back((vert[ind[i]]).z);
+        tvalues.push_back((tex[ind[i]]).s);
+        tvalues.push_back((tex[ind[i]]).t);
+        nvalues.push_back((norm[ind[i]]).x);
+        nvalues.push_back((norm[ind[i]]).y);
+        nvalues.push_back((norm[ind[i]]).z);
+    }
+
     glGenVertexArrays(1, vao);
     glBindVertexArray(vao[0]);
     glGenBuffers(numVBOs, vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidPositions), pyramidPositions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoordinates), textureCoordinates, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+    glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
 }
 
 void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
     cameraX = 0.0f;
     cameraY = 0.0f;
-    cameraZ = 4.0f;
-    pyrLocX = 0.0f;
-    pyrLocY = 0.0f;
-    pyrLocZ = 0.0f;
+    cameraZ = 2.0f;
+    sphLocX = 0.0f;
+    sphLocY = 0.0f;
+    sphLocZ = -1.0f;
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
     pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
     setupVertices();
-
-    brickTexture = Utils::loadTexture(RES_DIR "brick1.jpg");
-    // SEE Utils.cpp, the function "loadTexture", the mipmapping/anisotropic section
+    earthTexture = Utils::loadTexture(RES_DIR "earth.jpg");
 }
 
 void display(GLFWwindow* window, double currentTime) {
@@ -88,14 +96,7 @@ void display(GLFWwindow* window, double currentTime) {
     projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-
-    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(pyrLocX, pyrLocY, pyrLocZ));
-    rotAmt += 0.0018f;
-
-    mMat = glm::rotate(mMat, -0.45f, glm::vec3(1.0f, 0.0f, 0.0f));
-    mMat = glm::rotate(mMat, rotAmt, glm::vec3(0.0f, 1.0f, 0.0f));
-    mMat = glm::rotate(mMat, 0.00f, glm::vec3(0.0f, 0.0f, 1.0f));
-
+    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(sphLocX, sphLocY, sphLocZ));
     mvMat = vMat * mMat;
 
     glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
@@ -110,12 +111,12 @@ void display(GLFWwindow* window, double currentTime) {
     glEnableVertexAttribArray(1);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, brickTexture);
+    glBindTexture(GL_TEXTURE_2D, earthTexture);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
 
-    glDrawArrays(GL_TRIANGLES, 0, 18);
+    glDrawArrays(GL_TRIANGLES, 0, mySphere.getNumIndices());
 }
 
 void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
@@ -128,7 +129,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter5 - program1b", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Chapter6 - program1", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
