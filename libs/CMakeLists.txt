@@ -55,7 +55,7 @@ add_subdirectory(freetype)
 add_subdirectory(glfw)
 
 # glad 与 glew 二选一, 因为 glew 的 cmake 配置不明白, 所以使用 glad
-add_subdirectory(glad)
+# add_subdirectory(glad)
 
 # 这里重要说一下, 直接从 git clone 或 submodule 到的没有 include 与 src, 所以要去 git 上去下载发行版, 目前是 2.2.0 版
 # add_subdirectory(glew/build/cmake)
