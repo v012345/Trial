@@ -56,7 +56,7 @@ void main(void)
 		* material.specular.xyz * light.specular.xyz;
 
 	// send the color output to the fragment shader
-	vrayingColor = vec4((ambient + diffuse + specular), 1.0);
+	varyingColor = vec4((ambient + diffuse + specular), 1.0);
 	
 	// send the position to the fragment shader, as before
 	gl_Position = proj_matrix * mv_matrix * vec4(vertPos,1.0);
