@@ -29,13 +29,8 @@ uniform mat4 norm_matrix;
 
 void main(void)
 {
-	// output vertex positions, light, and normal vectors to the rasterizer for interpolation
-	vec3 vertPos3 = (mv_matrix * vertPos).xyz;
-	varyingLightDir = light.position - vertPos3;
 	varyingNormal = (norm_matrix * vertNormal).xyz;
-	
-	// calculate the half vector (L+V)
-	varyingHalfVector = normalize(varyingLightDir) + normalize(-vertPos3);
-	
+	varyingLightDir = light.position - vertPos.xyz;	
+	varyingHalfVector = normalize(varyingLightDir) + normalize(-vertPos.xyz);
 	gl_Position = mv_matrix * vertPos;
 }

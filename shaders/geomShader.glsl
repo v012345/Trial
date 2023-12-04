@@ -31,11 +31,15 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int flipNormal;
 
 void main (void)
-{	for (int i=0; i<3; i++)
+{	vec4 triangleNormal = 
+		vec4(((varyingNormal[0]+varyingNormal[1]+varyingNormal[2])/3.0),1.0);
+	
+	for (int i=0; i<3; i++)
 	{	gl_Position = proj_matrix *
-			(gl_in[i].gl_Position + normalize(vec4(varyingNormal[i],1.0))*0.4);
+			(gl_in[i].gl_Position + normalize(triangleNormal)*0.4);
 		varyingNormalG = varyingNormal[i];
 		varyingLightDirG = varyingLightDir[i];
 		varyingHalfVectorG = varyingHalfVector[i];

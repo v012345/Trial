@@ -2,6 +2,7 @@
 
 in vec3 varyingNormalG;
 in vec3 varyingLightDirG;
+in vec3 varyingVertPosG;
 in vec3 varyingHalfVectorG;
  
 out vec4 fragColor;
