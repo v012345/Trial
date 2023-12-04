@@ -1,8 +1,8 @@
 #version 430
 
-in vec3 varyingNormal;
-in vec3 varyingLightDir;
-in vec3 varyingVertPos;
+in vec3 varyingVertPosG;
+in vec3 varyingLightDirG;
+in vec3 varyingNormalG;
  
 out vec4 fragColor;
 
@@ -29,9 +29,9 @@ uniform mat4 norm_matrix;
 void main(void)
 {
 	// normalized the light, normal, and eye direction vectors
-	vec3 L = normalize(varyingLightDir);
-	vec3 N = normalize(varyingNormal);
-	vec3 V = normalize(-varyingVertPos);
+	vec3 L = normalize(varyingLightDirG);
+	vec3 N = normalize(varyingNormalG);
+	vec3 V = normalize(-varyingVertPosG);
 	
 	// compute light reflection vector, with respect N:
 	vec3 R = normalize(reflect(-L, N));
