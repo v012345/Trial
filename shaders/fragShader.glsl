@@ -6,11 +6,11 @@ in vec3 varyingNormal;
 in vec3 varyingTangent;
 in vec3 originalVertex;
 in vec2 tc;
-in vec3 varyingHalfVector;
 
 out vec4 fragColor;
 
-layout (binding=0) uniform sampler2D normMap;
+layout (binding=0) uniform sampler2D s;
+layout (binding=1) uniform sampler2D t;
 
 struct PositionalLight
 {	vec4 ambient;  
@@ -40,7 +40,7 @@ vec3 calcNewNormal()
 	tangent = normalize(tangent - dot(tangent, normal) * normal);
 	vec3 bitangent = cross(tangent, normal);
 	mat3 tbn = mat3(tangent, bitangent, normal);
-	vec3 retrievedNormal = texture(normMap,tc).xyz;
+	vec3 retrievedNormal = texture(s,tc).xyz;
 	retrievedNormal = retrievedNormal * 2.0 - 1.0;
 	vec3 newNormal = tbn * retrievedNormal;
 	newNormal = normalize(newNormal);
@@ -58,17 +58,15 @@ void main(void)
 	float cosTheta = dot(L,N);
 	
 	// compute light reflection vector, with respect N:
-	//vec3 R = normalize(reflect(-L, N));
-	
-	vec3 H = normalize(varyingHalfVector);
+	vec3 R = normalize(reflect(-L, N));
 	
 	// angle between the view vector and reflected light:
-	float cosPhi = dot(H,N);
+	float cosPhi = dot(V,R);
 
-	// compute ADS contributions (per pixel):
-	fragColor = globalAmbient * material.ambient
-	+ light.ambient * material.ambient
-	+ light.diffuse * material.diffuse * max(cosTheta,0.0)
-	+ light.specular  * material.specular
-		* pow(max(cosPhi,0.0), material.shininess*3.0);
+	vec4 texC = texture(t,tc);
+	
+	// compute ADS contributions with surface texture image:
+	fragColor = globalAmbient + light.ambient * texC
+	+ light.diffuse * texC * max(cosTheta,0.0)
+	+ light.specular * texC * pow(max(cosPhi,0.0), material.shininess);
 }

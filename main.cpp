@@ -25,21 +25,22 @@ GLuint vbo[numVBOs];
 
 // variable allocation for display
 GLuint mvLoc, projLoc, nLoc;
+GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecLoc, mshiLoc;
 int width, height;
 float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat, invTrMat;
-GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecLoc, mshiLoc;
 glm::vec3 currentLightPos;
 float lightPos[3];
-float rotAmt = 0.0f;
+float rotAmt = -2.5f;
 
 Sphere mySphere(48);
 int numSphereVertices;
 
-GLuint roofTexture;
+GLuint moonNormalMap;
+GLuint moonTexture;
 
 // white light
-float globalAmbient[4] = {0.7f, 0.7f, 0.7f, 1.0f};
+float globalAmbient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
 float lightAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 float lightDiffuse[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 float lightSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -95,8 +96,8 @@ void setupVertices(void) {
     glBufferData(GL_ARRAY_BUFFER, tanvalues.size() * 4, &tanvalues[0], GL_STATIC_DRAW);
 }
 
-void installLights(glm::mat4 vMatrix) {
-    glm::vec3 transformed = glm::vec3(vMatrix * glm::vec4(currentLightPos, 1.0));
+void installLights(glm::mat4 v_matrix) {
+    glm::vec3 transformed = glm::vec3(v_matrix * glm::vec4(currentLightPos, 1.0));
     lightPos[0] = transformed.x;
     lightPos[1] = transformed.y;
     lightPos[2] = transformed.z;
@@ -128,13 +129,13 @@ void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
     cameraX = 0.0f;
     cameraY = 0.0f;
-    cameraZ = 2.0f;
+    cameraZ = 1.7f;
     sphLocX = 0.0f;
     sphLocY = 0.0f;
     sphLocZ = -1.0f;
-    lightLocX = -5.0f;
+    lightLocX = 3.0f;
     lightLocY = 2.0f;
-    lightLocZ = 5.0f;
+    lightLocZ = 3.0f;
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
@@ -142,7 +143,8 @@ void init(GLFWwindow* window) {
 
     setupVertices();
 
-    roofTexture = Utils::loadTexture(RES_DIR "castleroofNORMAL.jpg");
+    moonTexture = Utils::loadTexture(RES_DIR "moon.jpg");
+    moonNormalMap = Utils::loadTexture(RES_DIR "moonNORMAL.jpg");
 }
 
 void display(GLFWwindow* window, double currentTime) {
@@ -188,7 +190,10 @@ void display(GLFWwindow* window, double currentTime) {
     glEnableVertexAttribArray(3);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, roofTexture);
+    glBindTexture(GL_TEXTURE_2D, moonNormalMap);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, moonTexture);
 
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -206,7 +211,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter10 - program2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter10 - program3", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);

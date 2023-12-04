@@ -11,9 +11,9 @@ out vec3 varyingNormal;
 out vec3 varyingTangent;
 out vec3 originalVertex;
 out vec2 tc;
-out vec3 varyingHalfVector;
 
 layout (binding=0) uniform sampler2D s;
+layout (binding=1) uniform sampler2D t;
 
 struct PositionalLight
 {	vec4 ambient;
@@ -44,10 +44,6 @@ void main(void)
 
 	varyingNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
 	varyingTangent = (norm_matrix * vec4(vertTangent,1.0)).xyz;
-	
-	varyingHalfVector =
-		normalize(normalize(varyingLightDir)
-		+ normalize(-varyingVertPos)).xyz;
 
 	gl_Position = proj_matrix * mv_matrix * vec4(vertPos,1.0);
 }
