@@ -16,19 +16,20 @@ float toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
 #define numVAOs 1
 #define numVBOs 4
 
+Utils util = Utils();
 float cameraX, cameraY, cameraZ;
 float torLocX, torLocY, torLocZ;
 GLuint renderingProgram, renderingProgramCubeMap;
 GLuint vao[numVAOs];
 GLuint vbo[numVBOs];
-GLuint brickTexture, skyboxTexture;
+GLuint skyboxTexture;
 float rotAmt = 0.0f;
 
 // variable allocation for display
-GLuint vLoc, mvLoc, projLoc;
+GLuint vLoc, mvLoc, projLoc, nLoc;
 int width, height;
 float aspect;
-glm::mat4 pMat, vMat, mMat, mvMat;
+glm::mat4 pMat, vMat, mMat, mvMat, invTrMat;
 
 Torus myTorus(0.8f, 0.4f, 48);
 int numTorusVertices, numTorusIndices;
@@ -73,7 +74,7 @@ void setupVertices(void) {
     glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-    glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
@@ -89,7 +90,6 @@ void init(GLFWwindow* window) {
 
     setupVertices();
 
-    brickTexture = Utils::loadTexture(RES_DIR "brick1.jpg");
     skyboxTexture = Utils::loadCubeMap(RES_DIR "cubeMap"); // expects a folder name
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -136,31 +136,35 @@ void display(GLFWwindow* window, double currentTime) {
 
     mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
     projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+    nLoc = glGetUniformLocation(renderingProgram, "normalMat");
 
+    rotAmt += 0.01f;
     mMat = glm::translate(glm::mat4(1.0f), glm::vec3(torLocX, torLocY, torLocZ));
-    mMat = glm::rotate(mMat, toRadians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mMat = glm::rotate(mMat, rotAmt, glm::vec3(1.0f, 0.0f, 0.0f));
+
     mvMat = vMat * mMat;
+
+    invTrMat = glm::transpose(glm::inverse(mvMat));
 
     glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
+    glUniformMatrix4fv(nLoc, 1, GL_FALSE, glm::value_ptr(invTrMat));
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, brickTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
-    glDisable(GL_LEQUAL);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
     glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
