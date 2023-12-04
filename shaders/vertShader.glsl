@@ -12,4 +12,4 @@ void main(void)
 {
 	tc = tex_coord;
 	gl_Position = proj_matrix * mv_matrix * vec4(position,1.0);
-} 
+}

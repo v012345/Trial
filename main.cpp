@@ -14,23 +14,23 @@ using namespace std;
 float toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
 
 #define numVAOs 1
-#define numVBOs 5
+#define numVBOs 4
 
 float cameraX, cameraY, cameraZ;
 float torLocX, torLocY, torLocZ;
-GLuint renderingProgram;
+GLuint renderingProgram, renderingProgramCubeMap;
 GLuint vao[numVAOs];
 GLuint vbo[numVBOs];
 GLuint brickTexture, skyboxTexture;
 float rotAmt = 0.0f;
 
 // variable allocation for display
-GLuint mvLoc, projLoc;
+GLuint vLoc, mvLoc, projLoc;
 int width, height;
 float aspect;
 glm::mat4 pMat, vMat, mMat, mvMat;
 
-Torus myTorus(0.5f, 0.2f, 48);
+Torus myTorus(0.8f, 0.4f, 48);
 int numTorusVertices, numTorusIndices;
 
 void setupVertices(void) {
@@ -39,20 +39,6 @@ void setupVertices(void) {
                                       1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,
                                       -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,
                                       -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f};
-    float cubeTextureCoord[72] = {
-        1.00f, 0.6666666f, 1.00f, 0.3333333f, 0.75f, 0.3333333f, // back face lower right
-        0.75f, 0.3333333f, 0.75f, 0.6666666f, 1.00f, 0.6666666f, // back face upper left
-        0.75f, 0.3333333f, 0.50f, 0.3333333f, 0.75f, 0.6666666f, // right face lower right
-        0.50f, 0.3333333f, 0.50f, 0.6666666f, 0.75f, 0.6666666f, // right face upper left
-        0.50f, 0.3333333f, 0.25f, 0.3333333f, 0.50f, 0.6666666f, // front face lower right
-        0.25f, 0.3333333f, 0.25f, 0.6666666f, 0.50f, 0.6666666f, // front face upper left
-        0.25f, 0.3333333f, 0.00f, 0.3333333f, 0.25f, 0.6666666f, // left face lower right
-        0.00f, 0.3333333f, 0.00f, 0.6666666f, 0.25f, 0.6666666f, // left face upper left
-        0.25f, 0.3333333f, 0.50f, 0.3333333f, 0.50f, 0.0000000f, // bottom face upper right
-        0.50f, 0.0000000f, 0.25f, 0.0000000f, 0.25f, 0.3333333f, // bottom face lower left
-        0.25f, 1.0000000f, 0.50f, 1.0000000f, 0.50f, 0.6666666f, // top face upper right
-        0.50f, 0.6666666f, 0.25f, 0.6666666f, 0.25f, 1.0000000f // top face lower left
-    };
 
     numTorusVertices = myTorus.getNumVertices();
     numTorusIndices = myTorus.getNumIndices();
@@ -81,23 +67,21 @@ void setupVertices(void) {
     glGenBuffers(numVBOs, vbo);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertexPositions) * 4, cubeVertexPositions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertexPositions), cubeVertexPositions, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeTextureCoord) * 4, cubeTextureCoord, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
     glBufferData(GL_ARRAY_BUFFER, pvalues.size() * 4, &pvalues[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
     glBufferData(GL_ARRAY_BUFFER, tvalues.size() * 4, &tvalues[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[4]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
 }
 
 void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
+    renderingProgramCubeMap = Utils::createShaderProgram(SHADERS_DIR "vertCShader.glsl", SHADERS_DIR "fragCShader.glsl");
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
@@ -106,10 +90,11 @@ void init(GLFWwindow* window) {
     setupVertices();
 
     brickTexture = Utils::loadTexture(RES_DIR "brick1.jpg");
-    skyboxTexture = Utils::loadTexture(RES_DIR "alien.jpg");
+    skyboxTexture = Utils::loadCubeMap(RES_DIR "cubeMap"); // expects a folder name
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     torLocX = 0.0f;
-    torLocY = -0.75f;
+    torLocY = 0.0f;
     torLocZ = 0.0f;
     cameraX = 0.0f;
     cameraY = 0.0f;
@@ -124,27 +109,20 @@ void display(GLFWwindow* window, double currentTime) {
 
     // draw cube map
 
-    glUseProgram(renderingProgram);
+    glUseProgram(renderingProgramCubeMap);
 
-    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cameraX, cameraY, cameraZ));
-    mvMat = vMat * mMat;
+    vLoc = glGetUniformLocation(renderingProgramCubeMap, "v_matrix");
+    glUniformMatrix4fv(vLoc, 1, GL_FALSE, glm::value_ptr(vMat));
 
-    mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
-    projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
-
-    glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
+    projLoc = glGetUniformLocation(renderingProgramCubeMap, "p_matrix");
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, skyboxTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW); // cube is CW, but we are viewing the inside
@@ -152,7 +130,7 @@ void display(GLFWwindow* window, double currentTime) {
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glEnable(GL_DEPTH_TEST);
 
-    // draw scene (in this case it is just a torus
+    // draw scene (in this case it is just a torus)
 
     glUseProgram(renderingProgram);
 
@@ -160,17 +138,17 @@ void display(GLFWwindow* window, double currentTime) {
     projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 
     mMat = glm::translate(glm::mat4(1.0f), glm::vec3(torLocX, torLocY, torLocZ));
-    mMat = glm::rotate(mMat, toRadians(15.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mMat = glm::rotate(mMat, toRadians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     mvMat = vMat * mMat;
 
     glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
     glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
 
@@ -184,7 +162,7 @@ void display(GLFWwindow* window, double currentTime) {
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glEnable(GL_DEPTH_TEST);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[4]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
     glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
 }
 
@@ -198,7 +176,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter9 - program1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter9 - program2", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
