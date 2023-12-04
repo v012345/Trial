@@ -3,7 +3,7 @@
 layout (location=0) in vec3 vertPos;
 layout (location=1) in vec3 vertNormal;
 
-out vec3 vNormal, vLightDir, vVertPos, vHalfVec; 
+out vec3 varyingNormal, varyingLightDir, varyingVertPos, varyingHalfVec; 
 out vec4 shadow_coord;
 
 struct PositionalLight
@@ -26,16 +26,16 @@ layout (binding=0) uniform sampler2DShadow shadowTex;
 
 void main(void)
 {	//output the vertex position to the rasterizer for interpolation
-	vVertPos = (mv_matrix * vec4(vertPos,1.0)).xyz;
+	varyingVertPos = (mv_matrix * vec4(vertPos,1.0)).xyz;
         
 	//get a vector from the vertex to the light and output it to the rasterizer for interpolation
-	vLightDir = light.position - vVertPos;
+	varyingLightDir = light.position - varyingVertPos;
 
 	//get a vertex normal vector in eye space and output it to the rasterizer for interpolation
-	vNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
+	varyingNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
 	
 	// calculate the half vector (L+V)
-	vHalfVec = (vLightDir-vVertPos).xyz;
+	varyingHalfVec = (varyingLightDir-varyingVertPos).xyz;
 	
 	shadow_coord = shadowMVP * vec4(vertPos,1.0);
 	
