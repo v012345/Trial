@@ -1,26 +1,11 @@
 #version 430
 
-layout (quads, equal_spacing,ccw) in;
+layout (quads, fractional_even_spacing, ccw) in;
+//layout (quads, equal_spacing, ccw) in;
 
 uniform mat4 mvp_matrix;
 layout (binding = 0) uniform sampler2D tex_color;
 layout (binding = 1) uniform sampler2D tex_height;
-layout (binding = 2) uniform sampler2D tex_normal;
-
-/*--- light stuff----*/
-struct PositionalLight
-{	vec4 ambient; vec4 diffuse; vec4 specular; vec3 position; };
-struct Material
-{	vec4 ambient; vec4 diffuse; vec4 specular; float shininess; };
-uniform vec4 globalAmbient;
-uniform PositionalLight light;
-uniform Material material;
-uniform mat4 mv_matrix;
-uniform mat4 proj_matrix;
-uniform mat4 norm_matrix;
-out vec3 varyingVertPos;
-out vec3 varyingLightDir; 
-/*-----------------*/
 
 in vec2 tcs_out[];
 out vec2 tes_out;
@@ -37,9 +22,5 @@ void main (void)
 	tessellatedPoint.y += (texture(tex_height, tc).r) / 60.0;
 	
 	gl_Position = mvp_matrix * tessellatedPoint;
-	tes_out = tc;
-	
-	/*--- light stuff----*/
-	varyingVertPos = (mv_matrix * tessellatedPoint).xyz;
-	varyingLightDir = light.position - varyingVertPos;
+	tes_out = tc;	
 }
