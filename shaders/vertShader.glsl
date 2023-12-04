@@ -1,24 +1,44 @@
 #version 430
 
 layout (location=0) in vec3 vertPos;
-layout (location=1) in vec2 texCoord;
-layout (location=2) in vec3 vertNormal;
+layout (location=1) in vec3 vertNormal;
 
-out vec3 vertEyeSpacePos;
-out vec2 tc;
+out vec3 vNormal, vLightDir, vVertPos, vHalfVec; 
 
+struct PositionalLight
+{	vec4 ambient, diffuse, specular;
+	vec3 position;
+};
+struct Material
+{	vec4 ambient, diffuse, specular;   
+	float shininess;
+};
+
+uniform vec4 globalAmbient;
+uniform PositionalLight light;
+uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
-layout (binding=0) uniform sampler2D t;	// for texture
-layout (binding=1) uniform sampler2D h;	// for height map
+uniform mat4 norm_matrix;
+
+uniform float alpha;
+uniform float flipNormal;
 
 void main(void)
-{	// height-mapped vertex
-	vec4 P = vec4(vertPos,1.0) + vec4((vertNormal*((texture2D(h,texCoord).r)/5.0f)),1.0f);
+{	//output the vertex position to the rasterizer for interpolation
+	vVertPos = (mv_matrix * vec4(vertPos,1.0)).xyz;
+        
+	//get a vector from the vertex to the light and output it to the rasterizer for interpolation
+	vLightDir = light.position - vVertPos;
 
-	tc = texCoord;
+	//get a vertex normal vector in eye space and output it to the rasterizer for interpolation
+	vNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
 	
-	// compute vertex position in eye space (without perspective)
-	vertEyeSpacePos = (mv_matrix * P).xyz;
-	gl_Position = proj_matrix * mv_matrix * P;
+	//if rendering a back-face, flip the normal
+	if (flipNormal < 0) vNormal = -vNormal;
+	
+	// calculate the half vector (L+V)
+	vHalfVec = (vLightDir-vVertPos).xyz;
+	
+	gl_Position = proj_matrix * mv_matrix * vec4(vertPos,1.0);
 }
