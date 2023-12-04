@@ -1,6 +1,6 @@
 #include <GL\glew.h>
 //
-#include "Utils\Torus.h"
+#include "Utils\Sphere.h"
 #include "Utils\Utils.h"
 #include <GLFW\glfw3.h>
 #include <SOIL2\soil2.h>
@@ -17,7 +17,7 @@ float toRadians(float degrees) { return (degrees * 2.0f * 3.14159f) / 360.0f; }
 #define numVBOs 4
 
 float cameraX, cameraY, cameraZ;
-float torLocX, torLocY, torLocZ;
+float sphLocX, sphLocY, sphLocZ;
 float lightLocX, lightLocY, lightLocZ;
 GLuint renderingProgram;
 GLuint vao[numVAOs];
@@ -31,9 +31,12 @@ glm::mat4 pMat, vMat, mMat, mvMat, invTrMat;
 GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecLoc, mshiLoc;
 glm::vec3 currentLightPos;
 float lightPos[3];
+float rotAmt = 0.0f;
 
-Torus myTorus(0.5f, 0.2f, 48);
-int numTorusVertices, numTorusIndices;
+Sphere mySphere(48);
+int numSphereVertices;
+
+GLuint roofTexture;
 
 // white light
 float globalAmbient[4] = {0.7f, 0.7f, 0.7f, 1.0f};
@@ -41,35 +44,40 @@ float lightAmbient[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 float lightDiffuse[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 float lightSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-// gold material
-float* matAmb = Utils::goldAmbient();
-float* matDif = Utils::goldDiffuse();
-float* matSpe = Utils::goldSpecular();
-float matShi = Utils::goldShininess();
+// silver material
+float* matAmb = Utils::silverAmbient();
+float* matDif = Utils::silverDiffuse();
+float* matSpe = Utils::silverSpecular();
+float matShi = Utils::silverShininess();
 
 void setupVertices(void) {
-    numTorusVertices = myTorus.getNumVertices();
-    numTorusIndices = myTorus.getNumIndices();
+    numSphereVertices = mySphere.getNumIndices();
 
-    std::vector<int> ind = myTorus.getIndices();
-    std::vector<glm::vec3> vert = myTorus.getVertices();
-    std::vector<glm::vec2> tex = myTorus.getTexCoords();
-    std::vector<glm::vec3> norm = myTorus.getNormals();
+    std::vector<int> ind = mySphere.getIndices();
+    std::vector<glm::vec3> vert = mySphere.getVertices();
+    std::vector<glm::vec2> tex = mySphere.getTexCoords();
+    std::vector<glm::vec3> norm = mySphere.getNormals();
+    std::vector<glm::vec3> tang = mySphere.getTangents();
 
     std::vector<float> pvalues;
     std::vector<float> tvalues;
     std::vector<float> nvalues;
+    std::vector<float> tanvalues;
 
-    for (int i = 0; i < myTorus.getNumVertices(); i++) {
-        pvalues.push_back(vert[i].x);
-        pvalues.push_back(vert[i].y);
-        pvalues.push_back(vert[i].z);
-        tvalues.push_back(tex[i].s);
-        tvalues.push_back(tex[i].t);
-        nvalues.push_back(norm[i].x);
-        nvalues.push_back(norm[i].y);
-        nvalues.push_back(norm[i].z);
+    for (int i = 0; i < mySphere.getNumIndices(); i++) {
+        pvalues.push_back((vert[ind[i]]).x);
+        pvalues.push_back((vert[ind[i]]).y);
+        pvalues.push_back((vert[ind[i]]).z);
+        tvalues.push_back((tex[ind[i]]).s);
+        tvalues.push_back((tex[ind[i]]).t);
+        nvalues.push_back((norm[ind[i]]).x);
+        nvalues.push_back((norm[ind[i]]).y);
+        nvalues.push_back((norm[ind[i]]).z);
+        tanvalues.push_back((tang[ind[i]]).x);
+        tanvalues.push_back((tang[ind[i]]).y);
+        tanvalues.push_back((tang[ind[i]]).z);
     }
+
     glGenVertexArrays(1, vao);
     glBindVertexArray(vao[0]);
     glGenBuffers(numVBOs, vbo);
@@ -83,8 +91,8 @@ void setupVertices(void) {
     glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
     glBufferData(GL_ARRAY_BUFFER, nvalues.size() * 4, &nvalues[0], GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind.size() * 4, &ind[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+    glBufferData(GL_ARRAY_BUFFER, tanvalues.size() * 4, &tanvalues[0], GL_STATIC_DRAW);
 }
 
 void installLights(glm::mat4 vMatrix) {
@@ -120,19 +128,21 @@ void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "fragShader.glsl");
     cameraX = 0.0f;
     cameraY = 0.0f;
-    cameraZ = 1.0f;
-    torLocX = 0.0f;
-    torLocY = 0.0f;
-    torLocZ = -1.0f;
+    cameraZ = 2.0f;
+    sphLocX = 0.0f;
+    sphLocY = 0.0f;
+    sphLocZ = -1.0f;
+    lightLocX = -5.0f;
+    lightLocY = 2.0f;
+    lightLocZ = 5.0f;
 
     glfwGetFramebufferSize(window, &width, &height);
     aspect = (float)width / (float)height;
     pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
-    lightLocX = 5.0f;
-    lightLocY = 2.0f;
-    lightLocZ = 2.0f;
     setupVertices();
+
+    roofTexture = Utils::loadTexture(RES_DIR "castleroofNORMAL.jpg");
 }
 
 void display(GLFWwindow* window, double currentTime) {
@@ -147,8 +157,10 @@ void display(GLFWwindow* window, double currentTime) {
     nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");
 
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(torLocX, torLocY, torLocZ));
-    mMat = glm::rotate(mMat, toRadians(35.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mMat = glm::translate(glm::mat4(1.0f), glm::vec3(sphLocX, sphLocY, sphLocZ));
+    mMat = glm::rotate(mMat, toRadians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    mMat = glm::rotate(mMat, rotAmt, glm::vec3(0.0f, 1.0f, 0.0f));
+    rotAmt += 0.002f;
     mvMat = vMat * mMat;
     invTrMat = glm::transpose(glm::inverse(mvMat));
 
@@ -163,15 +175,25 @@ void display(GLFWwindow* window, double currentTime) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[3]);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(3);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, roofTexture);
 
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-    glDrawElements(GL_TRIANGLES, myTorus.getIndices().size(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, numSphereVertices);
 }
 
 void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
@@ -184,7 +206,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter6 - program2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter10 - program2", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
