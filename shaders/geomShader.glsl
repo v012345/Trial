@@ -31,7 +31,7 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
-uniform int flipNormal;
+uniform int enableLighting;
 
 void main (void)
 {	vec4 triangleNormal = 

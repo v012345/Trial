@@ -26,6 +26,7 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int enableLighting;
 
 void main(void)
 {
@@ -39,7 +40,12 @@ void main(void)
 	// halfway vector was computed in vertex shader, and interpolated
 	vec3 H = normalize(varyingHalfVectorG);
 
-	fragColor = globalAmbient * material.ambient  +  light.ambient * material.ambient
+	if (enableLighting == 1)
+	{	fragColor = globalAmbient * material.ambient  +  light.ambient * material.ambient
 				+ light.diffuse * material.diffuse * max(cosTheta,0.0)
 				+ light.specular * material.specular * pow(max(dot(H,N),0.0), material.shininess*3.0);
+	}
+	else
+	{	fragColor = globalAmbient * material.ambient  +  light.ambient * material.ambient;
+	}
 }

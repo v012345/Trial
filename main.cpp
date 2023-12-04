@@ -29,7 +29,7 @@ glm::vec3 lightLoc = glm::vec3(5.0f, 2.0f, 2.0f);
 float amt = 0.0f;
 
 // variable allocation for display
-GLuint mvLoc, projLoc, nLoc;
+GLuint mvLoc, projLoc, nLoc, lLoc;
 GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecLoc, mshiLoc;
 int width, height;
 float aspect;
@@ -136,6 +136,7 @@ void display(GLFWwindow* window, double currentTime) {
 	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
 	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 	nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");
+	lLoc = glGetUniformLocation(renderingProgram, "enableLighting");
 
 	vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
 
@@ -165,10 +166,16 @@ void display(GLFWwindow* window, double currentTime) {
 	glEnableVertexAttribArray(1);
 
 	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
+	glUniform1i(lLoc, 1);
+	glFrontFace(GL_CCW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
+	glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
+
+	glUniform1i(lLoc, 0);
+	glFrontFace(GL_CW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
 	glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
 }
