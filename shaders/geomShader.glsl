@@ -2,13 +2,11 @@
 
 layout (triangles) in;
 
-in vec3 varyingNormal[];
-in vec3 varyingLightDir[];
-in vec3 varyingHalfVector[];
+in vec3 varyingOriginalNormal[];
 
-out vec3 varyingNormalG;
-out vec3 varyingLightDirG;
-out vec3 varyingHalfVectorG;
+out vec3 varyingNormal;
+out vec3 varyingLightDir;
+out vec3 varyingVertPos;
 
 layout (triangle_strip, max_vertices=9) out;
 
@@ -31,17 +29,50 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
-uniform int enableLighting;
 
-void main (void)
-{	if (mod(gl_PrimitiveIDIn,3)!=0)
-	{	for (int i=0; i<3; i++)
-		{	gl_Position = proj_matrix * gl_in[i].gl_Position;
-			varyingNormalG = varyingNormal[i];
-			varyingLightDirG = varyingLightDir[i];
-			varyingHalfVectorG = varyingHalfVector[i];
-			EmitVertex();
-		}
-	}
+vec3 newPoints[4], lightDir[4];
+float sLen = 0.005;
+
+void setOutputValues(int p, vec3 norm)
+{	varyingNormal = norm;
+	varyingLightDir = lightDir[p];
+	varyingVertPos = newPoints[p];
+	gl_Position = proj_matrix * vec4(newPoints[p], 1.0);
+}
+
+void makeNewTriangle(int p1, int p2)
+{	// generate vertex normal for this triangle
+	vec3 c1 = normalize(newPoints[p1] - newPoints[3]);
+	vec3 c2 = normalize(newPoints[p2] - newPoints[3]);
+	vec3 norm = cross(c1,c2);
+	
+	// generate and emit the three vertices
+	setOutputValues(p1, norm); EmitVertex();
+	setOutputValues(p2, norm); EmitVertex();
+	setOutputValues(3, norm); EmitVertex();
 	EndPrimitive();
+}
+
+void main(void)
+{	// offset the three triangle vertices by the surface normal
+	vec3 sp0 = gl_in[0].gl_Position.xyz + varyingOriginalNormal[0]*sLen;
+	vec3 sp1 = gl_in[1].gl_Position.xyz + varyingOriginalNormal[1]*sLen;
+	vec3 sp2 = gl_in[2].gl_Position.xyz + varyingOriginalNormal[2]*sLen;
+	
+	// compute the new points comprising a small pyramid
+	newPoints[0] = gl_in[0].gl_Position.xyz;
+	newPoints[1] = gl_in[1].gl_Position.xyz;
+	newPoints[2] = gl_in[2].gl_Position.xyz;
+	newPoints[3] = (sp0 + sp1 + sp2)/3.0;	// spike point
+	
+	// compute the directions from the vertices to the light
+	lightDir[0] = light.position - newPoints[0];
+	lightDir[1] = light.position - newPoints[1];
+	lightDir[2] = light.position - newPoints[2];
+	lightDir[3] = light.position - newPoints[3];
+
+	// build three new triangles to form a small surface pyramid
+	makeNewTriangle(0,1);  // the third point is always the spike point
+	makeNewTriangle(1,2);
+	makeNewTriangle(2,0);
 }

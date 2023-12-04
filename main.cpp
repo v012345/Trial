@@ -21,7 +21,7 @@ GLuint renderingProgram;
 GLuint vao[numVAOs];
 GLuint vbo[numVBOs];
 
-Torus myTorus(0.5f, 0.2f, 48);
+Torus myTorus(0.5f, 0.2f, 32);
 int numTorusVertices = myTorus.getNumVertices();
 int numTorusIndices = myTorus.getNumIndices();
 
@@ -29,7 +29,7 @@ glm::vec3 lightLoc = glm::vec3(5.0f, 2.0f, 2.0f);
 float amt = 0.0f;
 
 // variable allocation for display
-GLuint mvLoc, projLoc, nLoc, lLoc;
+GLuint mvLoc, projLoc, nLoc;
 GLuint globalAmbLoc, ambLoc, diffLoc, specLoc, posLoc, mambLoc, mdiffLoc, mspecLoc, mshiLoc;
 int width, height;
 float aspect;
@@ -127,12 +127,6 @@ void init(GLFWwindow* window) {
 	setupVertices();
 }
 
-void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
-	aspect = (float)newWidth / (float)newHeight;
-	glViewport(0, 0, newWidth, newHeight);
-	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
-}
-
 void display(GLFWwindow* window, double currentTime) {
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -142,11 +136,6 @@ void display(GLFWwindow* window, double currentTime) {
 	mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
 	projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 	nLoc = glGetUniformLocation(renderingProgram, "norm_matrix");
-	lLoc = glGetUniformLocation(renderingProgram, "enableLighting");
-
-	glfwGetFramebufferSize(window, &width, &height);
-	aspect = (float)width / (float)height;
-	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
 	vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
 
@@ -176,25 +165,25 @@ void display(GLFWwindow* window, double currentTime) {
 	glEnableVertexAttribArray(1);
 
 	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	glUniform1i(lLoc, 1);
-	glFrontFace(GL_CCW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
 	glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
+}
 
-	glUniform1i(lLoc, 0);
-	glFrontFace(GL_CW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[3]);
-	glDrawElements(GL_TRIANGLES, numTorusIndices, GL_UNSIGNED_INT, 0);
+void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
+	aspect = (float)newWidth / (float)newHeight;
+	glViewport(0, 0, newWidth, newHeight);
+	pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 }
 
 int main(void) {
 	if (!glfwInit()) { exit(EXIT_FAILURE); }
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter13 - program2", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter13 - program1", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
 	glfwSwapInterval(1);
