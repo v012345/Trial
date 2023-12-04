@@ -28,13 +28,13 @@ glm::mat4 pMat, vMat, mMat, mvpMat;
 float tessInner = 30.0f;
 float tessOuter = 20.0f;
 
-GLuint floorTexture;
+GLuint squareMoonTexture;
 
 void init(GLFWwindow* window) {
     renderingProgram = Utils::createShaderProgram(SHADERS_DIR "vertShader.glsl", SHADERS_DIR "tessCShader.glsl", SHADERS_DIR "tessEShader.glsl", SHADERS_DIR "fragShader.glsl");
     cameraX = 0.0f;
     cameraY = 0.0f;
-    cameraZ = 4.0f;
+    cameraZ = 0.7f;
     terLocX = 0.0f;
     terLocY = 0.0f;
     terLocZ = 0.0f;
@@ -43,7 +43,7 @@ void init(GLFWwindow* window) {
     aspect = (float)width / (float)height;
     pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f);
 
-    floorTexture = Utils::loadTexture(RES_DIR "floor_color.jpg");
+    squareMoonTexture = Utils::loadTexture(RES_DIR "squareMoonMap.jpg");
 
     glGenVertexArrays(numVAOs, vao);
     glBindVertexArray(vao[0]);
@@ -58,8 +58,7 @@ void display(GLFWwindow* window, double currentTime) {
     vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
 
     mMat = glm::translate(glm::mat4(1.0f), glm::vec3(terLocX, terLocY, terLocZ));
-    mMat = glm::rotate(mMat, toRadians(30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    mMat = glm::rotate(mMat, toRadians(100.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    mMat = glm::rotate(mMat, toRadians(20.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     mvpMat = pMat * vMat * mMat;
 
     mvpLoc = glGetUniformLocation(renderingProgram, "mvp_matrix");
@@ -67,13 +66,13 @@ void display(GLFWwindow* window, double currentTime) {
     glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvpMat));
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, floorTexture);
+    glBindTexture(GL_TEXTURE_2D, squareMoonTexture);
 
     glFrontFace(GL_CCW);
 
-    glPatchParameteri(GL_PATCH_VERTICES, 16);
+    glPatchParameteri(GL_PATCH_VERTICES, 4);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawArrays(GL_PATCHES, 0, 16);
+    glDrawArraysInstanced(GL_PATCHES, 0, 4, 64 * 64);
 }
 
 void window_size_callback(GLFWwindow* win, int newWidth, int newHeight) {
@@ -86,7 +85,7 @@ int main(void) {
     if (!glfwInit()) { exit(EXIT_FAILURE); }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter12 - program2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 800, "Chapter12 - program3a", NULL, NULL);
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK) { exit(EXIT_FAILURE); }
     glfwSwapInterval(1);
