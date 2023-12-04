@@ -1,48 +1,22 @@
 #version 430
 
-in vec3 varyingVertPosG;
-in vec3 varyingLightDirG;
-in vec3 varyingNormalG;
- 
+in vec3 vertEyeSpacePos;
+in vec2 tc;
 out vec4 fragColor;
 
-struct PositionalLight
-{	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	vec3 position;
-};
-struct Material
-{	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	float shininess;
-};
-
-uniform vec4 globalAmbient;
-uniform PositionalLight light;
-uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
-uniform mat4 norm_matrix;
+layout (binding=0) uniform sampler2D t;	// for texture
+layout (binding=1) uniform sampler2D h;	// for height map
 
 void main(void)
-{
-	// normalized the light, normal, and eye direction vectors
-	vec3 L = normalize(varyingLightDirG);
-	vec3 N = normalize(varyingNormalG);
-	vec3 V = normalize(-varyingVertPosG);
-	
-	// compute light reflection vector, with respect N:
-	vec3 R = normalize(reflect(-L, N));
-	
-	// get the angle between the light and surface normal
-	float cosTheta = dot(L,N);
-	
-	// angle between the view vector and reflected light:
-	float cosPhi = dot(V,R);
+{	vec4 fogColor = vec4(0.7, 0.8, 0.9, 1.0);	// bluish gray
+	float fogStart = 0.2;
+	float fogEnd = 0.8;
 
-	fragColor = globalAmbient * material.ambient  +  light.ambient * material.ambient
-				+ light.diffuse * material.diffuse * max(cosTheta,0.0)
-				+ light.specular * material.specular * pow(max(cosPhi,0.0), material.shininess);
+	// the distance from the camera to the vertex in eye space is simply the length of a
+    // vector to that vertex, because the camera is at (0,0,0) in eye space.
+	float dist = length(vertEyeSpacePos.xyz);
+	float fogFactor = clamp(((fogEnd-dist)/(fogEnd-fogStart)), 0.0, 1.0);
+	fragColor = mix(fogColor,(texture(t,tc)),fogFactor);
 }
