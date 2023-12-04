@@ -34,12 +34,15 @@ target_link_libraries(Main
     glew
     soil2
     glm
+    imgui
 )
 target_include_directories(Main PRIVATE
     libs/glfw/include
     libs/glew-2.2.0/include
     libs/SOIL2/src
     libs/glm
+    libs/imgui
+    libs/imgui/backends
 )
 target_compile_definitions(Main PRIVATE
     LUA_MAIN_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/main.lua"
