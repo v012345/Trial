@@ -1,16 +1,22 @@
 #version 430
 
-layout (location=0) in vec3 vertPos;
-layout (location=1) in vec3 vertNormal;
-
-out vec3 vNormal, vLightDir, vVertPos, vHalfVec; 
+layout (location = 0) in vec3 vertPos;
+layout (location = 1) in vec3 vertNormal;
+out vec3 varyingNormal;
+out vec3 varyingLightDir;
+out vec3 varyingVertPos;
+out vec3 varyingHalfVector;
 
 struct PositionalLight
-{	vec4 ambient, diffuse, specular;
+{	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
 	vec3 position;
 };
 struct Material
-{	vec4 ambient, diffuse, specular;   
+{	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
 	float shininess;
 };
 
@@ -20,25 +26,22 @@ uniform Material material;
 uniform mat4 mv_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 norm_matrix;
+uniform int flipNormal;
 
-uniform float alpha;
-uniform float flipNormal;
+vec4 clip_plane = vec4(0.0, 0.0, -1.0, 0.5);
 
 void main(void)
-{	//output the vertex position to the rasterizer for interpolation
-	vVertPos = (mv_matrix * vec4(vertPos,1.0)).xyz;
-        
-	//get a vector from the vertex to the light and output it to the rasterizer for interpolation
-	vLightDir = light.position - vVertPos;
+{	varyingVertPos = (mv_matrix * vec4(vertPos,1.0)).xyz;
+	varyingLightDir = light.position - varyingVertPos;
+	varyingNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
+	
+	if (flipNormal==1) varyingNormal = -varyingNormal;
+	
+	varyingHalfVector =
+		normalize(normalize(varyingLightDir)
+		+ normalize(-varyingVertPos)).xyz;
+	
+	gl_ClipDistance[0] = dot(clip_plane.xyz, vertPos) + clip_plane.w;
 
-	//get a vertex normal vector in eye space and output it to the rasterizer for interpolation
-	vNormal = (norm_matrix * vec4(vertNormal,1.0)).xyz;
-	
-	//if rendering a back-face, flip the normal
-	if (flipNormal < 0) vNormal = -vNormal;
-	
-	// calculate the half vector (L+V)
-	vHalfVec = (vLightDir-vVertPos).xyz;
-	
 	gl_Position = proj_matrix * mv_matrix * vec4(vertPos,1.0);
 }
