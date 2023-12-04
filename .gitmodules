@@ -35,3 +35,6 @@
 [submodule "libs/SOIL2"]
 	path = libs/SOIL2
 	url = git@github.com:SpartanJ/SOIL2.git
+[submodule "libs/imgui"]
+	path = libs/imgui
+	url = git@github.com:ocornut/imgui.git
