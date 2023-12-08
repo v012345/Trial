@@ -19,11 +19,11 @@ def split_pdf(input_path, output_path, start_page, end_page):
 
 
 # 示例用法
-input_file_path = "../log/游戏开发世嘉新人培训教材 by 平山尚.pdf"
+input_file_path = "../log/游戏引擎架构（第2版） (Jason Gregory) (Z-Library).pdf"
 output_file_path = "2.pdf"
 start_page_number = 1
 end_page_number = 3
 
-split_pdf(input_file_path, "1.pdf", 1, 295)
-split_pdf(input_file_path, "2.pdf", 296, 548)
-split_pdf(input_file_path, "3.pdf", 549, 999)
+split_pdf(input_file_path, "1.pdf", 1, 260)
+# split_pdf(input_file_path, "2.pdf", 296, 548)
+# split_pdf(input_file_path, "3.pdf", 549, 999)
