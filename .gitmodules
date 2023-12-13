@@ -38,3 +38,6 @@
 [submodule "libs/imgui"]
 	path = libs/imgui
 	url = git@github.com:ocornut/imgui.git
+[submodule "extensions/luasec"]
+	path = extensions/luasec
+	url = git@github.com:lunarmodules/luasec.git
