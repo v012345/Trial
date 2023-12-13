@@ -14,7 +14,7 @@ add_subdirectory("extensions")
 # add_subdirectory("Example")
 
 # add_subdirectory("windows")
-# add_subdirectory("server")
+add_subdirectory("server")
 add_executable(Main
     main.cpp
     Utils/Utils.cpp

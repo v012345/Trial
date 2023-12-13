@@ -49,6 +49,7 @@ int main(int argc, char const* argv[]) {
 #ifdef LUA_MAIN_SCRIPT
     luaL_dofile(L, LUA_MAIN_SCRIPT);
 #endif
+    luaL_dofile(L, "main.lua");
     return 0;
 }
 static int Lua__getch(lua_State* L) {
