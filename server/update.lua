@@ -29,6 +29,7 @@ xpcall(function(...)
             print("Client disconnected")
             print("Close server")
             return
+        elseif request == "update" then
         end
 
         if not err then
