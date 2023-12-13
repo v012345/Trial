@@ -27,6 +27,7 @@ xpcall(function(...)
                 getbyhttp("https://raw.githubusercontent.com/v012345/Trial/master/server/update.lua", file)
             end
             print("Client disconnected")
+            print("Close server")
             return
         end
 
