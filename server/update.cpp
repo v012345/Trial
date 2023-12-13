@@ -6,6 +6,10 @@ extern "C" {
 int luaopen_socket_core(lua_State* L);
 int luaopen_lfs(lua_State* L);
 int luaopen_mime_core(lua_State* L);
+int luaopen_ssl_core(lua_State* L);
+int luaopen_ssl_context(lua_State* L);
+int luaopen_ssl_x509(lua_State* L);
+int luaopen_ssl_config(lua_State* L);
 }
 
 int main(int argc, char const* argv[]) {
@@ -18,6 +22,14 @@ int main(int argc, char const* argv[]) {
     luaL_requiref(L, "socket.core", luaopen_socket_core, 0);
     lua_pop(L, 1);
     luaL_requiref(L, "mime.core", luaopen_mime_core, 0);
+    lua_pop(L, 1);
+    luaL_requiref(L, "ssl.core", luaopen_ssl_core, 0);
+    lua_pop(L, 1);
+    luaL_requiref(L, "ssl.context", luaopen_ssl_context, 0);
+    lua_pop(L, 1);
+    luaL_requiref(L, "ssl.x509", luaopen_ssl_x509, 0);
+    lua_pop(L, 1);
+    luaL_requiref(L, "ssl.config", luaopen_ssl_config, 0);
     lua_pop(L, 1);
     luaL_dofile(L, "update.lua");
     return 0;
