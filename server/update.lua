@@ -35,13 +35,7 @@ xpcall(function(...)
         elseif req.cmd == "execute" then
             load(req.chunk)(client)
         end
-
-        if not err then
-            -- 处理请求并发送响应
-            client:send(response)
-        end
-
-        -- 关闭客户端连接
+        client:send(response)
         client:close()
         print("Client disconnected")
         print("===============================")
