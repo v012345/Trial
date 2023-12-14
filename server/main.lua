@@ -16,41 +16,54 @@
 -- end, function(msg)
 --     print(msg)
 -- end)
--- local json = require "Tools.JSON"
-local socket = require("socket")
 
--- local host = "2.tcp.cpolar.cn"
--- local port = 14731
 
--- local host = "192.168.1.6"
--- local port = 3389
+-- xpcall(function(...)
+--     require "Tools.JSON"
+--     local socket = require("socket")
 
-local host = "127.0.0.1"
-local port = 8081
+--     -- local host = "2.tcp.cpolar.cn"
+--     -- local port = 14731
 
--- 创建 TCP 客户端
-local client = socket.tcp()
+--     local host = "192.168.1.6"
+--     -- local port = 3389
 
--- 连接到服务器
-client:connect(host, port)
+--     -- local host = "127.0.0.1"
+--     local port = 8080
 
--- 发送 HTTP GET 请求
-local c = {}
-c.cmd = "update"
-c.source = "https://raw.githubusercontent.com/v012345/Trial/master/server/main.lua"
-c.target = "main.lua"
-local request = 'update-self\n'
-client:send(request)
+--     -- 创建 TCP 客户端
+--     local client = socket.tcp()
 
--- 读取服务器响应
-local response, err = client:receive("*a")
+--     -- 连接到服务器
+--     client:connect(host, port)
+--     -- tasklist /fi "imagename eq nginx.exe"
+--     -- 发送 HTTP GET 请求
+--     local c = {}
+--     c.cmd = "execute"
+--     -- c.cmd = "update"
+--     -- c.cmd = "update-self"
+--     c.source = "http://192.168.1.15:8080/server/update.exe"
+--     c.target = "update.exe"
+    
+--     -- c.chunk = "local x = {...}; print(x[1]);x[1]:send('123\\n');local a = io.open(\"update_restart.bat\",'w');a:write('taskkill /fi \"imagename eq update.exe\"\\nstart update.exe');a:close() "
+--     c.chunk = "call_restart_bat()"
+--     local request = JSON:convert(c) .. "\n"
+--     print("111")
+--     client:send(request)
+--     print("222")
 
-if response then
-    print("Response body:")
-    print(response)
-else
-    print("Error:", err)
-end
+--     -- 读取服务器响应
+--     local response, err = client:receive("*a")
 
--- 关闭连接
-client:close()
+--     if response then
+--         print("Response body:")
+--         print(response)
+--     else
+--         print("Error:", err)
+--     end
+
+--     -- 关闭连接
+--     client:close()
+-- end, function(m)
+--     print(m)
+-- end)

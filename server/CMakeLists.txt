@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-add_executable(server server.cpp)
+add_executable(server server1.cpp)
 target_link_libraries(server
     liblua
     lfs
