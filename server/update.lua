@@ -1,5 +1,6 @@
 xpcall(function(...)
     require "get"
+    require "Tools.JSON"
     local socket = require("socket")
     local http = require("socket.http")
     local listening_port = 8080
@@ -19,17 +20,20 @@ xpcall(function(...)
         -- 读取客户端请求
         local request, err = client:receive()
         print(request)
-        if request == "update-self" then
+        ---@type table
+        ---@diagnostic disable-next-line
+        local req = JSON(request):getData()
+        if req.cmd == "update-self" then
             client:send(response)
             client:close()
-            local file = io.open("update.lua", "w")
-            if file then
-                getbyhttp("https://raw.githubusercontent.com/v012345/Trial/master/server/update.lua", file)
-            end
+            get("http://raw.githubusercontent.com/v012345/Trial/master/server/update.lua", "update.lua")
             print("Client disconnected")
             print("Close server")
             return
-        elseif request == "update" then
+        elseif req.cmd == "update" then
+            get(req.source, req.target)
+        elseif req.cmd == "execute" then
+            load(req.chunk)(client)
         end
 
         if not err then

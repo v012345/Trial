@@ -1,4 +1,5 @@
 xpcall(function(...)
+    require "Tools.JSON"
     require "get"
     local socket = require("socket")
     local listening_port = 8081
@@ -8,19 +9,14 @@ xpcall(function(...)
         print("Can't run server")
         return
     end
-    local x = io.popen('tasklist /fi "imagename eq update.exe"') or error("")
-    local r = x:read("a")
-    print(r)
-    if string.match(r, "update.exe") then
-        print("kkk")
-        local x = io.popen('taskkill /f /fi "imagename eq update.exe"')
-        local r = x:read("a")
-        print(os.execute("start update.exe"))
-        -- print(r)
-    else
-        print(os.execute("start update.exe"))
+    local function run_update_exe()
+        if string.match(io.popen('tasklist /fi "imagename eq update.exe"'):read("a"), "update.exe") then
+            io.popen('taskkill /f /fi "imagename eq update.exe"'):read("a")
+        end
+        os.execute("start update.exe")
     end
-    print(r)
+    run_update_exe()
+
     print("Server is listening on port " .. listening_port)
     print("===============================")
     while true do
@@ -34,28 +30,13 @@ xpcall(function(...)
         ---@type table
         ---@diagnostic disable-next-line
         local r = JSON(request):getData()
-        if r.cmd == "update-self" then
-            client:send(response)
-            client:close()
-            get(r.source, r.target)
-            print("Client disconnected")
-            print("Close server")
-            return
-        elseif r.cmd == "update" then
-            get(r.source, r.target)
-        elseif r.cmd == "execute" then
-            xpcall(function(...)
-                load(r.chunk)(client)
-            end, function(msg)
-                print(msg)
-            end)
+        if r.cmd == "restart_update_exe" then
+            run_update_exe()
         end
-
         if not err then
             -- 处理请求并发送响应
             client:send(response)
         end
-
         -- 关闭客户端连接
         client:close()
         print("Client disconnected")
