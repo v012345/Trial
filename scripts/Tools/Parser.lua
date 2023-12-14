@@ -1,4 +1,4 @@
-require "Tools.Object"
+require "Object"
 ---@class Parser:Object
 Parser = {
     __parent = Object

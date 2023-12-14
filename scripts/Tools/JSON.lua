@@ -223,46 +223,18 @@ function Parser:_readBaseType()
 end
 
 function JSON:toString()
-    local r = {}
-    local function toJson(t)
-        local typ = type(t)
-        if typ == "nil" then
-            r[#r + 1] = "null"
-        elseif typ == "number" then
-            r[#r + 1] = tostring(t)
-        elseif typ == "boolean" then
-            r[#r + 1] = tostring(t)
-        elseif typ == "string" then
-            r[#r + 1] = string.format("%q", t)
-        elseif typ == "table" then
-            r[#r + 1] = "{"
-            for key, value in pairs(t) do
-                if type(key) == "number" then
-                    r[#r + 1] = "\""
-                    r[#r + 1] = key
-                    r[#r + 1] = "\""
-                else
-                    r[#r + 1] = string.format("%q", key)
-                end
-                r[#r + 1] = ":"
-                toJson(value)
-                r[#r + 1] = ","
-            end
-            if next(t) then
-                table.remove(r)
-            end
-            r[#r + 1] = "}"
-        else
-            error("can't convert to json")
-        end
-    end
-    toJson(self._mData)
-    return table.concat(r)
+    return self:toJson(self._mData)
 end
 
 function JSON:writeTo(path)
+    local file = io.open(path, "w") or error("can't open " .. path)
+    file:write(self:toString())
+    file:close()
+end
+
+function JSON:toJson(tab)
     local r = {}
-    local function toJson(t)
+    local function _toJson(t)
         local typ = type(t)
         if typ == "nil" then
             r[#r + 1] = "null"
@@ -283,7 +255,7 @@ function JSON:writeTo(path)
                     r[#r + 1] = string.format("%q", key)
                 end
                 r[#r + 1] = ":"
-                toJson(value)
+                _toJson(value)
                 r[#r + 1] = ","
             end
             if next(t) then
@@ -294,8 +266,10 @@ function JSON:writeTo(path)
             error("can't convert to json")
         end
     end
-    toJson(self._mData)
-    local file = io.open(path, "w") or error("can't open " .. path)
-    file:write(table.concat(r))
-    file:close()
+    _toJson(tab)
+    return table.concat(r)
+end
+
+function JSON:convert(t)
+    return self:toJson(t)
 end
