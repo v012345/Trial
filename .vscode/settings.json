@@ -101,7 +101,8 @@
         "unordered_map": "cpp",
         "unordered_set": "cpp",
         "*.rh": "cpp",
-        "auxiliar.h": "c"
+        "auxiliar.h": "c",
+        "zlib.h": "c"
     },
     "Lua.diagnostics.globals": [
         "lfs"

@@ -32,8 +32,8 @@ set(PNG_TOOLS OFF CACHE BOOL "" FORCE)
 set(PNG_TESTS OFF CACHE BOOL "" FORCE)
 set(SKIP_INSTALL_ALL TRUE)
 set(PNG_BUILD_ZLIB TRUE CACHE BOOL "Custom zlib location" FORCE)
-set(ZLIB_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/zlib;${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(ZLIB_LIBRARIES zlib)
+target_include_directories(zlib PUBLIC zlib)
+add_library(ZLIB::ZLIB ALIAS zlib)
 add_subdirectory(libpng)
 
 # 给 freetype 的设置
