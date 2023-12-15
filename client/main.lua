@@ -51,7 +51,7 @@ local function update_file(source, target)
 end
 xpcall(function(...)
     -- update_file("http://raw.githubusercontent.com/v012345/Trial/master/server/update_restart.lua","update_restart.lua")
-    update_updateself()
+    -- update_updateself()
 end, function(m)
     print(m)
 end)
