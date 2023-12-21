@@ -16,6 +16,7 @@ add_subdirectory("extensions")
 # add_subdirectory("windows")
 add_subdirectory("server")
 add_subdirectory("client")
+add_subdirectory("lua")
 add_executable(Main
     main.cpp
     Utils/Utils.cpp

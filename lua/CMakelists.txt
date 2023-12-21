@@ -1,0 +1,10 @@
+add_executable(lua
+    lua.c
+)
+target_link_libraries(lua
+    liblua
+    lfs
+)
+target_include_directories(lua PRIVATE
+    src
+)
