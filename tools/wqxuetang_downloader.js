@@ -20,48 +20,38 @@ var pageImgHeight = pageImgBox1.clientHeight + 20 // 有 20 是下方 margin
 
 var scrollElement = document.getElementById('scroll');
 var pageboxElement = document.getElementById('pagebox');
-var content = ""
+var content = "<body>"
 var pageImages = document.getElementsByClassName("page-lmg")
 // for (let index = 0; index < 10; index++) {
-let index = 827
-var textname = index + "-"
+let index = 0
+var textname = "h.html"
+var has_done = {
+    "644":true,
+};
+var i = 0
 for (; index < pageImages.length; index++) {
-    var element = pageImages[index];
-    scrollElement.scrollTop = pageImgHeight * index
-    var retry = 0
-    while (element.getElementsByTagName("img").length <= 0) {
-        await sleep(5000);
-        retry++
+    if (has_done[index]) {
+        i++
+        var element = pageImages[index];
+        scrollElement.scrollTop = pageImgHeight * index
+        var retry = 0
+        while (element.getElementsByTagName("img").length <= 0) {
+            await sleep(2000);
+            retry++
+            if (retry > 3) {
+                break
+            }
+        }
         if (retry > 3) {
             break
         }
+        content += `<div id="${index}">\n`
+        content += element.innerHTML
+        content += "</div>\n"
+        if (i >= 200) {
+            break
+        }
     }
-    if (retry > 3) {
-        break
-    }
-    content += `<div id="${index}">\n`
-    content += element.innerHTML
-    content += "</div>\n"
-
 }
-textname += ((index - 1) + ".txt")
+content += "</body>"
 downloadStringAsFile(content, textname, "text/plain");
-
-
-index = 0
-for (; index < pageImages.length; index++) {
-    var element = pageImages[index];
-    scrollElement.scrollTop = pageImgHeight * index
-    var retry = 0
-    while (element.getElementsByTagName("img").length <= 0) {
-        await sleep(1000);
-        retry++
-        if (retry > 3) {
-            break
-        }
-    }
-    if (retry > 3) {
-        break
-    }
-}
-console.log(index)

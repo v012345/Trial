@@ -8,3 +8,8 @@ target_link_libraries(lua
 target_include_directories(lua PRIVATE
     src
 )
+target_compile_definitions(lua PRIVATE
+    LUA_MAIN_SCRIPT="${CMAKE_CURRENT_SOURCE_DIR}/entry.lua"
+    LUA_PACKAGE_PATH="${CMAKE_SOURCE_DIR}/scripts/?.lua"
+    CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}/"
+)
