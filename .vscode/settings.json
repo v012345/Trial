@@ -102,7 +102,15 @@
         "unordered_set": "cpp",
         "*.rh": "cpp",
         "auxiliar.h": "c",
-        "zlib.h": "c"
+        "zlib.h": "c",
+        "any": "cpp",
+        "cinttypes": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "numeric": "cpp",
+        "source_location": "cpp",
+        "strstream": "cpp",
+        "variant": "cpp"
     },
     "Lua.diagnostics.globals": [
         "lfs"
