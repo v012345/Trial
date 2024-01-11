@@ -96,6 +96,7 @@
 
 #define markkey(g, n)	{ if keyiswhite(n) reallymarkobject(g,gckey(n)); }
 
+// 只要是白色, 就要标记
 #define markobject(g,t)	{ if (iswhite(t)) reallymarkobject(g, obj2gco(t)); }
 
 /*
@@ -402,8 +403,8 @@ static void cleargraylists (global_State *g) {
 */
 static void restartcollection (global_State *g) {
   cleargraylists(g);
-  markobject(g, g->mainthread);
-  markvalue(g, &g->l_registry);
+  markobject(g, g->mainthread); // 主线程被第一个放到 gray 链上
+  markvalue(g, &g->l_registry); // 全局注册表也被放到 gray 链上
   markmt(g);
   markbeingfnz(g);  /* mark any finalizing object left from previous cycle */
 }
@@ -1687,6 +1688,7 @@ static void incstep (lua_State *L, global_State *g) {
 */
 void luaC_step (lua_State *L) {
   global_State *g = G(L);
+  // 还不明白这个状态量是如何使用的
   if (!gcrunning(g))  /* not running? */
     luaE_setdebt(g, -2000);
   else {
@@ -1731,7 +1733,7 @@ void luaC_fullgc (lua_State *L, int isemergency) {
     fullinc(L, g);
   else
     fullgen(L, g);
-  g->gcemergency = 0;
+  g->gcemergency = 0; // 全量 gc 之后把标志坐置回
 }
 
 /* }====================================================== */
