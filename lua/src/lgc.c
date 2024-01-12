@@ -262,7 +262,7 @@ GCObject *luaC_newobjdt (lua_State *L, int tt, size_t sz, size_t offset) {
   GCObject *o = cast(GCObject *, p + offset);
   o->marked = luaC_white(g);
   o->tt = tt;
-  o->next = g->allgc;
+  o->next = g->allgc; // next 是用来链 allgc 链的
   g->allgc = o;
   return o;
 }
@@ -405,7 +405,7 @@ static void restartcollection (global_State *g) {
   cleargraylists(g);
   markobject(g, g->mainthread); // 主线程被第一个放到 gray 链上
   markvalue(g, &g->l_registry); // 全局注册表也被放到 gray 链上
-  markmt(g);
+  markmt(g); // 基础类型变量的原表出要放到 gray 上
   markbeingfnz(g);  /* mark any finalizing object left from previous cycle */
 }
 
@@ -522,27 +522,33 @@ static int traverseephemeron (global_State *g, Table *h, int inv) {
 
 
 static void traversestrongtable (global_State *g, Table *h) {
-  Node *n, *limit = gnodelast(h);
+  Node *n, *limit = gnodelast(h); // 最后一个 node, 正好 node 也是从后向前使用的
   unsigned int i;
-  unsigned int asize = luaH_realasize(h);
+  unsigned int asize = luaH_realasize(h); // 数组部分的大小
   for (i = 0; i < asize; i++)  /* traverse array part */
     markvalue(g, &h->array[i]);
   for (n = gnode(h, 0); n < limit; n++) {  /* traverse hash part */
     if (isempty(gval(n)))  /* entry is empty? */
+      // 这里是把 node 的 key 的类型设置为 dead
       clearkey(n);  /* clear its key */
     else {
       lua_assert(!keyisnil(n));
+      // 键与值都要涂灰
       markkey(g, n);
       markvalue(g, gval(n));
     }
   }
+  // 表的 hash 与 array 都被涂灰了
+  // 下面这个是分代回收用的
   genlink(g, obj2gco(h));
 }
 
 
 static lu_mem traversetable (global_State *g, Table *h) {
   const char *weakkey, *weakvalue;
+  // 是否有原表, 与原表是否在 __mode 字段
   const TValue *mode = gfasttm(g, h->metatable, TM_MODE);
+  // 如果有原表, 当然要涂灰啦
   markobjectN(g, h->metatable);
   if (mode && ttisstring(mode) &&  /* is there a weak mode? */
       (cast_void(weakkey = strchr(svalue(mode), 'k')),
@@ -657,8 +663,9 @@ static int traversethread (global_State *g, lua_State *th) {
 ** traverse one gray object, turning it to black.
 */
 static lu_mem propagatemark (global_State *g) {
-  GCObject *o = g->gray;
+  GCObject *o = g->gray; // gray 链的链头
   nw2black(o);
+  // 把 o 从 gray 上拿下来
   g->gray = *getgclist(o);  /* remove from 'gray' list */
   switch (o->tt) {
     case LUA_VTABLE: return traversetable(g, gco2t(o));
@@ -1588,7 +1595,7 @@ static lu_mem singlestep (lua_State *L) {
   g->gcstopem = 1;  /* no emergency collections while collecting */
   switch (g->gcstate) {
     case GCSpause: {
-      restartcollection(g);
+      restartcollection(g); // 把几个必要项涂灰
       g->gcstate = GCSpropagate;
       work = 1;
       break;
