@@ -678,7 +678,7 @@ static lu_mem propagatemark (global_State *g) {
   }
 }
 
-
+// 清空灰链
 static lu_mem propagateall (global_State *g) {
   lu_mem tot = 0;
   while (g->gray)
@@ -830,7 +830,7 @@ static void freeobj (lua_State *L, GCObject *o) {
 static GCObject **sweeplist (lua_State *L, GCObject **p, int countin,
                              int *countout) {
   global_State *g = G(L);
-  int ow = otherwhite(g);
+  int ow = otherwhite(g); // 非当前白
   int i;
   int white = luaC_white(g);  /* current white */
   for (i = 0; *p != NULL && i < countin; i++) {
@@ -845,7 +845,7 @@ static GCObject **sweeplist (lua_State *L, GCObject **p, int countin,
       p = &curr->next;  /* go to next element */
     }
   }
-  if (countout)
+  if (countout) // 如果有, 就传出去
     *countout = i;  /* number of elements traversed */
   return (*p == NULL) ? NULL : p;
 }
@@ -1611,7 +1611,7 @@ static lu_mem singlestep (lua_State *L) {
     }
     case GCSenteratomic: {
       work = atomic(L);  /* work is what was traversed by 'atomic' */
-      entersweep(L);
+      entersweep(L); // 在这里设置了 g->sweepgc, 来执行要清扫的链
       g->GCestimate = gettotalbytes(g);  /* first estimate */;
       break;
     }
