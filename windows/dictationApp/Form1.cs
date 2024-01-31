@@ -9,7 +9,7 @@ namespace dictationApp
         private Mp3FileReader reader;
         private bool isDicating = false;
         private bool isPlaying = false;
-        private int mCount = 20;
+        private int mCount = 21;
         List<string> selectedKeys = new List<string>();
         List<string> dicatedKeys = new List<string>();
         private string mDictatingWord = null;
@@ -50,7 +50,10 @@ namespace dictationApp
                     this.selectedKeys.Remove(key);
                     this.dicatedKeys.Add(key);
                     this.mDictatingWord = key;
-                    this.PlaySound(key);
+                    if (this.selectedKeys.Count > 0)
+                    {
+                        this.PlaySound(key);
+                    }
                 }
 
             }
@@ -72,6 +75,7 @@ namespace dictationApp
                     words.Add(this.dicatedKeys[i]);
                 }
                 words.Add(Environment.NewLine);
+
             }
             this.TBoxHiragana.Text = string.Join("", words);
 
@@ -176,7 +180,7 @@ namespace dictationApp
         {
             if (this.mDictatingWord != null)
             {
-                if (!this.isPlaying) {
+                if (!this.isPlaying & this.selectedKeys.Count > 0) {
                     this.PlaySound(this.mDictatingWord);
                 }
             }
