@@ -130,6 +130,85 @@ namespace dictationApp
             myDictionary["わ"] = new double[] { 48.1, 49.2 };
             myDictionary["を"] = new double[] { 49.3, 50.2 };
             myDictionary["ん"] = new double[] { 50.3, 51.2 };
+
+            myDictionary["が"] = new double[] { 53.3, 54.3 };
+            myDictionary["ぎ"] = new double[] { 54.3, 55.2 };
+            myDictionary["ぐ"] = new double[] { 55.2, 56.0 };
+            myDictionary["げ"] = new double[] { 56.0, 56.8 };
+            myDictionary["ご"] = new double[] { 57.0, 57.8 };
+
+            myDictionary["ざ"] = new double[] { 59.0, 60.0 };
+            myDictionary["じ"] = new double[] { 60.0, 60.8 };
+            myDictionary["ず"] = new double[] { 61.0, 61.8 };
+            myDictionary["ぜ"] = new double[] { 61.8, 62.8 };
+            myDictionary["ぞ"] = new double[] { 62.8, 63.8 };
+
+            myDictionary["だ"] = new double[] { 65.5, 66.2 };
+            myDictionary["ぢ"] = new double[] { 66.3, 67.2 };
+            myDictionary["づ"] = new double[] { 67.2, 68.0 };
+            myDictionary["で"] = new double[] { 68.1, 68.9 };
+            myDictionary["ど"] = new double[] { 69.0, 69.9 };
+
+            myDictionary["ば"] = new double[] { 71.4, 72.1 };
+            myDictionary["び"] = new double[] { 72.2, 73.0 };
+            myDictionary["ぶ"] = new double[] { 73.0, 73.8 };
+            myDictionary["べ"] = new double[] { 74.0, 74.8 };
+            myDictionary["ぼ"] = new double[] { 74.8, 75.6 };
+
+            myDictionary["ぱ"] = new double[] { 77.0, 77.8 };
+            myDictionary["ぴ"] = new double[] { 77.9, 78.8 };
+            myDictionary["ぷ"] = new double[] { 78.8, 79.5 };
+            myDictionary["ぺ"] = new double[] { 79.6, 80.3 };
+            myDictionary["ぽ"] = new double[] { 80.4, 81.2 };
+
+
+            /*
+            myDictionary["きゃ"] = new double[] { 82.8, 83.4 };
+            myDictionary["きゅ"] = new double[] { 83.8, 84.5 };
+            myDictionary["きょ"] = new double[] { 84.6, 85.4 };
+
+            myDictionary["しゃ"] = new double[] { 86.2, 87.1 };
+            myDictionary["しゅ"] = new double[] { 87.1, 88.0 };
+            myDictionary["しょ"] = new double[] { 88.0, 88.9 };
+
+            myDictionary["ちゃ"] = new double[] { 90.0, 90.8 };
+            myDictionary["ちゅ"] = new double[] { 90.8, 91.7 };
+            myDictionary["ちょ"] = new double[] { 91.7, 92.7 };
+
+            myDictionary["にゃ"] = new double[] { 93.5, 94.5 };
+            myDictionary["にゅ"] = new double[] { 94.5, 95.4 };
+            myDictionary["にょ"] = new double[] { 95.4, 96.3 };
+
+            myDictionary["ひゃ"] = new double[] { 97.0, 98.0 };
+            myDictionary["ひゅ"] = new double[] { 98.0, 98.8 };
+            myDictionary["ひょ"] = new double[] { 98.8, 99.7 };
+
+            myDictionary["みゃ"] = new double[] { 100.4, 101.3 };
+            myDictionary["みゅ"] = new double[] { 101.3, 102.1 };
+            myDictionary["みょ"] = new double[] { 102.2, 103.0 };
+
+            myDictionary["りゃ"] = new double[] { 104.0, 104.7 };
+            myDictionary["りゅ"] = new double[] { 104.7, 105.5 };
+            myDictionary["りょ"] = new double[] { 105.5, 106.3 };
+
+            myDictionary["ぎゃ"] = new double[] { 107.3, 108.2 };
+            myDictionary["ぎゅ"] = new double[] { 108.2, 109.0 };
+            myDictionary["ぎょ"] = new double[] { 109.0, 110.0 };
+
+            myDictionary["じゃ"] = new double[] { 110.9, 111.8 };
+            myDictionary["じゅ"] = new double[] { 111.8, 112.7 };
+            myDictionary["じょ"] = new double[] { 112.7, 113.7 };
+
+            myDictionary["びゃ"] = new double[] { 114.7, 115.4 };
+            myDictionary["びゅ"] = new double[] { 115.4, 116.3 };
+            myDictionary["びょ"] = new double[] { 116.3, 117.3 };
+
+            myDictionary["ぴゃ"] = new double[] { 118.3, 119.1 };
+            myDictionary["ぴゅ"] = new double[] { 119.1, 120.0 };
+            myDictionary["ぴょ"] = new double[] { 120.0, 120.9 };
+
+            */
+
             this.BtnPlay.Text = "开始";
             // 访问和打印数据
             //Debug.WriteLine("第一个: [{0}]", string.Join(", ", myDictionary["第一个"]));
