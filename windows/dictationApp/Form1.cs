@@ -65,7 +65,7 @@ namespace dictationApp
                 this.BtnPlay.Text = "播放";
             }
             List<string> words = new List<string>();
-
+             
             for (int i = 0; i < this.dicatedKeys.Count; i++)
             {
                 words.Add(Convert.ToString(i + 1));
@@ -84,92 +84,102 @@ namespace dictationApp
         private void Form1_Load(object sender, EventArgs e)
         {
             // 添加数据
-            myDictionary["あ"] = new double[] { 1.1, 1.8 };
-            myDictionary["い"] = new double[] { 2.0, 2.6 };
-            myDictionary["う"] = new double[] { 2.8, 3.5 };
-            myDictionary["え"] = new double[] { 3.7, 4.5 };
-            myDictionary["お"] = new double[] { 4.7, 5.4 };
-            myDictionary["か"] = new double[] { 6.5, 7.3 };
-            myDictionary["き"] = new double[] { 7.4, 8.2 };
-            myDictionary["く"] = new double[] { 8.3, 9.0 };
-            myDictionary["け"] = new double[] { 9.2, 10.0 };
-            myDictionary["こ"] = new double[] { 10.1, 10.7 };
-            myDictionary["さ"] = new double[] { 11.5, 12.6 };
-            myDictionary["し"] = new double[] { 12.6, 13.5 };
-            myDictionary["す"] = new double[] { 13.5, 14.3 };
-            myDictionary["せ"] = new double[] { 14.3, 15.2 };
-            myDictionary["そ"] = new double[] { 15.2, 16.0 };
-            myDictionary["た"] = new double[] { 17.2, 18.0 };
-            myDictionary["ち"] = new double[] { 18.0, 18.8 };
-            myDictionary["つ"] = new double[] { 18.8, 19.8 };
-            myDictionary["て"] = new double[] { 19.8, 20.6 };
-            myDictionary["と"] = new double[] { 20.6, 21.4 };
-            myDictionary["な"] = new double[] { 22.3, 23.3 };
-            myDictionary["に"] = new double[] { 23.3, 24.1 };
-            myDictionary["ぬ"] = new double[] { 24.2, 25.2 };
-            myDictionary["ね"] = new double[] { 25.2, 25.9 };
-            myDictionary["の"] = new double[] { 26.0, 26.7 };
-            myDictionary["は"] = new double[] { 27.8, 28.7 };
-            myDictionary["ひ"] = new double[] { 28.7, 29.5 };
-            myDictionary["ふ"] = new double[] { 29.5, 30.3 };
-            myDictionary["へ"] = new double[] { 30.5, 31.3 };
-            myDictionary["ほ"] = new double[] { 31.3, 32.2 };
-            myDictionary["ま"] = new double[] { 33.3, 34.1 };
-            myDictionary["み"] = new double[] { 34.2, 35.0 };
-            myDictionary["む"] = new double[] { 35.0, 35.9 };
-            myDictionary["め"] = new double[] { 36.0, 36.8 };
-            myDictionary["も"] = new double[] { 36.8, 37.7 };
-            myDictionary["や"] = new double[] { 38.5, 39.6 };
-            myDictionary["ゆ"] = new double[] { 39.6, 40.5 };
-            myDictionary["よ"] = new double[] { 40.5, 41.4 };
-            myDictionary["ら"] = new double[] { 42.4, 43.5 };
-            myDictionary["り"] = new double[] { 43.5, 44.4 };
-            myDictionary["る"] = new double[] { 44.4, 45.4 };
-            myDictionary["れ"] = new double[] { 45.4, 46.3 };
-            myDictionary["ろ"] = new double[] { 46.3, 47.2 };
-            myDictionary["わ"] = new double[] { 48.1, 49.2 };
-            myDictionary["を"] = new double[] { 49.3, 50.2 };
-            myDictionary["ん"] = new double[] { 50.3, 51.2 };
+            //myDictionary["あ"] = new double[] { 1.1, 1.8 };
+            //mydictionary["い"] = new double[] { 2.0, 2.6 };
+            //mydictionary["う"] = new double[] { 2.8, 3.5 };
+            //mydictionary["え"] = new double[] { 3.7, 4.5 };
+            //mydictionary["お"] = new double[] { 4.7, 5.4 };
+            //mydictionary["か"] = new double[] { 6.5, 7.3 };
+            //mydictionary["き"] = new double[] { 7.4, 8.2 };
+            //mydictionary["く"] = new double[] { 8.3, 9.0 };
+            //mydictionary["け"] = new double[] { 9.2, 10.0 };
+            //mydictionary["こ"] = new double[] { 10.1, 10.7 };
+            //mydictionary["さ"] = new double[] { 11.5, 12.6 };
+            //mydictionary["し"] = new double[] { 12.6, 13.5 };
+            //mydictionary["す"] = new double[] { 13.5, 14.3 };
+            //mydictionary["せ"] = new double[] { 14.3, 15.2 };
+            //mydictionary["そ"] = new double[] { 15.2, 16.0 };
+            //mydictionary["た"] = new double[] { 17.2, 18.0 };
+            //mydictionary["ち"] = new double[] { 18.0, 18.8 };
+            //mydictionary["つ"] = new double[] { 18.8, 19.8 };
+            //mydictionary["て"] = new double[] { 19.8, 20.6 };
+            //mydictionary["と"] = new double[] { 20.6, 21.4 };
+            //mydictionary["な"] = new double[] { 22.3, 23.3 };
+            //mydictionary["に"] = new double[] { 23.3, 24.1 };
+            //mydictionary["ぬ"] = new double[] { 24.2, 25.2 };
+            //mydictionary["ね"] = new double[] { 25.2, 25.9 };
+            //mydictionary["の"] = new double[] { 26.0, 26.7 };
+            //mydictionary["は"] = new double[] { 27.8, 28.7 };
+            //mydictionary["ひ"] = new double[] { 28.7, 29.5 };
+            //mydictionary["ふ"] = new double[] { 29.5, 30.3 };
+            //mydictionary["へ"] = new double[] { 30.5, 31.3 };
+            //mydictionary["ほ"] = new double[] { 31.3, 32.2 };
+            //mydictionary["ま"] = new double[] { 33.3, 34.1 };
+            //mydictionary["み"] = new double[] { 34.2, 35.0 };
+            //mydictionary["む"] = new double[] { 35.0, 35.9 };
+            //mydictionary["め"] = new double[] { 36.0, 36.8 };
+            //mydictionary["も"] = new double[] { 36.8, 37.7 };
+            //mydictionary["や"] = new double[] { 38.5, 39.6 };
+            //mydictionary["ゆ"] = new double[] { 39.6, 40.5 };
+            //mydictionary["よ"] = new double[] { 40.5, 41.4 };
+            //mydictionary["ら"] = new double[] { 42.4, 43.5 };
+            //mydictionary["り"] = new double[] { 43.5, 44.4 };
+            //mydictionary["る"] = new double[] { 44.4, 45.4 };
+            //mydictionary["れ"] = new double[] { 45.4, 46.3 };
+            //mydictionary["ろ"] = new double[] { 46.3, 47.2 };
+            //mydictionary["わ"] = new double[] { 48.1, 49.2 };
+            //mydictionary["を"] = new double[] { 49.3, 50.2 };
+            //mydictionary["ん"] = new double[] { 50.3, 51.2 };
 
-            myDictionary["が"] = new double[] { 53.3, 54.3 };
-            myDictionary["ぎ"] = new double[] { 54.3, 55.2 };
-            myDictionary["ぐ"] = new double[] { 55.2, 56.0 };
-            myDictionary["げ"] = new double[] { 56.0, 56.8 };
-            myDictionary["ご"] = new double[] { 57.0, 57.8 };
+            //mydictionary["が"] = new double[] { 53.3, 54.3 };
+            //mydictionary["ぎ"] = new double[] { 54.3, 55.2 };
+            //mydictionary["ぐ"] = new double[] { 55.2, 56.0 };
+            //mydictionary["げ"] = new double[] { 56.0, 56.8 };
+            //mydictionary["ご"] = new double[] { 57.0, 57.8 };
 
-            myDictionary["ざ"] = new double[] { 59.0, 60.0 };
-            myDictionary["じ"] = new double[] { 60.0, 60.8 };
-            myDictionary["ず"] = new double[] { 61.0, 61.8 };
-            myDictionary["ぜ"] = new double[] { 61.8, 62.8 };
-            myDictionary["ぞ"] = new double[] { 62.8, 63.8 };
+            //mydictionary["ざ"] = new double[] { 59.0, 60.0 };
+            //mydictionary["じ"] = new double[] { 60.0, 60.8 };
+            //mydictionary["ず"] = new double[] { 61.0, 61.8 };
+            //mydictionary["ぜ"] = new double[] { 61.8, 62.8 };
+            //mydictionary["ぞ"] = new double[] { 62.8, 63.8 };
 
-            myDictionary["だ"] = new double[] { 65.5, 66.2 };
-            myDictionary["ぢ"] = new double[] { 66.3, 67.2 };
-            myDictionary["づ"] = new double[] { 67.2, 68.0 };
-            myDictionary["で"] = new double[] { 68.1, 68.9 };
-            myDictionary["ど"] = new double[] { 69.0, 69.9 };
+            //mydictionary["だ"] = new double[] { 65.5, 66.2 };
+            //mydictionary["ぢ"] = new double[] { 66.3, 67.2 };
+            //mydictionary["づ"] = new double[] { 67.2, 68.0 };
+            //mydictionary["で"] = new double[] { 68.1, 68.9 };
+            //mydictionary["ど"] = new double[] { 69.0, 69.9 };
 
-            myDictionary["ば"] = new double[] { 71.4, 72.1 };
-            myDictionary["び"] = new double[] { 72.2, 73.0 };
-            myDictionary["ぶ"] = new double[] { 73.0, 73.8 };
-            myDictionary["べ"] = new double[] { 74.0, 74.8 };
-            myDictionary["ぼ"] = new double[] { 74.8, 75.6 };
+            //mydictionary["ば"] = new double[] { 71.4, 72.1 };
+            //mydictionary["び"] = new double[] { 72.2, 73.0 };
+            //mydictionary["ぶ"] = new double[] { 73.0, 73.8 };
+            //mydictionary["べ"] = new double[] { 74.0, 74.8 };
+            //mydictionary["ぼ"] = new double[] { 74.8, 75.6 };
 
-            myDictionary["ぱ"] = new double[] { 77.0, 77.8 };
-            myDictionary["ぴ"] = new double[] { 77.9, 78.8 };
-            myDictionary["ぷ"] = new double[] { 78.8, 79.5 };
-            myDictionary["ぺ"] = new double[] { 79.6, 80.3 };
-            myDictionary["ぽ"] = new double[] { 80.4, 81.2 };
+            //mydictionary["ぱ"] = new double[] { 77.0, 77.8 };
+            //mydictionary["ぴ"] = new double[] { 77.9, 78.8 };
+            //mydictionary["ぷ"] = new double[] { 78.8, 79.5 };
+            //mydictionary["ぺ"] = new double[] { 79.6, 80.3 };
+            //mydictionary["ぽ"] = new double[] { 80.4, 81.2 };
 
 
-            /*
+            
             myDictionary["きゃ"] = new double[] { 82.8, 83.4 };
             myDictionary["きゅ"] = new double[] { 83.8, 84.5 };
             myDictionary["きょ"] = new double[] { 84.6, 85.4 };
 
+            myDictionary["ぎゃ"] = new double[] { 107.3, 108.2 };
+            myDictionary["ぎゅ"] = new double[] { 108.2, 109.0 };
+            myDictionary["ぎょ"] = new double[] { 109.0, 110.0 };
+
             myDictionary["しゃ"] = new double[] { 86.2, 87.1 };
             myDictionary["しゅ"] = new double[] { 87.1, 88.0 };
             myDictionary["しょ"] = new double[] { 88.0, 88.9 };
+
+
+            myDictionary["じゃ"] = new double[] { 110.9, 111.8 };
+            myDictionary["じゅ"] = new double[] { 111.8, 112.7 };
+            myDictionary["じょ"] = new double[] { 112.7, 113.7 };
+
 
             myDictionary["ちゃ"] = new double[] { 90.0, 90.8 };
             myDictionary["ちゅ"] = new double[] { 90.8, 91.7 };
@@ -191,13 +201,7 @@ namespace dictationApp
             myDictionary["りゅ"] = new double[] { 104.7, 105.5 };
             myDictionary["りょ"] = new double[] { 105.5, 106.3 };
 
-            myDictionary["ぎゃ"] = new double[] { 107.3, 108.2 };
-            myDictionary["ぎゅ"] = new double[] { 108.2, 109.0 };
-            myDictionary["ぎょ"] = new double[] { 109.0, 110.0 };
 
-            myDictionary["じゃ"] = new double[] { 110.9, 111.8 };
-            myDictionary["じゅ"] = new double[] { 111.8, 112.7 };
-            myDictionary["じょ"] = new double[] { 112.7, 113.7 };
 
             myDictionary["びゃ"] = new double[] { 114.7, 115.4 };
             myDictionary["びゅ"] = new double[] { 115.4, 116.3 };
@@ -207,7 +211,7 @@ namespace dictationApp
             myDictionary["ぴゅ"] = new double[] { 119.1, 120.0 };
             myDictionary["ぴょ"] = new double[] { 120.0, 120.9 };
 
-            */
+            
 
             this.BtnPlay.Text = "开始";
             // 访问和打印数据
